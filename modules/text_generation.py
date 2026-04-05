@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
-model = genai.GenerativeModel('gemini-2.5-flash-lite')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def serialize_history(history):
     result = []
@@ -138,7 +138,9 @@ def generate_gemini_citation(source, style):
 def generate_gemini_notes(topic):
     try:
         response = model.generate_content(f"Generate study notes for: {topic}")
-        return response.text
+        if response.text:
+            return response.text
+        return f"# Study Notes: {topic}\n(Empty response from AI)"
     except Exception as e:
         print(f"Gemini Notes Error: {e}")
         return f"# Study Notes: {topic}\n(Error)"

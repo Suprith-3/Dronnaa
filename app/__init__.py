@@ -57,11 +57,15 @@ def create_app():
 
         db.create_all()
 
-        # Auto-seed the database if it's currently empty (fresh deployment)
+        # Auto-seed the database in a background thread if it's empty (fresh deployment)
         from .models import Course
         if Course.query.first() is None:
+            import threading
             from .seed_helper import auto_seed_courses
-            auto_seed_courses(db)
+            def run_seed(app_instance, db_instance):
+                with app_instance.app_context():
+                    auto_seed_courses(db_instance)
+            threading.Thread(target=run_seed, args=(app, db)).start()
 
     return app
 
