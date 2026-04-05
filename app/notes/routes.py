@@ -5,6 +5,7 @@ from flask_login import current_user, login_required
 from . import notes_bp
 from ..models import Note, db
 from werkzeug.utils import secure_filename
+from modules.supabase_helper import upload_file_to_supabase
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -33,15 +34,24 @@ def upload():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             unique_filename = f"{uuid.uuid4().hex}_{filename}"
-            file_path = os.path.join(current_app.config['NOTES_FOLDER'], unique_filename)
-            file.save(file_path)
+            
+            final_path = unique_filename
+            # Try Supabase first
+            if current_app.config.get('SUPABASE_URL'):
+                supa_url = upload_file_to_supabase('dronacharya', file, f"notes/{unique_filename}")
+                if supa_url:
+                    final_path = supa_url
+                else:
+                    file.save(os.path.join(current_app.config['NOTES_FOLDER'], unique_filename))
+            else:
+                file.save(os.path.join(current_app.config['NOTES_FOLDER'], unique_filename))
 
             
             new_note = Note(
                 title=request.form.get('title'),
                 subject=request.form.get('subject'),
                 description=request.form.get('description'),
-                file_path=unique_filename,
+                file_path=final_path,
                 uploader_name=current_user.first_name if current_user.is_authenticated else request.form.get('uploader_name', 'Anonymous')
             )
             

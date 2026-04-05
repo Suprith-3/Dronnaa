@@ -3,6 +3,7 @@ from flask import render_template, request, redirect, url_for, jsonify, current_
 from werkzeug.utils import secure_filename
 from . import books_bp
 from ..models import Book, haversine_km, db
+from modules.supabase_helper import upload_file_to_supabase
 
 @books_bp.route('/')
 def index():
@@ -43,12 +44,18 @@ def list_book():
         if 'cover_image' in request.files:
             file = request.files['cover_image']
             if file and file.filename != '':
-                filename = secure_filename(f"book_{uuid.uuid4().hex}_{file.filename}")
-                try:
-                    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                except Exception as e:
-                    print(f"DEBUG: Local save failed: {e}")
-                    filename = 'default_book.png'
+                unique_name = f"book_{uuid.uuid4().hex}_{secure_filename(file.filename)}"
+                # Try Supabase first
+                if current_app.config.get('SUPABASE_URL'):
+                    supa_url = upload_file_to_supabase('dronacharya', file, f"books/{unique_name}")
+                    if supa_url:
+                        filename = supa_url
+                    else:
+                        file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], unique_name))
+                        filename = unique_name
+                else:
+                    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], unique_name))
+                    filename = unique_name
 
         
         print(f"DEBUG: Creating new book with image: {filename}")

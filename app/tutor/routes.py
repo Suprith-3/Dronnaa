@@ -8,6 +8,7 @@ from modules.text_generation import generate_gemini_quiz, generate_gemini_chat, 
 from modules.text_to_speech import generate_tts
 from modules.video_search import search_videos
 from modules.document_generator import create_docx
+from modules.supabase_helper import upload_file_to_supabase
 
 @tutor_bp.route('/')
 def welcome():
@@ -148,10 +149,17 @@ def get_answer():
     filepath = os.path.join(current_app.config['AUDIO_FOLDER'], filename)
     generate_tts(reply, filepath)
     
+    # Supabase Upload (Optional Persistence)
+    audio_url = url_for('static', filename='audio/'+filename)
+    if current_app.config.get('SUPABASE_URL'):
+        with open(filepath, 'rb') as f:
+            supa_url = upload_file_to_supabase('dronacharya', f, f"audio/{filename}")
+            if supa_url: audio_url = supa_url
+
     # Search videos
     videos = search_videos(question)
     
-    return render_template('tutor/lesson.html', question=question, answer=reply, audio_url=url_for('static', filename='audio/'+filename), videos=videos)
+    return render_template('tutor/lesson.html', question=question, answer=reply, audio_url=audio_url, videos=videos)
 
 @tutor_bp.route('/api/generate-notes', methods=['POST'])
 @login_required
@@ -161,7 +169,14 @@ def api_generate_notes():
     filename = f"notes_{uuid.uuid4().hex}.docx"
     filepath = os.path.join(current_app.config['DOCS_FOLDER'], filename)
     create_docx(notes_md, filepath)
-    return jsonify({'success': True, 'download_url': url_for('static', filename='documents/'+filename)})
+    
+    download_url = url_for('static', filename='documents/'+filename)
+    if current_app.config.get('SUPABASE_URL'):
+        with open(filepath, 'rb') as f:
+            supa_url = upload_file_to_supabase('dronacharya', f, f"notes/{filename}")
+            if supa_url: download_url = supa_url
+
+    return jsonify({'success': True, 'download_url': download_url})
 
 @tutor_bp.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -173,10 +188,20 @@ def profile():
         if 'profile_pic' in request.files:
             file = request.files['profile_pic']
             if file and file.filename != '':
-                # LOCAL SAVE
                 filename = secure_filename(f"avatar_{current_user.id}_{file.filename}")
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                current_user.profile_pic = filename
+                # Try Supabase first
+                if current_app.config.get('SUPABASE_URL'):
+                    supa_url = upload_file_to_supabase('dronacharya', file, f"avatars/{filename}")
+                    if supa_url:
+                        current_user.profile_pic = supa_url
+                    else:
+                        # Fallback to local
+                        file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                        current_user.profile_pic = filename
+                else:
+                    # LOCAL SAVE
+                    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                    current_user.profile_pic = filename
 
         
         db.session.commit()

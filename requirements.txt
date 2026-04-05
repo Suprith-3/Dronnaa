@@ -16,3 +16,4 @@ psycopg2-binary
 gunicorn
 markupsafe
 jinja2
+supabase
