@@ -231,5 +231,87 @@
       },
       "answer": "B"
     }
+  ],
+  "scholarships_global": [
+    {
+      "title": "Fulbright-Nehru Master\u2019s Fellowships",
+      "agency": "United States-India Educational Foundation (USIEF)",
+      "category": "Government",
+      "eligibility": "Indian citizens with a completed U.S. equivalent bachelor's degree and at least three years of professional work experience.",
+      "description": "Designed for outstanding Indians to pursue a master's degree program at select U.S. colleges and universities in areas like Arts, Culture, Environmental Science, and Public Administration.",
+      "link": "https://www.usief.org.in/Fulbright-Nehru-Masters-Fellowships.aspx",
+      "amount": "Full tuition, airfare, living stipend, and accident/sickness coverage.",
+      "status": "Open"
+    },
+    {
+      "title": "Chevening Scholarships",
+      "agency": "Foreign, Commonwealth & Development Office (UK Government)",
+      "category": "Government",
+      "eligibility": "Citizens of Chevening-eligible countries with an undergraduate degree and at least two years of work experience.",
+      "description": "The UK government\u2019s international awards program aimed at developing global leaders. It funds a one-year master's degree at any UK university.",
+      "link": "https://www.chevening.org/scholarship/india/",
+      "amount": "Full tuition fees, monthly stipend, travel costs to and from the UK, and an arrival allowance.",
+      "status": "Open"
+    },
+    {
+      "title": "Reliance Foundation Undergraduate Scholarships",
+      "agency": "Reliance Foundation",
+      "category": "Private",
+      "eligibility": "First-year undergraduate students enrolled in any full-time degree program in India with a household income of less than INR 15 Lakh.",
+      "description": "Aims to support meritorious students from all over India to continue their education in any stream of their choice.",
+      "link": "https://www.scholarships.reliancefoundation.org/",
+      "amount": "Up to INR 2,00,000 over the duration of the degree.",
+      "status": "Open"
+    },
+    {
+      "title": "DAAD Scholarships for Postgraduate Courses",
+      "agency": "German Academic Exchange Service (DAAD)",
+      "category": "Government",
+      "eligibility": "Graduates with at least two years of professional experience from developing or newly industrialized countries.",
+      "description": "Supports international students to pursue a development-related postgraduate course at a state-recognized German university.",
+      "link": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/",
+      "amount": "Monthly payments of 934 Euros for graduates or 1,200 Euros for doctoral candidates, plus travel and health insurance.",
+      "status": "Open"
+    },
+    {
+      "title": "Tata Scholarship at Cornell University",
+      "agency": "Tata Education and Development Trust",
+      "category": "Non-Government",
+      "eligibility": "Indian citizens who have attended secondary school in India and are offered admission to an undergraduate program at Cornell.",
+      "description": "Supports undergraduate students from India who demonstrate financial need but have achieved academic excellence.",
+      "link": "https://admissions.cornell.edu/apply/international-students/tata-scholarship",
+      "amount": "Full tuition for the duration of the undergraduate program.",
+      "status": "Open"
+    },
+    {
+      "title": "Commonwealth Master\u2019s Scholarships",
+      "agency": "Commonwealth Scholarship Commission (CSC)",
+      "category": "Government",
+      "eligibility": "Citizens or permanent residents of a Commonwealth country who cannot afford to study in the UK without this scholarship.",
+      "description": "Funded by the UK Foreign, Commonwealth & Development Office, these scholarships enable talented individuals to gain skills required for sustainable development.",
+      "link": "https://cscuk.fcdo.gov.uk/scholarships/commonwealth-masters-scholarships/",
+      "amount": "Approved airfare, tuition fees, stipend of \u00a31,347 per month, and warm clothing allowance.",
+      "status": "Open"
+    },
+    {
+      "title": "HDFC Bank Parivartan's ECS Scholarship",
+      "agency": "HDFC Bank",
+      "category": "Private",
+      "eligibility": "Indian students from Class 6 to Post-graduation level who are facing a personal or financial crisis.",
+      "description": "A merit-cum-means scholarship intended to support students who are unable to bear the cost of education due to financial difficulties.",
+      "link": "https://www.hdfcbank.com/personal/useful-links/social-initiatives/parivartan",
+      "amount": "Up to INR 75,000 per year depending on the level of study.",
+      "status": "Open"
+    },
+    {
+      "title": "Gates Cambridge Scholarship",
+      "agency": "Bill & Melinda Gates Foundation",
+      "category": "Non-Government",
+      "eligibility": "Citizens of any country outside the United Kingdom applying to pursue a full-time postgraduate degree at the University of Cambridge.",
+      "description": "Awarded to outstanding applicants who show exceptional intellectual ability and a commitment to improving the lives of others.",
+      "link": "https://www.gatescambridge.org/apply/eligibility/",
+      "amount": "University composition fee, maintenance allowance (\u00a320,000 per year), and airfare.",
+      "status": "Open"
+    }
   ]
 }

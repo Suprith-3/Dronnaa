@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Control Center | Dronacharya Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cinzel:wght@700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'DM Sans', sans-serif; background: #f4f7fe; }
+        .enterprise-title { font-family: 'Cinzel', serif; }
+        .sidebar { background: #0b1437; }
+        .card { background: white; border-radius: 20px; transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.05); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.02); }
+        .tab-btn { transition: all 0.2s; }
+        .tab-btn.active { background: white; color: #2b3674; box-shadow: 0 4px 14px rgba(0,0,0,0.05); }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen flex bg-[#f4f7fe]">
+    
+    <!-- Sidebar -->
+    <aside class="w-72 sidebar min-h-screen fixed left-0 top-0 text-white p-8 flex flex-col z-50">
+        <div class="flex items-center gap-3 mb-10 px-2">
+            <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center border border-white/20 backdrop-blur-md">
+                <img src="{{ url_for('static', filename='logo.png') }}" class="w-7 h-7 object-contain">
+            </div>
+            <div>
+                <h1 class="enterprise-title text-sm font-black tracking-widest leading-tight">Master Console</h1>
+                <p class="text-[8px] text-blue-400 font-bold uppercase tracking-[2px]">Admin Terminal v2.4</p>
+            </div>
+        </div>
+
+        <nav class="flex-grow space-y-2">
+            <button onclick="switchTab('users')" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all font-bold text-sm tracking-wide">
+                <span class="text-xl">📊</span> Overview
+            </button>
+            <div class="pt-4 pb-2 px-6 text-[10px] font-bold text-slate-500 uppercase tracking-[2px]">Management</div>
+            <button onclick="switchTab('users')" class="nav-link-users w-full flex items-center gap-4 px-6 py-4 rounded-2xl hover:bg-white/5 transition-all text-sm font-medium text-slate-400 hover:text-white">
+                <span class="text-xl opacity-60">👥</span> Users
+            </button>
+            <button onclick="switchTab('notes')" class="nav-link-notes w-full flex items-center gap-4 px-6 py-4 rounded-2xl hover:bg-white/5 transition-all text-sm font-medium text-slate-400 hover:text-white">
+                <span class="text-xl opacity-60">📝</span> Study Notes
+            </button>
+            <button onclick="switchTab('books')" class="nav-link-books w-full flex items-center gap-4 px-6 py-4 rounded-2xl hover:bg-white/5 transition-all text-sm font-medium text-slate-400 hover:text-white">
+                <span class="text-xl opacity-60">📚</span> Marketplace
+            </button>
+        </nav>
+
+        <div class="mt-auto pt-10">
+            <div class="p-6 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl relative overflow-hidden group mb-8">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-all duration-500"></div>
+                <div class="relative z-10">
+                    <p class="text-[10px] font-bold uppercase tracking-[2px] text-blue-100 mb-1">System Health</p>
+                    <h3 class="text-lg font-black mb-4">Operations Active</h3>
+                    <div class="h-1.5 w-full bg-black/10 rounded-full overflow-hidden">
+                        <div class="h-full w-[95%] bg-blue-300 rounded-full shadow-[0_0_8px_white]"></div>
+                    </div>
+                </div>
+            </div>
+            <a href="{{ url_for('admin.logout') }}" class="w-full flex items-center justify-center gap-3 py-4 bg-rose-500 hover:bg-rose-600 rounded-2xl text-sm font-bold tracking-widest uppercase shadow-lg shadow-rose-950/20 transition-all">
+                Logout Securely
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-72 flex-grow p-10 max-w-[1600px]">
+        <!-- Breadcrumbs & User -->
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-[2px] mb-1">Dronacharya Hub / Admin / <span id="current-page-label">Dashboard</span></p>
+                <h2 class="text-3xl font-black text-[#2b3674] tracking-tight">Main Control Dashboard</h2>
+            </div>
+            <div class="flex items-center gap-4 bg-white p-2 pr-6 rounded-3xl shadow-sm border border-slate-100">
+                <div class="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-2xl flex items-center justify-center font-bold">SM</div>
+                <div class="hidden sm:block">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Chief Administrator</p>
+                    <p class="text-xs font-bold text-[#2b3674]">supreethm763@gmail.com</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="card p-6 flex items-center gap-6">
+                <div class="w-16 h-16 bg-[#f4f7fe] rounded-2xl flex items-center justify-center text-3xl">👥</div>
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total Active Users</p>
+                    <h3 class="text-2xl font-black text-[#2b3674]">{{ users|length }}</h3>
+                </div>
+            </div>
+            <div class="card p-6 flex items-center gap-6">
+                <div class="w-16 h-16 bg-[#f4f7fe] rounded-2xl flex items-center justify-center text-3xl">📄</div>
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Premium Surveys</p>
+                    <h3 class="text-2xl font-black text-[#2b3674]">{{ users_with_research_access|length }}</h3>
+                </div>
+            </div>
+            <div class="card p-6 flex items-center gap-6">
+                <div class="w-16 h-16 bg-[#f4f7fe] rounded-2xl flex items-center justify-center text-3xl">📝</div>
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Notes Uploaded</p>
+                    <h3 class="text-2xl font-black text-[#2b3674]">{{ notes|length }}</h3>
+                </div>
+            </div>
+            <div class="card p-6 flex items-center gap-6">
+                <div class="w-16 h-16 bg-[#f4f7fe] rounded-2xl flex items-center justify-center text-3xl">📚</div>
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Marketplace Items</p>
+                    <h3 class="text-2xl font-black text-[#2b3674]">{{ books|length }}</h3>
+                </div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-8 p-5 rounded-3xl text-sm font-bold flex items-center gap-3 shadow-sm border {% if category == 'success' %}bg-emerald-50 text-emerald-700 border-emerald-100{% else %}bg-rose-50 text-rose-700 border-rose-100{% endif %}">
+                        <span class="text-lg">{% if category == 'success' %}✅{% else %}⚠️{% endif %}</span> {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- MANAGEMENT SECTION -->
+        <div class="card p-8 min-h-[600px] overflow-hidden">
+            <div class="flex items-center justify-between mb-8 pb-8 border-b border-slate-50">
+                <div class="flex items-center gap-2 p-1.5 bg-[#f4f7fe] rounded-2xl hide-scroll overflow-x-auto max-w-full">
+                    <button onclick="switchTab('users')" id="tab-users" class="tab-btn active px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap">User Accounts</button>
+                    <button onclick="switchTab('notes')" id="tab-notes" class="tab-btn px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap">Educational Notes</button>
+                    <button onclick="switchTab('books')" id="tab-books" class="tab-btn px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap">Marketplace Ads</button>
+                </div>
+                <!-- Search Mockup -->
+                <div class="relative hidden lg:block">
+                    <input type="text" placeholder="Global system search..." class="pl-10 pr-4 py-3 bg-[#f4f7fe] border-none rounded-xl text-xs font-bold text-slate-600 focus:ring-2 focus:ring-blue-500/20 outline-none w-64">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-30 text-xs">🔍</span>
+                </div>
+            </div>
+
+            <!-- USERS VIEW -->
+            <div id="content-users" class="tab-content transition-all duration-500">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-[2px] border-b border-slate-50">
+                                <th class="pb-4 px-4">Entity ID</th>
+                                <th class="pb-4 px-4">Member Persona</th>
+                                <th class="pb-4 px-4">Contact</th>
+                                <th class="pb-4 px-4">Privileges</th>
+                                <th class="pb-4 px-4 text-right">Terminal Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for u in users %}
+                            <tr class="border-b border-slate-50/50 group hover:bg-slate-50/50 transition-colors">
+                                <td class="py-5 px-4 font-bold text-slate-400">USR-{{ u.id }}</td>
+                                <td class="py-5 px-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-black text-[10px] text-blue-600 border border-blue-200">
+                                            {{ u.first_name[0] }}{{ u.last_name[0] }}
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-[#2b3674]">{{ u.first_name }} {{ u.last_name }}</p>
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">UID: @{{ u.username }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 font-bold text-slate-600">{{ u.email }}</td>
+                                <td class="py-5 px-4">
+                                    {% if u.has_research_access %}
+                                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black rounded-lg uppercase tracking-widest">Premium Node</span>
+                                    {% else %}
+                                    <span class="px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-black rounded-lg uppercase tracking-widest">Standard</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-5 px-4 text-right">
+                                    <form method="POST" action="{{ url_for('admin.delete_user', user_id=u.id) }}" onsubmit="return confirm('CRITICAL: Permanent wipe of user node?');">
+                                        <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                                            <span>☣️</span> Terminate
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- NOTES VIEW -->
+            <div id="content-notes" class="tab-content hidden transition-all duration-500">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-[2px] border-b border-slate-50">
+                                <th class="pb-4 px-4">Data Block</th>
+                                <th class="pb-4 px-4">Resource Title</th>
+                                <th class="pb-4 px-4">Classification</th>
+                                <th class="pb-4 px-4">Source Entity</th>
+                                <th class="pb-4 px-4 text-right">Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for n in notes %}
+                            <tr class="border-b border-slate-50/50 hover:bg-slate-50/50 transition-colors">
+                                <td class="py-5 px-4 font-bold text-slate-400">DOC-{{ n.id }}</td>
+                                <td class="py-5 px-4 font-bold text-[#2b3674]">{{ n.title }}</td>
+                                <td class="py-5 px-4">
+                                    <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-black rounded-lg uppercase tracking-widest">{{ n.subject }}</span>
+                                </td>
+                                <td class="py-5 px-4 font-bold text-slate-600">👤 {{ n.uploader_name }}</td>
+                                <td class="py-5 px-4 text-right">
+                                    <form method="POST" action="{{ url_for('admin.delete_note', note_id=n.id) }}" onsubmit="return confirm('Purge data from main repository?');">
+                                        <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                                            <span>🗑️</span> Purge
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BOOKS VIEW -->
+            <div id="content-books" class="tab-content hidden transition-all duration-500">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-[2px] border-b border-slate-50">
+                                <th class="pb-4 px-4">Listing Ref</th>
+                                <th class="pb-4 px-4">Item Identity</th>
+                                <th class="pb-4 px-4">Market Val</th>
+                                <th class="pb-4 px-4">Advertiser</th>
+                                <th class="pb-4 px-4 text-right">Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            {% for b in books %}
+                            <tr class="border-b border-slate-50/50 hover:bg-slate-50/50 transition-colors">
+                                <td class="py-5 px-4 font-bold text-slate-400">OBJ-{{ b.id }}</td>
+                                <td class="py-5 px-4">
+                                    <div class="flex items-center gap-3">
+                                        {% if b.cover_image %}
+                                        <div class="w-10 h-14 bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                                            <img src="{{ url_for('static', filename='uploads/' + b.cover_image) }}" class="w-full h-full object-cover">
+                                        </div>
+                                        {% else %}
+                                        <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-lg shadow-inner">📚</div>
+                                        {% endif %}
+                                        <div class="font-bold text-[#2b3674]">{{ b.title }}</div>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4">
+                                    <p class="font-extrabold text-blue-600">₹{{ b.price }}</p>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{ b.listing_type }} ad</p>
+                                </td>
+                                <td class="py-5 px-4 font-bold text-slate-600">👤 {{ b.seller_name }}</td>
+                                <td class="py-5 px-4 text-right">
+                                    <form method="POST" action="{{ url_for('admin.delete_book', book_id=b.id) }}" onsubmit="return confirm('Remove ad from public view?');">
+                                        <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                                            <span>⛔</span> Remove Ad
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-10 text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[4px]">Dronacharya Internal Data Management Terminal | 2026</p>
+        </div>
+    </main>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Deactivate all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-white', 'text-[#2b3674]', 'shadow-sm');
+                btn.classList.add('text-slate-400');
+            });
+
+            // Update UI Labels
+            document.getElementById('current-page-label').innerText = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+
+            // Show active content
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            
+            // Activate button
+            const activeBtn = document.getElementById('tab-' + tabId);
+            activeBtn.classList.add('active', 'bg-white', 'text-[#2b3674]', 'shadow-sm');
+            activeBtn.classList.remove('text-slate-400');
+
+            // Update sidebar appearance if buttons exist
+            document.querySelectorAll('aside button').forEach(btn => {
+               btn.classList.remove('text-white', 'bg-white/10');
+               btn.classList.add('text-slate-400');
+               const icon = btn.querySelector('span');
+               if(icon) icon.classList.add('opacity-60');
+            });
+            
+            const sidebarBtn = document.querySelector('.nav-link-' + tabId);
+            if(sidebarBtn) {
+                sidebarBtn.classList.add('text-white', 'bg-white/10');
+                sidebarBtn.classList.remove('text-slate-400');
+                const icon = sidebarBtn.querySelector('span');
+                if(icon) icon.classList.remove('opacity-60');
+            }
+        }
+    </script>
+</body>
+</html>
