@@ -77,3 +77,5 @@ def create_app():
             threading.Thread(target=run_seed, args=(app, db)).start()
 
     return app
+
+app = create_app()
