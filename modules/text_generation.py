@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
-model_id = 'gemini-1.5-flash' 
+model_id = 'gemini-2.0-flash' 
 # Valid model IDs for the current Google GenAI SDK (April 2026)
-fallback_models = ['gemini-1.5-flash-8b', 'gemini-1.5-pro', 'gemini-2.0-flash']
+fallback_models = ['gemini-2.0-flash-lite', 'gemini-2.5-flash']
 
 def generate_with_fallback(prompt, sys_instr=None):
     import time
