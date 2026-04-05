@@ -57,6 +57,11 @@ def create_app():
 
         db.create_all()
 
+        # Auto-seed the database if it's currently empty (fresh deployment)
+        if Course.query.first() is None:
+            from .seed_helper import auto_seed_courses
+            auto_seed_courses(db)
+
     return app
 
 # Add this to handle Render's default 'gunicorn app:app' command
