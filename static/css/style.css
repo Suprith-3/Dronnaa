@@ -27,28 +27,34 @@
    Cinzel (hero headings) + Sora (section headings) + DM Sans (body)
    https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap
 */
-body { font-family: 'DM Sans', sans-serif; background: var(--surface2); color: var(--text); }
+/* ─── GLOBAL SMOOTHNESS ─── */
+html { scroll-behavior: smooth; }
+* { transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+
+body { font-family: 'DM Sans', sans-serif; background: var(--surface2); color: var(--text); -webkit-font-smoothing: antialiased; }
 h1, h2.hero { font-family: 'Cinzel', serif; }
 h2, h3      { font-family: 'Sora', sans-serif; }
 
 /* ─── CARDS ─── */
 .card {
   background: white; border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.05);
   border: 1px solid var(--border);
-  transition: transform 0.25s, box-shadow 0.25s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
-.card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
+.card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
 
 /* ─── BUTTONS ─── */
 .btn-primary {
   background: linear-gradient(135deg, var(--brand), var(--brand-mid));
   color: white; padding: 12px 28px; border-radius: 50px;
   font-weight: 600; font-family: 'Sora', sans-serif;
-  transition: all 0.2s; border: none; cursor: pointer;
+  transition: all 0.2s ease-in-out; border: none; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(27,67,50,0.3); }
+.btn-primary:active { transform: scale(0.95); opacity: 0.9; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(27,67,50,0.3); }
 
 .btn-gold {
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
@@ -62,14 +68,29 @@ h2, h3      { font-family: 'Sora', sans-serif; }
 .btn-books    { background: linear-gradient(135deg, #1B4332, #2D6A4F); color: white; }
 
 /* ─── ANIMATIONS ─── */
-@keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(20px); }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(15px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.fade-in   { animation: fadeSlideUp 0.5s ease forwards; }
+.page-fade-in { animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+.fade-in   { animation: fadeInUp 0.5s ease forwards; }
 .fade-in-1 { animation-delay: 0.1s; opacity: 0; }
 .fade-in-2 { animation-delay: 0.2s; opacity: 0; }
 .fade-in-3 { animation-delay: 0.3s; opacity: 0; }
+
+/* ─── MOBILE OPTIMIZATION ─── */
+@media (max-width: 768px) {
+  .py-20 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+  .py-16 { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+  .py-12 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+  .mb-16 { margin-bottom: 2rem !important; }
+  .mb-12 { margin-bottom: 1.5rem !important; }
+  
+  h1 { font-size: 1.875rem !important; line-height: 2.25rem !important; } /* text-3xl */
+  h2 { font-size: 1.5rem !important; line-height: 2rem !important; } /* text-2xl */
+  p  { font-size: 0.875rem !important; line-height: 1.25rem !important; } /* text-sm */
+}
 
 /* ─── LEAFLET MAP POLISH ─── */
 .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }

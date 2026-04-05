@@ -42,7 +42,47 @@
   {% block head %}{% endblock %}
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col overflow-x-hidden">
+  <!-- ═══════════════════════════════════════════
+     SITE-WIDE SKELETON LOADER
+  ═══════════════════════════════════════════ -->
+  <div id="site-skeleton" class="fixed inset-0 z-[1000] bg-white flex flex-col p-6 space-y-8 transition-opacity duration-500 pointer-events-none">
+    <div class="max-w-7xl mx-auto w-full space-y-10">
+      <!-- Nav Skeleton -->
+      <div class="flex justify-between items-center h-12">
+        <div class="w-32 h-8 bg-gray-100 rounded-lg animate-pulse"></div>
+        <div class="hidden md:flex gap-4">
+            <div class="w-20 h-8 bg-gray-50 rounded-lg animate-pulse"></div>
+            <div class="w-20 h-8 bg-gray-50 rounded-lg animate-pulse"></div>
+            <div class="w-20 h-8 bg-gray-50 rounded-lg animate-pulse"></div>
+        </div>
+      </div>
+      <!-- Hero Skeleton -->
+      <div class="h-64 bg-gray-100 rounded-[40px] animate-pulse flex flex-col items-center justify-center space-y-4">
+        <div class="w-2/3 h-10 bg-gray-200/50 rounded-2xl"></div>
+        <div class="w-1/2 h-4 bg-gray-200/50 rounded-xl"></div>
+      </div>
+      <!-- Content Grid -->
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="h-80 bg-gray-50 rounded-3xl animate-pulse"></div>
+        <div class="h-80 bg-gray-50 rounded-3xl animate-pulse"></div>
+        <div class="h-80 bg-gray-50 rounded-3xl animate-pulse"></div>
+      </div>
+    </div>
+    <!-- Pulsing Shimmer Overlay CSS -->
+    <style>
+      #site-skeleton { opacity: 1; pointer-events: all; }
+      #site-skeleton .animate-pulse {
+        background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+        background-size: 200% 100%;
+        animation: skeleton-shimmer 1.5s infinite;
+      }
+      @keyframes skeleton-shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    </style>
+  </div>
 
   <!-- ═══════════════════════════════════════════
      UNIFIED NAVBAR (Desktop + Hamburger for Mobile)
@@ -192,7 +232,7 @@
   {% endif %}
 
   <!-- MAIN CONTENT -->
-  <main class="flex-grow">
+  <main class="flex-grow {% if current_user and current_user.is_authenticated %}pb-20 lg:pb-0{% endif %} page-fade-in">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
       <div class="max-w-7xl mx-auto px-4 mt-4">
@@ -208,8 +248,51 @@
     {% block content %}{% endblock %}
   </main>
 
+  <!-- ═══════════════════════════════════════════
+     MOBILE BOTTOM NAVIGATION (App-like experience)
+  ═══════════════════════════════════════════ -->
+  {% if current_user and current_user.is_authenticated %}
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 z-[100] flex items-center justify-around py-3 px-1 shadow-[0_-5px_30px_rgba(0,0,0,0.08)]">
+    <a href="{{ url_for('home') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.endpoint == 'home' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
+      <span class="text-xl">🏠</span>
+      <span class="text-[9px] font-bold uppercase tracking-tighter">Home</span>
+      {% if request.endpoint == 'home' %}<div class="absolute -bottom-1 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>{% endif %}
+    </a>
+    <a href="{{ url_for('tutor.welcome') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.blueprint == 'tutor' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
+      <span class="text-xl">🎓</span>
+      <span class="text-[9px] font-bold uppercase tracking-tighter">Tutor</span>
+      {% if request.blueprint == 'tutor' %}<div class="absolute -bottom-1 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>{% endif %}
+    </a>
+    <a href="{{ url_for('research.index') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.blueprint == 'research' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
+      <span class="text-xl">📄</span>
+      <span class="text-[9px] font-bold uppercase tracking-tighter">Research</span>
+      {% if request.blueprint == 'research' %}<div class="absolute -bottom-1 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>{% endif %}
+    </a>
+    <a href="{{ url_for('scholarships.index') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.blueprint == 'scholarships' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
+      <span class="text-xl">📜</span>
+      <span class="text-[9px] font-bold uppercase tracking-tighter">Scholar</span>
+      {% if request.blueprint == 'scholarships' %}<div class="absolute -bottom-1 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>{% endif %}
+    </a>
+    <a href="{{ url_for('notes.index') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.blueprint == 'notes' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
+      <span class="text-xl">📝</span>
+      <span class="text-[9px] font-bold uppercase tracking-tighter">Notes</span>
+      {% if request.blueprint == 'notes' %}<div class="absolute -bottom-1 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>{% endif %}
+    </a>
+    <a href="{{ url_for('books.index') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.blueprint == 'books' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
+      <span class="text-xl">📚</span>
+      <span class="text-[9px] font-bold uppercase tracking-tighter">Books</span>
+      {% if request.blueprint == 'books' %}<div class="absolute -bottom-1 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>{% endif %}
+    </a>
+    <a href="{{ url_for('games.index') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.blueprint == 'games' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
+      <span class="text-xl">🕹️</span>
+      <span class="text-[9px] font-bold uppercase tracking-tighter">Games</span>
+      {% if request.blueprint == 'games' %}<div class="absolute -bottom-1 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>{% endif %}
+    </a>
+  </div>
+  {% endif %}
+
   <!-- UNIFIED FOOTER -->
-  <footer style="background:#0B1437;" class="text-white mt-12 mb-0">
+  <footer style="background:#0B1437;" class="text-white mb-0 border-t border-white/5">
     <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-4 lg:grid-cols-7 gap-8">
       <div>
         <div style="font-family:'Cinzel',serif; color:#F4A261; font-size:18px; margin-bottom:8px;">🏹 Dronacharya Hub</div>
@@ -281,6 +364,17 @@
   <script src="{{ url_for('static', filename='js/research.js') }}"></script>
   <script src="{{ url_for('static', filename='js/tutor.js') }}"></script>
   <script>
+    // Hide Skeleton Loader on Page Load
+    window.addEventListener('load', function() {
+        const skeleton = document.getElementById('site-skeleton');
+        if (skeleton) {
+            skeleton.style.opacity = '0';
+            setTimeout(() => {
+                skeleton.style.display = 'none';
+            }, 500);
+        }
+    });
+
     function toggleMobileMenu() {
       const menu = document.getElementById('mobile-menu');
       const panel = document.getElementById('mobile-menu-panel');

@@ -7,7 +7,7 @@
         Find Books Near You
     </div>
     <h1 style="font-family:'Cinzel',serif;" class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Read. Reuse. <span class="text-green-600">Rejoice.</span></h1>
-    <p class="text-gray-500 max-w-2xl text-lg leading-relaxed">The only local marketplace where readers find books within a few kilometers using GPS intelligence.</p>
+    <p class="hidden md:block text-gray-500 max-w-2xl text-lg leading-relaxed">The only local marketplace where readers find books within a few kilometers using GPS intelligence.</p>
   </div>
 
   <div class="mb-16">
@@ -15,7 +15,7 @@
         <div class="grid md:grid-cols-2 gap-12 items-center">
             <div>
                 <h2 class="text-3xl font-black text-gray-900 mb-6">Discover Nearby Books</h2>
-                <p class="text-gray-500 mb-10 leading-relaxed italic">"A book is a gift you can open again and again. Find one in your neighborhood today."</p>
+                <p class="hidden md:block text-gray-500 mb-10 leading-relaxed italic">"A book is a gift you can open again and again. Find one in your neighborhood today."</p>
                 <div class="flex flex-col sm:flex-row gap-4">
                     <button onclick="findNearbyBooks()" class="px-10 py-4 btn-primary btn-books rounded-xl font-black text-lg shadow-xl hover:shadow-2xl transition-all">📍 Find Books Near Me</button>
                     <a href="{{ url_for('books.browse') }}" class="px-10 py-4 bg-gray-100 text-gray-700 rounded-xl font-black text-lg hover:bg-gray-200 transition text-center">Browse All →</a>

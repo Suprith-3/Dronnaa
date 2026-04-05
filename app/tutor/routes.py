@@ -51,16 +51,26 @@ def logout():
     logout_user()
     return redirect(url_for('tutor.welcome'))
 
+from sqlalchemy.orm import joinedload
+
 @tutor_bp.route('/dashboard')
 @login_required
 def dashboard():
-    courses = Course.query.all()
+    # Fetch all courses with their videos eager-loaded (to avoid N+1 when counting total videos)
+    courses = Course.query.options(joinedload(Course.videos)).all()
+    
+    # Pre-fetch all completed video IDs for the current user in a single query
+    completed_video_ids = {v.id for v in current_user.completed_videos}
+    
     progress_data = []
     for c in courses:
         total = len(c.videos)
-        done = current_user.completed_videos.filter_by(course_id=c.id).count()
-        progress = int((done / total) * 100) if total > 0 else 0
+        # Count completed videos for this specific course from the pre-fetched set
+        done_count = sum(1 for v in c.videos if v.id in completed_video_ids)
+        
+        progress = int((done_count / total) * 100) if total > 0 else 0
         progress_data.append({'course': c, 'progress': progress})
+        
     return render_template('tutor/dashboard.html', progress_data=progress_data)
 
 @tutor_bp.route('/courses')
