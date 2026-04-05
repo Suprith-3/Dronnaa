@@ -19,23 +19,32 @@ function appendChatBubble(text, role){
   const box=document.getElementById('chat-messages');
   if(!box) return;
   const div=document.createElement('div');
-  div.className=role==='user'?'flex justify-end mb-3':'flex justify-start mb-3';
+  div.className=role==='user'?'flex justify-end mb-4 fade-in':'flex justify-start mb-4 fade-in';
   const bubble=document.createElement('div');
-  bubble.className=role==='user'?'bg-green-50 border border-green-200 px-4 py-3 rounded-2xl rounded-br-sm max-w-xs text-[12px] md:text-sm text-gray-800 shadow-sm':'bg-blue-50 border border-blue-100 px-4 py-3 rounded-2xl rounded-bl-sm max-w-sm text-[12px] md:text-sm text-gray-800 shadow-sm';
+  bubble.className=role==='user'?'bg-green-50 border border-green-200 px-5 py-3.5 rounded-3xl rounded-br-md max-w-sm text-sm text-gray-800 shadow-sm transition-all hover:shadow-md':'bg-blue-50 border border-blue-100 px-5 py-3.5 rounded-3xl rounded-bl-md max-w-lg text-sm text-gray-800 shadow-sm transition-all hover:shadow-md';
   if(role==='bot') {
     bubble.innerHTML=marked.parse(text);
     window.renderMath(bubble);
   } else bubble.textContent=text;
   div.appendChild(bubble);
   box.appendChild(div);
-  box.scrollTop=box.scrollHeight;
+  box.scrollTo({top: box.scrollHeight, behavior: 'smooth'});
 }
 
 function showTypingIndicator(){
   const box=document.getElementById('chat-messages');
-  if(box) {
-    box.innerHTML+='<div id="typing" class="flex justify-start mb-4"><div class="bg-blue-50 border border-blue-100 px-4 py-3 rounded-2xl text-sm shadow-sm"><span class="typing-dots text-blue-400">● ● ●</span></div></div>';
-    box.scrollTop=box.scrollHeight;
+  if(box && !document.getElementById('typing')) {
+    const div = document.createElement('div');
+    div.id = 'typing';
+    div.className = 'flex justify-start mb-4 fade-in';
+    div.innerHTML = `
+        <div class="bg-blue-50 border border-blue-100 px-5 py-3.5 rounded-3xl rounded-bl-md text-sm shadow-sm flex items-center gap-1">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+        </div>`;
+    box.appendChild(div);
+    box.scrollTo({top: box.scrollHeight, behavior: 'smooth'});
   }
 }
 function hideTypingIndicator(){ document.getElementById('typing')?.remove(); }
@@ -59,7 +68,12 @@ async function generateQuiz(){
 
 function showQuestion(){
   const q=quiz[currentQuestion];
-  document.getElementById('quiz-display').classList.remove('hidden');
+  const display = document.getElementById('quiz-display');
+  display.classList.remove('hidden');
+  display.classList.remove('active-question');
+  void display.offsetWidth; // Force reflow
+  display.classList.add('active-question');
+
   document.getElementById('q-number').textContent=`Question ${currentQuestion+1} of ${quiz.length}`;
   document.getElementById('q-text').textContent=q.question;
   document.getElementById('q-progress').style.width=`${((currentQuestion+1)/quiz.length)*100}%`;
@@ -67,7 +81,7 @@ function showQuestion(){
   opts.innerHTML='';
   Object.entries(q.options).forEach(([k,v])=>{
     const btn=document.createElement('button');
-    btn.className='w-full text-left px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-blue-400 transition text-sm font-medium bg-white';
+    btn.className='w-full text-left px-5 py-4 border-2 border-gray-100 rounded-2xl hover:border-blue-400 hover:bg-blue-50 transition-all text-sm font-semibold bg-white active:scale-[0.98] shadow-sm';
     btn.textContent=`${k}. ${v}`;
     btn.onclick=()=>selectOption(k, btn, q);
     opts.appendChild(btn);

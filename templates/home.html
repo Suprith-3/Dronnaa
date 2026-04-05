@@ -3,22 +3,36 @@
 {% block content %}
 
 <!-- HERO -->
-<section style="background:linear-gradient(135deg,#0B1437 0%,#112060 50%,#1a0533 100%);"
-  class="py-20 px-4 text-white text-center">
-  <div class="max-w-3xl mx-auto">
+<section style="background:linear-gradient(135deg,#0B1437 0%,#1a0533 50%,#112060 100%); background-size: 200% 200%; animation: gradient-shift 15s ease infinite;"
+  class="py-20 px-4 text-white text-center relative overflow-hidden">
+  <!-- Subtle Bokeh Overlay -->
+  <div class="absolute inset-0 opacity-20 pointer-events-none">
+    <div class="absolute top-10 left-10 w-64 h-64 bg-blue-500 rounded-full blur-[120px] animate-pulse"></div>
+    <div class="absolute bottom-10 right-10 w-96 h-96 bg-purple-600 rounded-full blur-[150px] animate-pulse"></div>
+  </div>
 
-    <h1 style="font-family:'Cinzel',serif; font-size:clamp(32px,5vw,58px);" class="font-bold mb-6 leading-tight">
+  <div class="max-w-3xl mx-auto relative z-10">
+    <h1 style="font-family:'Cinzel',serif; font-size:clamp(32px,5vw,58px);" class="font-bold mb-6 leading-tight fade-in">
       Your Complete<br>
       <span
         style="background:linear-gradient(to right,#F4A261,#FFD580);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">
         Learning Platform
       </span>
     </h1>
-    <p class="hidden md:block text-gray-300 text-lg mb-10 max-w-xl mx-auto">
+    <p class="hidden md:block text-gray-300 text-lg mb-10 max-w-xl mx-auto fade-in-1">
       Three powerful tools — AI tutoring, instant research papers, and a local book marketplace — all in one place.
     </p>
   </div>
 </section>
+
+<style>
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+</style>
+
 
 <!-- 4 PRODUCT CARDS -->
 <section class="max-w-7xl mx-auto px-4 -mt-10 pb-16">

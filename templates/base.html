@@ -66,46 +66,7 @@
 </head>
 
 <body class="min-h-screen flex flex-col overflow-x-hidden">
-  <!-- ═══════════════════════════════════════════
-     SITE-WIDE SKELETON LOADER
-  ═══════════════════════════════════════════ -->
-  <div id="site-skeleton" class="fixed inset-0 z-[1000] bg-white flex flex-col p-6 space-y-8 transition-opacity duration-500 pointer-events-none">
-    <div class="max-w-7xl mx-auto w-full space-y-10">
-      <!-- Nav Skeleton -->
-      <div class="flex justify-between items-center h-12">
-        <div class="w-32 h-8 bg-gray-100 rounded-lg animate-pulse"></div>
-        <div class="hidden md:flex gap-4">
-            <div class="w-20 h-8 bg-gray-50 rounded-lg animate-pulse"></div>
-            <div class="w-20 h-8 bg-gray-50 rounded-lg animate-pulse"></div>
-            <div class="w-20 h-8 bg-gray-50 rounded-lg animate-pulse"></div>
-        </div>
-      </div>
-      <!-- Hero Skeleton -->
-      <div class="h-64 bg-gray-100 rounded-[40px] animate-pulse flex flex-col items-center justify-center space-y-4">
-        <div class="w-2/3 h-10 bg-gray-200/50 rounded-2xl"></div>
-        <div class="w-1/2 h-4 bg-gray-200/50 rounded-xl"></div>
-      </div>
-      <!-- Content Grid -->
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="h-80 bg-gray-50 rounded-3xl animate-pulse"></div>
-        <div class="h-80 bg-gray-50 rounded-3xl animate-pulse"></div>
-        <div class="h-80 bg-gray-50 rounded-3xl animate-pulse"></div>
-      </div>
-    </div>
-    <!-- Pulsing Shimmer Overlay CSS -->
-    <style>
-      #site-skeleton { opacity: 1; pointer-events: all; }
-      #site-skeleton .animate-pulse {
-        background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
-        background-size: 200% 100%;
-        animation: skeleton-shimmer 1.5s infinite;
-      }
-      @keyframes skeleton-shimmer {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-      }
-    </style>
-  </div>
+
 
   <!-- ═══════════════════════════════════════════
      UNIFIED NAVBAR (Desktop + Hamburger for Mobile)
@@ -292,7 +253,8 @@
      MOBILE BOTTOM NAVIGATION (App-like experience)
   ═══════════════════════════════════════════ -->
   {% if current_user and current_user.is_authenticated %}
-  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 z-[100] flex items-center justify-around py-3 px-1 shadow-[0_-5px_30px_rgba(0,0,0,0.08)]">
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/80 mobile-nav-blur border-t border-gray-100 z-[100] flex items-center justify-around py-3 px-1 shadow-[0_-5px_30px_rgba(0,0,0,0.08)]">
+
     <a href="{{ url_for('home') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.endpoint == 'home' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
       <span class="text-xl">🏠</span>
       <span class="text-[9px] font-bold uppercase tracking-tighter">Home</span>
@@ -409,16 +371,6 @@
   <script src="{{ url_for('static', filename='js/research.js') }}"></script>
   <script src="{{ url_for('static', filename='js/tutor.js') }}"></script>
   <script>
-    // Hide Skeleton Loader on Page Load
-    window.addEventListener('load', function() {
-        const skeleton = document.getElementById('site-skeleton');
-        if (skeleton) {
-            skeleton.style.opacity = '0';
-            setTimeout(() => {
-                skeleton.style.display = 'none';
-            }, 500);
-        }
-    });
 
     function toggleMobileMenu() {
       const menu = document.getElementById('mobile-menu');
@@ -455,7 +407,29 @@
         }
     }
 
+    // Top Loading Bar Logic
+    window.addEventListener('beforeunload', function() {
+        const bar = document.getElementById('top-loading-bar');
+        if (bar) {
+            bar.style.width = '30%';
+            setTimeout(() => { bar.style.width = '70%'; }, 200);
+        }
+    });
+
+    // Mouse Tracking for Card Glow
+    document.addEventListener('mousemove', e => {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+
     function closeRewardModal() {
+
         const modal = document.getElementById('reward-modal');
         const overlay = document.getElementById('reward-overlay');
         const content = document.getElementById('reward-modal-content');
