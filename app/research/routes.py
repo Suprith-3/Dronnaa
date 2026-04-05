@@ -64,6 +64,21 @@ def generate():
     msg = content.replace("ERROR:", "").strip() if content else "Paper generation failed."
     return jsonify({'success': False, 'message': msg}), 400
 
+@research_bp.route('/generate-survey', methods=['POST'])
+@login_required
+def generate_survey():
+    if not current_user.has_research_access:
+        return jsonify({'success': False, 'message': "Payment Required"}), 402
+
+    from modules.text_generation import generate_gemini_survey
+    topic = request.json.get('topic')
+    language = request.json.get('language', 'English')
+    content = generate_gemini_survey(topic, language)
+    if content and not content.startswith("ERROR:"):
+        return jsonify({'success': True, 'content': content})
+    msg = content.replace("ERROR:", "").strip() if content else "Survey generation failed."
+    return jsonify({'success': False, 'message': msg}), 400
+
 @research_bp.route('/download', methods=['POST'])
 @login_required
 def download():

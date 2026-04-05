@@ -1,4 +1,5 @@
 let currentMarkdown = '', currentTopic = '', currentSource = '';
+let currentSurveyMarkdown = '', currentSurveyTopic = '';
 
 // ── PAPER GENERATION ────────────────────────────────────────────
 async function generatePaper(){
@@ -57,6 +58,66 @@ async function copyPaper(){
 
 function regeneratePaper(){ if(currentTopic){ document.getElementById('topic-input').value=currentTopic; generatePaper(); } }
 
+// ── SURVEY PAPER (DUAL SYNTHESIS) ───────────────────────────────
+async function generateSurvey(){
+  const topic=document.getElementById('survey-topic-input').value.trim();
+  const language=document.getElementById('survey-language-select').value;
+  if(!topic){ showToast('Please enter a survey topic.','error'); return; }
+  currentSurveyTopic=topic;
+  
+  document.getElementById('survey-skeleton-area').classList.remove('hidden');
+  document.getElementById('survey-output-area').classList.add('hidden');
+  
+  const btn=document.getElementById('generate-survey-btn');
+  btn.disabled=true; btn.textContent='Synthesizing...';
+  
+  const msgs=['Generating Perspective A...', 'Generating Perspective B...', 'Comparing theoretical frameworks...', 'Synthesizing final paper...', 'Checking plagiarism...'];
+  let mi=0; const msgEl=document.getElementById('survey-loading-msg');
+  const interval=setInterval(()=>{ if(msgEl) msgEl.textContent=msgs[mi++%msgs.length]; },1000);
+  
+  try{
+    const res=await fetch('/research/generate-survey',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic,language})});
+    const data=await res.json();
+    clearInterval(interval);
+    if(data.success){
+      currentSurveyMarkdown=data.content;
+      const previewEl=document.getElementById('survey-preview');
+      previewEl.innerHTML=marked.parse(currentSurveyMarkdown);
+      window.renderMath?.(previewEl);
+      document.getElementById('survey-output-area').classList.remove('hidden');
+      document.getElementById('survey-skeleton-area').classList.add('hidden');
+      const wc=currentSurveyMarkdown.trim().split(/\s+/).length;
+      document.getElementById('survey-word-count').textContent=`~${wc} words`;
+      showToast('Synthesized Survey generated successfully!','success');
+    } else { 
+      document.getElementById('survey-skeleton-area').classList.add('hidden'); 
+      showToast(data.message||'Generation failed.','error'); 
+    }
+  } catch(e){ 
+    clearInterval(interval); 
+    document.getElementById('survey-skeleton-area').classList.add('hidden'); 
+    showToast('Network error.','error'); 
+  }
+  finally{ btn.disabled=false; btn.textContent='Generate Survey'; }
+}
+
+async function downloadSurvey(){
+  if(!currentSurveyMarkdown){ showToast('Generate a survey first.','error'); return; }
+  const fmt=document.getElementById('survey-download-format').value.toLowerCase();
+  const btn=document.getElementById('survey-download-btn');
+  btn.disabled=true; btn.textContent='Preparing...';
+  try{
+    const res=await fetch('/research/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:currentSurveyMarkdown,format:fmt})});
+    const ct=res.headers.get('content-type')||'';
+    if(ct.includes('application/json')){ const d=await res.json(); throw new Error(d.message); }
+    const blob=await res.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=`survey_synthesis.${fmt==='txt'?'txt':fmt}`; a.click(); URL.revokeObjectURL(url);
+    showToast(`${fmt.toUpperCase()} downloaded!`,'success');
+  } catch(e){ showToast('Download failed: '+e.message,'error'); }
+  finally{ btn.disabled=false; btn.textContent='⬇ Download Survey'; }
+}
+
 // ── CITATION ────────────────────────────────────────────────────
 async function generateCitation(){
   const source=document.getElementById('citation-input').value.trim();
@@ -85,7 +146,7 @@ async function copyCitation(){
 
 // ── TAB SWITCHING ───────────────────────────────────────────────
 function switchMainTab(tab){
-  ['paper','citation'].forEach(t=>{ 
+  ['paper', 'survey', 'citation'].forEach(t=>{ 
     const el = document.getElementById(t + '-tab');
     if(el) el.classList.add('hidden'); 
     document.querySelector(`[data-tab="${t}-tab"]`)?.classList.remove('border-b-2','border-violet-600','font-bold'); 

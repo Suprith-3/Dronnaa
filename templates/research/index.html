@@ -214,13 +214,18 @@
             class="flex items-center justify-center gap-1 bg-white p-2 rounded-2xl shadow-xl w-fit mx-auto border border-violet-100 mb-12">
             <button onclick="switchMainTab('paper')" data-tab="paper-tab"
                 class="px-8 py-3 rounded-xl transition text-sm font-bold border-b-2 border-violet-600">
-                📄 Survey Paper
+                📄 Research Paper
+            </button>
+            <button onclick="switchMainTab('survey')" data-tab="survey-tab"
+                class="px-8 py-3 rounded-xl transition text-sm font-medium hover:bg-violet-50">
+                📊 Survey Paper
             </button>
             <button onclick="switchMainTab('citation')" data-tab="citation-tab"
                 class="px-8 py-3 rounded-xl transition text-sm font-medium hover:bg-violet-50">
                 📌 Citation Engine
             </button>
         </div>
+
 
         <!-- Paper Tab -->
         <div id="paper-tab" class="space-y-8 fade-in">
@@ -437,6 +442,65 @@
                     <button onclick="regeneratePaper()"
                         class="text-sm font-bold text-violet-600 hover:text-violet-800 transition">↻ Regenerate this
                         response</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Survey Tab (Synthesizer) -->
+        <div id="survey-tab" class="hidden space-y-8 fade-in">
+            <div class="card p-10 bg-white/80 backdrop-blur-3xl shadow-2xl border-t-8 border-violet-600">
+                <div class="grid md:grid-cols-4 gap-6 items-end">
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Survey Topic (Synthesis)</label>
+                        <input type="text" id="survey-topic-input" class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-lg font-bold" placeholder="e.g., Artificial Intelligence in Medical Diagnosis">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Language</label>
+                        <select id="survey-language-select" class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-lg font-bold bg-white cursor-pointer">
+                            <option value="English">🇬🇧 English</option>
+                            <option value="Hindi">🇮🇳 Hindi</option>
+                            <option value="Kannada">🇮🇳 Kannada</option>
+                            <option value="Spanish">🇪🇸 Spanish</option>
+                            <option value="French">🇫🇷 French</option>
+                        </select>
+                    </div>
+                    <button onclick="generateSurvey()" id="generate-survey-btn" class="btn-primary btn-research py-[18px] rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl transition-all">Generate Survey</button>
+                </div>
+                <p class="text-xs text-gray-400 mt-4 italic">The AI will generate two distinct papers internally, compare them, and output a highly unified, low-plagiarism synthesis.</p>
+            </div>
+
+            <!-- Survey Loading State (Shared Skeleton) -->
+            <div id="survey-skeleton-area" class="hidden space-y-8 animate-pulse">
+                <div class="flex items-center justify-center py-20 bg-violet-50/50 rounded-3xl border-2 border-dashed border-violet-200">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">⌛</div>
+                        <h3 id="survey-loading-msg" class="text-xl font-bold text-violet-900 mb-2">Drafting Perspective A...</h3>
+                        <p class="text-violet-700 text-xs">Wait while Dronacharya AI compares multiple viewpoints to lower plagiarism.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Survey Output -->
+            <div id="survey-output-area" class="hidden space-y-6">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6 card p-6 border-violet-100 bg-violet-50/50">
+                    <div class="flex items-center gap-10">
+                        <div class="text-center border-r border-violet-200 pr-10">
+                            <div id="survey-word-count" class="text-2xl font-black text-violet-900">~2000 words</div>
+                            <div class="text-[10px] font-bold text-violet-400 uppercase tracking-widest">Document length</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <select id="survey-download-format" class="px-5 py-3 rounded-xl border-2 border-violet-200 text-sm font-black text-violet-900 outline-none">
+                            <option value="docx">📄 DOCX</option>
+                            <option value="pdf">📕 PDF</option>
+                            <option value="txt">📝 TXT</option>
+                        </select>
+                        <button onclick="downloadSurvey()" id="survey-download-btn" class="btn-primary btn-research px-10 py-3 rounded-xl font-black text-sm shadow-xl flex-grow md:flex-none">⬇ Download Survey</button>
+                    </div>
+                </div>
+
+                <div id="survey-preview" class="card p-12 bg-white shadow-2xl prose prose-violet max-w-none prose-sm leading-relaxed text-gray-700 prose-headings:font-cinzel prose-headings:text-gray-900">
+                    <!-- Rendered Markdown -->
                 </div>
             </div>
         </div>
