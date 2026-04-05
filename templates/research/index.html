@@ -157,6 +157,18 @@
                     throw new Error("Razorpay script not loaded. Check internet connection.");
                 }
 
+                // Native Bridge for Android
+                if (window.AndroidNative && typeof window.AndroidNative.openRazorpayNative === 'function') {
+                    console.log("Research: Using Native Android Payment Bridge...");
+                    window.AndroidNative.openRazorpayNative(data.order_id, "100", RAZORPAY_KEY_ID);
+                    btn.textContent = '🚀 Opening SDK...';
+                    setTimeout(() => { 
+                        btn.disabled = false; 
+                        btn.innerHTML = originalText; 
+                    }, 5000);
+                    return;
+                }
+
                 const rzp1 = new Razorpay(options);
                 rzp1.open();
                 console.log("Research: Checkout modal opened.");
