@@ -8,7 +8,7 @@
       <div class="card overflow-hidden bg-white shadow-2xl border-none aspect-[3/4] relative">
           <img src="{% if book.cover_image and book.cover_image.startswith('http') %}{{ book.cover_image }}{% else %}{{ url_for('static', filename='uploads/' + (book.cover_image or 'generic_book.png')) }}{% endif %}" 
                onerror="this.src='{{ url_for('static', filename='uploads/generic_book.png') }}'; this.onerror=null;"
-               class="w-full h-full object-cover">
+               class="w-full h-full object-cover" alt="Book Cover for {{ book.title }}">
           {% if not book.is_available %}
             <div class="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-20">
                 <span class="text-white text-3xl font-black uppercase tracking-[0.3em] border-4 border-white px-8 py-4 -rotate-12">SOLD OUT</span>

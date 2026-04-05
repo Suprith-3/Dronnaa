@@ -63,7 +63,7 @@
                 <div class="aspect-[3/4] overflow-hidden rounded-t-2xl relative">
                     <img src="{% if book.cover_image and book.cover_image.startswith('http') %}{{ book.cover_image }}{% else %}{{ url_for('static', filename='uploads/' + (book.cover_image or 'generic_book.png')) }}{% endif %}" 
                          onerror="this.src='{{ url_for('static', filename='uploads/generic_book.png') }}'; this.onerror=null;"
-                         class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                         class="w-full h-full object-cover transition duration-500 group-hover:scale-110" alt="Book Cover for {{ book.title }}">
                     <div class="absolute top-2 left-2 md:top-4 md:left-4">
                         {% if book.listing_type == 'sell' %}
                             <span class="bg-black text-white text-[8px] md:text-[10px] font-black px-2 md:px-4 py-1 rounded-full uppercase tracking-widest shadow-lg">Sale</span>

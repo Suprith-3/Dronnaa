@@ -4,9 +4,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block meta_description %}Dronacharya Hub is an AI-powered educational platform offering personalized tutoring, academic research tools, a local book marketplace, scholarships, notes sharing, and brain training games all in one place.{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}AI Tutor, Research Generator, Buy Sell Books Locally, Scholarships, Study Notes, Educational Games, Dronacharya Hub, E-learning{% endblock %}">
+  
   <title>{% block title %}Dronacharya Hub{% endblock %}</title>
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+  
+  <!-- Schema Markup -->
+  {% block schema_markup %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Dronacharya Hub",
+    "url": "https://dronacharyahub.com/",
+    "description": "AI-powered educational platform offering personalized tutoring, academic research tools, a local book marketplace, scholarships, notes sharing, and brain training games.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Dronacharya Hub",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dronacharyahub.com/static/images/logo.png"
+      }
+    }
+  }
+  </script>
+  {% endblock %}
 
   <!-- Tailwind -->
   <script>
@@ -133,7 +157,7 @@
           class="hidden lg:flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 px-3 py-2 rounded-lg text-sm transition">
           <img
             src="{% if current_user.profile_pic.startswith('http') %}{{ current_user.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}{% endif %}"
-            class="w-7 h-7 rounded-full object-cover">
+            class="w-7 h-7 rounded-full object-cover" alt="User Profile">
           <span>{{ current_user.first_name }}</span>
         </a>
         {% endif %}
@@ -199,7 +223,7 @@
         <a href="{{ url_for('books.list_book') }}" class="block w-full text-center py-3 bg-amber-500 text-white rounded-xl font-bold mb-4">📖 List a Book</a>
         {% if current_user and current_user.is_authenticated %}
           <div class="flex items-center gap-3 mb-6 p-4 bg-white/5 rounded-xl">
-            <img src="{% if current_user.profile_pic.startswith('http') %}{{ current_user.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}{% endif %}" class="w-10 h-10 rounded-full border-2 border-blue-400">
+            <img src="{% if current_user.profile_pic.startswith('http') %}{{ current_user.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}{% endif %}" class="w-10 h-10 rounded-full border-2 border-blue-400" alt="User Profile">
             <div class="overflow-hidden">
               <div class="font-bold truncate">{{ current_user.first_name }}</div>
               <div class="text-[10px] text-gray-400 truncate">{{ current_user.email }}</div>

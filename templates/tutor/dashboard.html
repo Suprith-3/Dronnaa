@@ -11,7 +11,7 @@
     <div class="hidden md:block">
       <img
         src="{% if current_user.profile_pic.startswith('http') %}{{ current_user.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}{% endif %}"
-        class="w-16 h-16 rounded-full border-4 border-blue-500/20 object-cover shadow-lg">
+        class="w-16 h-16 rounded-full border-4 border-blue-500/20 object-cover shadow-lg" alt="User User Profile Picture">
     </div>
   </div>
 

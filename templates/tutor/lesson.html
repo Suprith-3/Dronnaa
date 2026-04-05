@@ -36,7 +36,7 @@
               {% for video in videos %}
                   <a href="{{ video.video_url }}" target="_blank" class="card overflow-hidden group hover:translate-y-[-4px] transition-all">
                       <div class="aspect-video relative">
-                          <img src="{{ video.thumbnail }}" class="w-full h-full object-cover">
+                          <img src="{{ video.thumbnail }}" class="w-full h-full object-cover" alt="Video Thumbnail">
                           <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition flex items-center justify-center">
                               <span class="text-white text-3xl opacity-0 group-hover:opacity-100 transition shadow-lg">▶️</span>
                           </div>

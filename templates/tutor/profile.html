@@ -6,7 +6,7 @@
     <div class="relative group">
         <label for="profile-pic-input" class="cursor-pointer block">
             <img id="profile-preview" src="{% if current_user.profile_pic.startswith('http') %}{{ current_user.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}{% endif %}" 
-                 class="w-32 h-32 rounded-full border-4 border-blue-500/20 object-cover shadow-2xl group-hover:opacity-80 transition">
+                 class="w-32 h-32 rounded-full border-4 border-blue-500/20 object-cover shadow-2xl group-hover:opacity-80 transition" alt="User Profile Image">
             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white font-bold text-xs uppercase bg-black/40 rounded-full">Change Pic</div>
         </label>
     </div>
