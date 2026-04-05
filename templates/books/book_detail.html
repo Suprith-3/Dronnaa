@@ -7,6 +7,7 @@
     <div class="lg:col-span-2 space-y-6">
       <div class="card overflow-hidden bg-white shadow-2xl border-none aspect-[3/4] relative">
           <img src="{% if book.cover_image.startswith('http') %}{{ book.cover_image }}{% else %}{{ url_for('static', filename='uploads/' + (book.cover_image or 'default_book.png')) }}{% endif %}" 
+               onerror="this.src='{{ url_for('static', filename='uploads/default_book.png') }}'; this.onerror=null;"
                class="w-full h-full object-cover">
           {% if not book.is_available %}
             <div class="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-20">

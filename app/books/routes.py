@@ -43,14 +43,23 @@ def list_book():
         if 'cover_image' in request.files:
             file = request.files['cover_image']
             if file and file.filename != '':
+                print(f"DEBUG: Uploading cover image: {file.filename}")
                 from modules.supabase_helper import upload_file_to_supabase
                 s_url = upload_file_to_supabase(file, folder="books")
                 if s_url:
+                    print(f"DEBUG: Successfully uploaded to Supabase: {s_url}")
                     filename = s_url
                 else:
+                    print(f"DEBUG: Supabase upload failed, falling back to local storage")
                     filename = secure_filename(f"book_{uuid.uuid4().hex}_{file.filename}")
-                    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                    try:
+                        file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                        print(f"DEBUG: Saved locally: {filename}")
+                    except Exception as e:
+                        print(f"DEBUG: Local save failed: {e}")
+                        filename = 'default_book.png'
         
+        print(f"DEBUG: Creating new book with image: {filename}")
         new_book = Book(
             title=title, price=price, seller_name=seller_name, seller_phone=seller_phone,
             latitude=latitude, longitude=longitude, address=address,
@@ -59,6 +68,7 @@ def list_book():
         )
         db.session.add(new_book)
         db.session.commit()
+        print(f"DEBUG: Book '{title}' committed to database.")
         flash('Book listed successfully!', 'success')
         return redirect(url_for('books.browse'))
     return render_template('books/list_book.html')

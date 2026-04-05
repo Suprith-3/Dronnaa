@@ -22,22 +22,35 @@ def upload_file_to_supabase(file_obj, folder="uploads", bucket="dronacharya-hub"
         file_obj.seek(0)
         file_data = file_obj.read()
         
-        # Create a unique filename if it doesn't have one
+        # Create a unique filename
         import uuid
-        ext = file_obj.filename.split('.')[-1] if '.' in file_obj.filename else 'bin'
+        ext = 'png'
+        if hasattr(file_obj, 'filename') and '.' in file_obj.filename:
+            ext = file_obj.filename.split('.')[-1]
+        
         filename = f"{folder}/{uuid.uuid4().hex}.{ext}"
         
         # Upload
+        content_type = getattr(file_obj, 'content_type', 'image/png')
+        
+        # In newer version of supabase-py, upload might raise or return response
         res = supabase.storage.from_(bucket).upload(
             path=filename,
             file=file_data,
-            file_options={"content-type": file_obj.content_type if hasattr(file_obj, 'content_type') else "application/octet-stream"}
+            file_options={"content-type": content_type}
         )
         
+        # Check if response indicates an error (depends on SDK version)
+        # If it's a response object, it might have an error attribute or status code
+        if hasattr(res, 'error') and res.error:
+            print(f"Supabase Upload Error response: {res.error}")
+            return None
+            
         # Get public URL
         # URL format: {SUPABASE_URL}/storage/v1/object/public/{bucket}/{filename}
         public_url = f"{current_app.config['SUPABASE_URL']}/storage/v1/object/public/{bucket}/{filename}"
+        print(f"Uploaded to Supabase: {public_url}")
         return public_url
     except Exception as e:
-        print(f"Supabase Storage Error: {e}")
+        print(f"Supabase Storage Exception: {e}")
         return None
