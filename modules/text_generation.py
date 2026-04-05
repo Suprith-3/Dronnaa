@@ -510,32 +510,82 @@ def generate_specific_course(topic):
 
 def classify_document_type(file_path):
     """
-    Classifies a file (image or PDF) as 'Handwritten' or 'Printed/Typed' using Gemini.
-    Returns True if handwritten, False otherwise.
+    Classifies a file (image or PDF) as 'Handwritten' or 'Printed/Typed' using AI Vision.
+    For PDFs, it extracts the first page as an image first for maximum accuracy.
+    Includes an automatic fallback loop for high api demand (503 errors).
     """
-    mime_type = 'application/pdf' if file_path.lower().endswith('.pdf') else 'image/jpeg'
-    prompt = "Analyze this document. Is it handwritten or printed/typed text? Reply with ONLY one word: 'Handwritten' or 'Printed'."
+    import os, time
+    from google.genai import types
+    
+    # 1. Prepare the image for AI
+    image_to_send = None
+    mime_type = 'image/jpeg'
     
     try:
-        with open(file_path, 'rb') as f:
-            file_data = f.read()
-            
-        response = client.models.generate_content(
-            model=model_id,
-            contents=[
-                types.Content(
-                    role='user',
-                    parts=[
-                        types.Part.from_text(text=prompt),
-                        types.Part.from_bytes(data=file_data, mime_type=mime_type)
-                    ]
-                )
-            ]
+        if file_path.lower().endswith('.pdf'):
+            try:
+                import fitz  # PyMuPDF
+                doc = fitz.open(file_path)
+                if len(doc) > 0:
+                    page = doc[0]
+                    pix = page.get_pixmap()
+                    image_to_send = pix.tobytes("jpg")
+                    doc.close()
+                else:
+                    return False
+            except Exception as e:
+                print(f"PDF extraction failed: {e}")
+                # Fallback to sending raw PDF bytes
+                with open(file_path, 'rb') as f: image_to_send = f.read()
+                mime_type = 'application/pdf'
+        else:
+            with open(file_path, 'rb') as f: image_to_send = f.read()
+            mime_type = 'image/jpeg'
+
+        if not image_to_send: return False
+
+        # 2. Ask Gemini (Multi-Model Strategy)
+        prompt = (
+            "Analyze this document carefully. Is the text primarily Handwritten (written by a human pen/pencil) "
+            "or Printed (created by a computer/printer)? "
+            "Reply with exactly one word: 'Handwritten' or 'Printed'."
         )
-        result = response.text.strip().lower()
-        print(f"Classification result: {result}")
-        return 'handwritten' in result
+        
+        # Primary call
+        try:
+            response = client.models.generate_content(
+                model=model_id,
+                contents=[
+                    types.Content(role='user', parts=[
+                        types.Part.from_text(text=prompt),
+                        types.Part.from_bytes(data=image_to_send, mime_type=mime_type)
+                    ])
+                ]
+            )
+            result = response.text.strip().lower()
+            return 'handwritten' in result
+        except Exception as e:
+            print(f"Primary classification failed, trying fallbacks: {e}")
+            for fb_model in fallback_models:
+                try:
+                    time.sleep(0.5)
+                    response = client.models.generate_content(
+                        model=fb_model,
+                        contents=[
+                            types.Content(role='user', parts=[
+                                types.Part.from_text(text=prompt),
+                                types.Part.from_bytes(data=image_to_send, mime_type=mime_type)
+                            ])
+                        ]
+                    )
+                    result = response.text.strip().lower()
+                    return 'handwritten' in result
+                except: continue
+
+        return False # Absolute fallback
+
     except Exception as e:
-        print(f"Classification Error: {e}")
-        # Default fallback mechanism (e.g., check file size or just return False)
+        print(f"Global AI Error: {e}")
         return False
+
+

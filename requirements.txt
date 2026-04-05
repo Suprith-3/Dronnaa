@@ -18,3 +18,6 @@ markupsafe
 jinja2
 supabase
 razorpay
+pymupdf
+pikepdf
+pillow

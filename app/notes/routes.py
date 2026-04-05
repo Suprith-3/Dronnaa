@@ -81,7 +81,15 @@ def upload():
             # AI Check
             try:
                 is_detected_handwritten = classify_document_type(temp_path)
-            except:
+                
+                # Check for mismatch and notify user
+                is_user_handwritten = (user_proposed_type == 'handwritten')
+                if is_user_handwritten != is_detected_handwritten:
+                    detected_label = "Handwritten" if is_detected_handwritten else "Printed"
+                    expected_label = "Handwritten" if is_user_handwritten else "Printed"
+                    flash(f'Smart Detection: We noticed these notes look like {detected_label} text (you chose {expected_label}). We have updated the category for you!', 'info')
+            except Exception as e:
+                print(f"AI Check failed: {e}")
                 is_detected_handwritten = (user_proposed_type == 'handwritten')
             
             # Finalize note model
@@ -96,8 +104,11 @@ def upload():
             )
             
             # Clean up temp file
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
+            try:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+            except: pass
+
             
             db.session.add(new_note)
             

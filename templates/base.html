@@ -8,8 +8,7 @@
   <meta name="keywords" content="{% block meta_keywords %}AI Tutor, Research Generator, Buy Sell Books Locally, Scholarships, Study Notes, Educational Games, Dronacharya Hub, E-learning{% endblock %}">
   
   <title>{% block title %}Dronacharya Hub{% endblock %}</title>
-  <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
   
   <!-- Schema Markup -->
   {% block schema_markup %}
@@ -25,7 +24,7 @@
       "name": "Dronacharya Hub",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://dronacharyahub.com/static/images/logo.png"
+        "url": "https://dronacharyahub.com/static/logo.png"
       }
     }
   }
@@ -115,11 +114,19 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
 
       <!-- Logo -->
-      <a href="{{ url_for('home') }}" class="flex items-center gap-2">
-        <span class="text-2xl">🏹</span>
-        <span style="font-family:'Cinzel',serif; font-size:20px; color:#F4A261; font-weight:700;">
-          Dronacharya Hub
-        </span>
+      <a href="{{ url_for('home') }}" class="flex items-center gap-3 group">
+        <div class="relative">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Dronacharya Hub Logo" class="w-10 h-10 rounded-xl object-contain bg-white/10 p-1 group-hover:scale-110 transition-transform duration-300">
+          <div class="absolute -inset-1 bg-amber-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span style="font-family:'Cinzel',serif; font-size:18px; color:#F4A261; font-weight:700; letter-spacing: 0.05em;">
+            DRONACHARYA
+          </span>
+          <span style="font-family:'Sora',sans-serif; font-size:10px; color:#6366F1; font-weight:800; text-transform: uppercase; letter-spacing: 0.2em;">
+            The Learning Hub
+          </span>
+        </div>
       </a>
 
       <!-- Desktop Nav Links -->
@@ -187,7 +194,10 @@
     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleMobileMenu()"></div>
     <div id="mobile-menu-panel" class="fixed inset-y-0 right-0 w-full max-w-xs bg-[#0B1437] shadow-2xl flex flex-col p-6 text-white transform transition-transform duration-300 translate-x-full">
       <div class="flex items-center justify-between mb-8">
-        <span style="font-family:'Cinzel',serif;" class="text-xl font-bold text-amber-400">Dronacharya</span>
+        <div class="flex items-center gap-3">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Dronacharya Logo" class="w-8 h-8 rounded-lg">
+          <span style="font-family:'Cinzel',serif;" class="text-xl font-bold text-amber-400">Dronacharya</span>
+        </div>
         <button onclick="toggleMobileMenu()" class="p-2 hover:bg-white/10 rounded-full transition">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
