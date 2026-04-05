@@ -38,7 +38,7 @@
         </div>
       {% else %}
         <div class="grid md:grid-cols-2 gap-6">
-          {% for item in progress_data %}
+          {% for item in progress_data[:6] %}
             <div class="card p-5 group hover:border-blue-300 transition-all">
               <div class="text-xs font-bold text-blue-600 mb-2 uppercase">{{ item.course.level }}</div>
               <h3 class="font-bold text-lg mb-4 group-hover:text-blue-700">{{ item.course.title }}</h3>
@@ -54,6 +54,13 @@
               <a href="{{ url_for('tutor.course_detail', id=item.course.id) }}" class="text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1">Continue Learning →</a>
             </div>
           {% endfor %}
+
+          <!-- View All Courses Card -->
+          <a href="{{ url_for('tutor.courses') }}" class="card p-5 flex flex-col items-center justify-center text-center bg-blue-50/50 border-dashed border-2 border-blue-200 hover:bg-blue-100/50 hover:border-blue-400 transition-all group">
+            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📚</div>
+            <h3 class="font-bold text-blue-800">Explore All Courses</h3>
+            <p class="text-xs text-blue-600/70 mt-1">View all {{ progress_data|length }} available disciplines</p>
+          </a>
         </div>
       {% endif %}
     </div>

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
-model = genai.GenerativeModel('gemini-2.5-flash')
+model = genai.GenerativeModel('gemini-2.5-flash-lite')
 
 def serialize_history(history):
     result = []
@@ -99,15 +99,40 @@ Final results indicate clear trends...
         return f"ERROR: {err_msg}"
 
 def generate_gemini_citation(source, style):
+    # If the source is a URL, try to enrichment with title fetching
+    context_info = ""
+    if source.startswith("http") or "www." in source:
+        try:
+            import urllib.request
+            headers = {"User-Agent": "Mozilla/5.0"}
+            req = urllib.request.Request(source, headers=headers)
+            with urllib.request.urlopen(req, timeout=5) as response:
+                html = response.read().decode('utf-8', errors='ignore')
+                import re
+                title_match = re.search('<title>(.*?)</title>', html, re.IGNORECASE)
+                if title_match:
+                    context_info = f" [Fetched Context: {title_match.group(1).strip()}]"
+        except:
+            pass
+            
+    system_instruction = (
+        f"You are a professional librarian and academic citation expert. "
+        f"Generate a high-precision, official {style} style citation for the provided source: '{source}'. "
+        f"{context_info}"
+        f"\n\nRules:"
+        f"\n1. If a URL is given, use your knowledge to find the correct author, full paper title, publication year, and journal name."
+        f"\n2. If only a short snippet is provided, format it professionally based on the {style} manual."
+        f"\n3. Respond ONLY with the formatted citation string. No preamble, no conversational text."
+    )
     try:
-        response = model.generate_content(f"Generate a professional {style} citation for this source: {source}. Respond with only the citation.")
+        response = model.generate_content(system_instruction)
         return response.text.strip()
     except Exception as e:
         err_msg = str(e)
         print(f"Gemini Citation Error: {err_msg}")
         if "429" in err_msg or "quota" in err_msg.lower():
             # Demo fallback
-            return f"{source} ({style} style). [Note: Quota Exceeded, using manual format]"
+            return f"{source} ({style} style). [Note: Quota Exceeded, using simplified format]"
         return None
 
 def generate_gemini_notes(topic):
@@ -143,5 +168,45 @@ def generate_crossmath_puzzle(difficulty="Medium"):
         if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
         return json.loads(text)
     except Exception as e:
-        print(f"Gemini Crossmath Error: {e}")
+        err_msg = str(e)
+        print(f"Gemini Crossmath Error: {err_msg}")
+        if "429" in err_msg or "quota" in err_msg.lower() or "limit" in err_msg.lower():
+            # Local fallback generator for a valid 3x3 grid
+            import random
+            def solve(a, op, b):
+                if op == '+': return a + b
+                if op == '-': return a - b
+                if op == '*': return a * b
+                return 0
+            
+            ops = ['+', '-', '*']
+            r1_op = random.choice(ops)
+            r2_op = random.choice(ops)
+            c1_op = random.choice(ops)
+            c2_op = random.choice(ops)
+            
+            a, b = random.randint(1, 10), random.randint(1, 10)
+            d, e = random.randint(1, 10), random.randint(1, 10)
+            
+            # Ensure C1 and C2 don't go negative if using '-'
+            if c1_op == '-' and a < d: a, d = d, a
+            if c2_op == '-' and b < e: b, e = e, b
+            if r1_op == '-' and a < b: a, b = b, a
+            if r2_op == '-' and d < e: d, e = e, d
+
+            c = solve(a, r1_op, b)
+            f = solve(d, r2_op, e)
+            g = solve(a, c1_op, d)
+            h = solve(b, c2_op, e)
+            
+            return {
+                "grid": [
+                    [str(a), r1_op, str(b), "=", str(c)],
+                    [c1_op, " ", " ", " ", " "],
+                    [str(d), r2_op, str(e), "=", str(f)],
+                    ["=", " ", " ", " ", " "],
+                    [str(g), " ", str(h), " ", " "]
+                ],
+                "clues": [f"Row 1: {a}{r1_op}{b}={c}", f"Col 1: {a}{c1_op}{d}={g}"]
+            }
         return None
