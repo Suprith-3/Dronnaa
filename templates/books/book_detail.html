@@ -6,7 +6,7 @@
     <!-- Left: Image (2 cols) -->
     <div class="lg:col-span-2 space-y-6">
       <div class="card overflow-hidden bg-white shadow-2xl border-none aspect-[3/4] relative">
-          <img src="{% if book.cover_image.startswith('http') %}{{ book.cover_image }}{% else %}{{ url_for('static', filename='uploads/' + (book.cover_image or 'generic_book.png')) }}{% endif %}" 
+          <img src="{% if book.cover_image and book.cover_image.startswith('http') %}{{ book.cover_image }}{% else %}{{ url_for('static', filename='uploads/' + (book.cover_image or 'generic_book.png')) }}{% endif %}" 
                onerror="this.src='{{ url_for('static', filename='uploads/generic_book.png') }}'; this.onerror=null;"
                class="w-full h-full object-cover">
           {% if not book.is_available %}
