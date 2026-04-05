@@ -546,6 +546,7 @@
             }
         }
 
+        let scratchCount = 0;
         function scratch(e) {
             if (!isDrawing) return;
             
@@ -564,7 +565,10 @@
             lastX = x;
             lastY = y;
 
-            checkProgress();
+            scratchCount++;
+            if (scratchCount % 20 === 0) { // Throttle calculation (only check every 20 moves)
+                checkProgress();
+            }
         }
 
         function checkProgress() {

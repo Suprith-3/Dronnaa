@@ -57,11 +57,13 @@ body {
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.6);
     box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
     border-radius: 32px;
     overflow: hidden;
     position: relative;
     z-index: 1;
+    will-change: transform, box-shadow;
+    transform: translateZ(0); /* Force GPU acceleration */
 }
 
 .card::before {
@@ -127,15 +129,15 @@ body {
 
 /* ULTRA-FAST FADE-IN */
 @keyframes ultra-fade {
-    from { opacity: 0; transform: translateY(30px); }
+    from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
-.fade-in { animation: ultra-fade 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-.page-fade-in { animation: ultra-fade 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.fade-in { animation: ultra-fade 0.2s cubic-bezier(0.23, 1, 0.32, 1) forwards; will-change: transform, opacity; }
+.page-fade-in { animation: ultra-fade 0.25s cubic-bezier(0.23, 1, 0.32, 1) forwards; will-change: transform, opacity; }
 
-.fade-in-1 { animation-delay: 0.1s; opacity: 0; }
-.fade-in-2 { animation-delay: 0.25s; opacity: 0; }
-.fade-in-3 { animation-delay: 0.4s; opacity: 0; }
+.fade-in-1 { animation-delay: 0.05s; opacity: 0; }
+.fade-in-2 { animation-delay: 0.12s; opacity: 0; }
+.fade-in-3 { animation-delay: 0.2s; opacity: 0; }
 
 /* ─── TYPOGRAPHY ─── */
 h1 { font-family: 'Cinzel', serif; font-weight: 700; color: #ffffff; letter-spacing: -0.01em; margin-bottom: 0px !important; }

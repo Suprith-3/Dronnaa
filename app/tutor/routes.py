@@ -1,4 +1,4 @@
-import os, json, uuid
+import os, json, uuid, random
 from concurrent.futures import ThreadPoolExecutor
 from flask import render_template, redirect, url_for, request, flash, jsonify, session, current_app, send_file
 from flask_login import login_user, logout_user, login_required, current_user
@@ -425,16 +425,21 @@ def live_chat():
     
     # Custom prompt for "friend" persona
     friendly_prompt = f"""
-    You are a supportive, friendly, and cool AI friend for a student. 
-    A student is currently in a Live Session on Dronacharya Hub and messaged you: "{user_msg}"
-    
-    Respond in a warm, encouraging, and informal tone (like a close friend or a helpful senior). 
-    Keep it concise but caring. Use emojis. 
-    If they ask about the session, encourage them to stay focused and enjoy learning.
+    You are ROBITE, a high-tech robotic friend. 
+    A user is talking to you: "{user_msg}"
+
+    RULES FOR MAX SPEED (Target <2000ms):
+    1. EXTREMELY BRIEF: Your reply MUST be 15-20 words max. Be snappy and concise. 
+    2. HUMAN-LIKE: Still be friendly and use emojis. Talk like a real friend.
+    3. LANGUAGE: English only.
+    4. GRAMMAR: Correct user grammar mistakes ONLY if they are major, but keep your own response super short!
+    5. ENGAGING: One short sentence + one quick question.
     """
     
     try:
-        response_text = generate_gemini_chat(friendly_prompt)
+        from modules.text_generation import generate_with_fallback
+        # Use the robust fallback generator for the persona response
+        response_text = generate_with_fallback(friendly_prompt)
         
         # Generate TTS for voice response
         import uuid
@@ -445,8 +450,15 @@ def live_chat():
 
         return jsonify({'response': response_text, 'audio_url': audio_url})
     except Exception as e:
-        print(f"Gemini Chat Error: {e}")
-        return jsonify({'response': "Hey! My brain took a tiny nap. What were we talking about? 😊"})
+        print(f"Robite Fallback Error: {e}")
+        # Final safety net with hardcoded friendly responses
+        safe_responses = [
+            "Hey! My brain took a tiny nap for a second. Can you tell me that again? 😊",
+            "Oops, I got a bit distracted by some code! What were we talking about? 🧡",
+            "My AI senses are tingling, but I missed that last part. Say it again? ✨",
+            "Just resetting my circuits! What was that, friend? 🤖"
+        ]
+        return jsonify({'response': random.choice(safe_responses)})
 
 @tutor_bp.route('/api/live-translate', methods=['POST'])
 @login_required

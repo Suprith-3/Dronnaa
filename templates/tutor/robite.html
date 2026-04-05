@@ -1,183 +1,202 @@
-{% extends "base.html" %}
-
-{% block title %}ROBITE - Your AI Companion{% endblock %}
-
-{% block content %}
-<div class="max-w-4xl mx-auto px-4 py-8 page-fade-in flex flex-col h-[calc(100vh-180px)]">
-    
-    <!-- ROBITE HEADER -->
-    <div class="flex items-center gap-6 mb-8 bg-white p-6 rounded-[32px] shadow-xl border border-gray-100 relative overflow-hidden group">
-        <!-- Decorative background -->
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/5 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROBITE | Your Cybernetic Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Space Grotesk', sans-serif; background: #020617; overflow: hidden; margin: 0; }
+        .bg-grid { background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 30px 30px; }
         
-        <div class="relative">
-            <div class="w-20 h-20 rounded-[24px] bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-4xl shadow-2xl transform group-hover:rotate-6 transition-transform">
-                🤖
-            </div>
-            <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full animate-pulse"></div>
-        </div>
+        /* THE ROBOT - Sleek and Interactive */
+        .robot-container { position: relative; width: 400px; height: 400px; cursor: pointer; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .robot-container:hover { transform: scale(1.05) translateY(-10px); }
         
-        <div>
-            <h1 class="text-3xl font-black text-gray-800 tracking-tight">I'm <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">ROBITE</span></h1>
-            <p class="text-gray-500 font-medium">Your friendly AI study companion & friend. How are you today? 😊</p>
+        .robot-head { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 2; transition: all 0.3s; }
+        .robot-eyes { fill: #38bdf8; transition: all 0.3s; box-shadow: 0 0 20px #38bdf8; }
+        
+        /* ANIMATIONS */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .floating { animation: float 6s ease-in-out infinite; }
+        
+        @keyframes pulse-glow { 0% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); } 50% { box-shadow: 0 0 60px rgba(56, 189, 248, 0.6); } 100% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); } }
+        .listening { animation: pulse-glow 1.5s infinite; filter: drop-shadow(0 0 15px #38bdf8); }
+        
+        .thinking { animation: rotate 2s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* HUD ELEMENTS */
+        .hud-scan { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #38bdf8, transparent); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .is-active .hud-scan { opacity: 0.8; animation: scanning 2s linear infinite; }
+        @keyframes scanning { 0% { top: -20%; } 100% { top: 120%; } }
+
+        /* RESPONSE BUBBLE - Minimal and fast */
+        .response-overlay { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); width: 80%; max-width: 600px; text-align: center; opacity: 0; transition: all 0.4s; z-index: 100; }
+        .response-overlay.show { opacity: 1; transform: translateX(-50%) translateY(-20px); }
+        
+        /* VOICE WAVES */
+        .voice-waves { display: flex; align-items: center; justify-content: center; gap: 4px; height: 40px; margin-top: 10px; }
+        .wave-bar { width: 4px; border-radius: 2px; background: #38bdf8; animation: sound-wave 1s infinite alternate; }
+        @keyframes sound-wave { 0% { height: 5px; } 100% { height: 35px; } }
+    </style>
+</head>
+<body class="h-screen flex items-center justify-center bg-grid">
+
+    <!-- HUD BACKGROUND -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-blue-500/10 rounded-full"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] border border-blue-500/5 rounded-full"></div>
+        <div class="absolute top-10 left-10 text-white/20 text-[10px] font-bold tracking-[4px] uppercase">
+            System Identity: ROBITE Core v3.0<br>
+            Neural Sync: Active
         </div>
     </div>
 
-    <!-- CHAT CONTAINER -->
-    <div class="flex-grow bg-white rounded-[32px] shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
-        <!-- Messages Area -->
-        <div id="robite-chat-box" class="flex-grow p-8 overflow-y-auto space-y-6 bg-gray-50/20 scroll-smooth">
-            <!-- Initial Message -->
-            <div class="flex items-start gap-4 max-w-[80%]">
-                <div class="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-lg flex-shrink-0 border border-gray-100">🤖</div>
-                <div class="bg-white p-5 rounded-3xl rounded-tl-none shadow-sm border border-gray-100 text-gray-700 leading-relaxed">
-                    Hey there! I was just waiting for someone cool to talk to. I'm **Robite**, your new best friend here on Dronacharya Hub. 
-                    Whether you're stressed about exams, need a quick explanation, or just want to chat about your day—I've got your back! 🧡
-                </div>
-            </div>
-        </div>
-
-        <!-- Input Area -->
-        <div class="p-6 bg-white border-t border-gray-100">
-            <form onsubmit="handleRobiteChat(event)" class="relative max-w-3xl mx-auto flex items-center gap-3">
-                <div class="relative flex-grow">
-                    <input type="text" id="robite-input" placeholder="Say hello or click the mic to talk!" 
-                           class="w-full pl-6 pr-16 py-5 bg-gray-50 border-2 border-gray-100 rounded-[28px] focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100 outline-none text-gray-700 transition-all shadow-inner" autocomplete="off">
-                    <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center hover:bg-indigo-700 transition shadow-xl hover:shadow-indigo-200">
-                        <svg class="w-6 h-6 transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                        </svg>
-                    </button>
-                </div>
+    <!-- MAIN ROBOT INTERFACE -->
+    <div class="flex flex-col items-center justify-center p-4">
+        
+        <div id="robot-trigger" onclick="startRobiteVoice()" class="robot-container floating">
+            <div class="hud-scan"></div>
+            <!-- ROBOT SVG - Premium Minimalist Design -->
+            <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-[0_0_30px_rgba(56,189,248,0.2)]">
+                <!-- Body -->
+                <rect x="60" y="90" width="80" height="70" rx="40" class="fill-slate-800 stroke-[#38bdf8]/30 stroke-2" />
+                <rect x="75" y="110" width="50" height="30" rx="15" class="fill-slate-900 border border-[#38bdf8]/40" />
                 
-                <!-- Mic Button -->
-                <button type="button" id="robite-mic-btn" onclick="startRobiteSpeech()" class="w-16 h-16 bg-white border-2 border-gray-100 text-gray-500 rounded-full flex items-center justify-center text-2xl hover:bg-red-50 hover:border-red-200 hover:text-red-500 transition shadow-lg group relative">
-                    <span id="mic-emoji">🎙️</span>
-                    <div id="mic-pulse" class="absolute inset-0 bg-red-400/20 rounded-full animate-ping hidden"></div>
-                </button>
-            </form>
-            <p class="text-center text-[10px] text-gray-400 mt-4 font-bold uppercase tracking-widest">Robite is always learning. Be nice to your silicon friend! 🤖</p>
+                <!-- Head -->
+                <circle cx="100" cy="70" r="45" class="robot-head fill-[#0f172a] stroke-[#38bdf8]/50 stroke-2" />
+                <!-- Screen Face -->
+                <rect x="75" y="55" width="50" height="30" rx="10" class="fill-[#020617]" />
+                <!-- Eyes -->
+                <circle id="eye-left" cx="88" cy="70" r="5" class="robot-eyes" />
+                <circle id="eye-right" cx="112" cy="70" r="5" class="robot-eyes" />
+                
+                <!-- Antennas / Audio Sensory -->
+                <line x1="100" y1="25" x2="100" y2="15" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" class="opacity-50" />
+                <circle cx="100" cy="12" r="3" class="fill-[#38bdf8]" />
+            </svg>
+
+            <!-- Interactive Status Ring -->
+            <div id="status-ring" class="absolute inset-0 rounded-full border-4 border-[#38bdf8]/10 transition-all duration-500"></div>
+        </div>
+
+        <div id="instruction" class="mt-12 text-white/40 text-xs font-bold uppercase tracking-[5px] animate-pulse cursor-pointer" onclick="startRobiteVoice()">
+            Tap Robot to Start Contact
         </div>
     </div>
-</div>
-{% endblock %}
 
-{% block scripts %}
-<script>
-    async function handleRobiteChat(e) {
-        e.preventDefault();
-        const input = document.getElementById('robite-input');
-        const msg = input.value.trim();
-        if(!msg) return;
+    <!-- RESPONSE OVERLAY -->
+    <div id="response-panel" class="response-overlay">
+        <h2 id="response-text" class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-400 leading-tight">...</h2>
+        <div id="wave-container" class="voice-waves hidden">
+            <div class="wave-bar" style="animation-delay: 0.1s"></div>
+            <div class="wave-bar" style="animation-delay: 0.3s"></div>
+            <div class="wave-bar" style="animation-delay: 0.5s"></div>
+            <div class="wave-bar" style="animation-delay: 0.2s"></div>
+            <div class="wave-bar" style="animation-delay: 0.4s"></div>
+        </div>
+    </div>
 
-        // Add user message
-        addMessage('user', msg);
-        input.value = '';
+    <script>
+        let isActive = false;
 
-        // Add typing indicator
-        const typingId = 'typing-' + Date.now();
-        showTyping(typingId);
+        function startRobiteVoice() {
+            if(isActive) return;
+            isActive = true;
 
-        try {
-            const resp = await fetch("{{ url_for('tutor.live_chat') }}", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: msg })
-            });
-            const data = await resp.json();
-            
-            document.getElementById(typingId)?.remove();
-            addMessage('bot', data.response || "Hey! I got a bit distracted by a butterfly. What were we saying? 🦋✨");
-            
-            // Play Voice
-            if(data.audio_url) {
-                const audio = new Audio(data.audio_url);
-                audio.play();
-                // Visual bounce while talking
-                const robotAvatar = document.querySelector('.transform.group-hover\\:rotate-6');
-                robotAvatar?.classList.add('animate-bounce');
-                audio.onended = () => robotAvatar?.classList.remove('animate-bounce');
+            const robot = document.getElementById('robot-trigger');
+            const eyes = document.querySelectorAll('.robot-eyes');
+            const panel = document.getElementById('response-panel');
+            const instr = document.getElementById('instruction');
+            const ring = document.getElementById('status-ring');
+
+            // Listening UI State
+            robot.classList.add('is-active', 'listening');
+            ring.classList.add('scale-110', 'border-[#38bdf8]/40');
+            eyes.forEach(e => e.classList.add('scale-150', 'duration-300'));
+            instr.innerText = "Listening System...";
+            instr.classList.add('text-blue-400');
+
+            // VOICE RECOGNITION (STT)
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Browser does not support Neural Link.");
+                resetUI();
+                return;
             }
 
-        } catch (err) {
-            console.error(err);
-            document.getElementById(typingId)?.remove();
-            addMessage('bot', "Oops! My circuits tripped. Can you say that again? 🧡");
-        }
-    }
-
-    // --- VOICE INPUT (STT) ---
-    function startRobiteSpeech() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("Oops! Speech recognition isn't supported in your browser yet. 😿");
-            return;
-        }
-
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.interimResults = false;
-        
-        const micBtn = document.getElementById('robite-mic-btn');
-        const micEmoji = document.getElementById('mic-emoji');
-        const micPulse = document.getElementById('mic-pulse');
-        
-        recognition.onstart = () => {
-            micEmoji.innerText = "🛑";
-            micPulse.classList.remove('hidden');
-            micBtn.classList.add('border-red-400', 'bg-red-50');
-        };
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            const input = document.getElementById('robite-input');
-            input.value = transcript;
-            // Automatically send the message
-            handleRobiteChat(new Event('submit'));
-        };
-
-        recognition.onend = () => {
-            micEmoji.innerText = "🎙️";
-            micPulse.classList.add('hidden');
-            micBtn.classList.remove('border-red-400', 'bg-red-50');
-        };
-
-        recognition.onerror = () => {
-            recognition.stop();
-        };
-
-        recognition.start();
-    }
-
-    function addMessage(role, text) {
-        const box = document.getElementById('robite-chat-box');
-        const div = document.createElement('div');
-        div.className = `flex ${role === 'user' ? 'justify-end' : 'items-start'} gap-4 max-w-[85%] ${role === 'user' ? 'ml-auto' : ''}`;
-        
-        const avatar = role === 'bot' 
-            ? '<div class="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-lg flex-shrink-0 border border-gray-100">🤖</div>'
-            : '';
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
             
-        const content = role === 'user'
-            ? `<div class="bg-gradient-to-tr from-indigo-600 to-purple-600 text-white p-5 rounded-[28px] rounded-tr-none shadow-xl border border-indigo-500/20 text-sm leading-relaxed">${text}</div>`
-            : `<div class="bg-white p-5 rounded-[28px] rounded-tl-none shadow-sm border border-gray-100 text-gray-700 text-sm leading-relaxed">${text}</div>`;
-            
-        div.innerHTML = avatar + content;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-    }
+            recognition.onresult = async (event) => {
+                const transcript = event.results[0][0].transcript;
+                instr.innerText = "Transmitting...";
+                
+                // SEND TO AI
+                try {
+                    const t1 = performance.now();
+                    const resp = await fetch("{{ url_for('tutor.live_chat') }}", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: transcript })
+                    });
+                    const data = await resp.json();
+                    const t2 = performance.now();
+                    console.log(`Neural Sync Speed: ${Math.round(t2-t1)}ms`);
 
-    function showTyping(id) {
-        const box = document.getElementById('robite-chat-box');
-        const div = document.createElement('div');
-        div.id = id;
-        div.className = "flex items-start gap-4 max-w-[80%]";
-        div.innerHTML = `
-            <div class="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-lg flex-shrink-0 animate-bounce">🤖</div>
-            <div class="bg-gray-100 p-4 rounded-[24px] rounded-tl-none text-gray-400 text-xs italic tracking-wide">Robite is thinking...</div>
-        `;
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-    }
-</script>
-{% endblock %}
+                    // Display Result
+                    displayResponse(data.response || "Communication Lost.", data.audio_url);
+                } catch (err) {
+                    displayResponse("Sync Error. Hardware trip.", null);
+                }
+            };
+
+            recognition.onerror = () => resetUI();
+            recognition.onend = () => { if(!panel.classList.contains('show')) resetUI(); };
+            recognition.start();
+        }
+
+        function displayResponse(text, audioUrl) {
+            const panel = document.getElementById('response-panel');
+            const responseTxt = document.getElementById('response-text');
+            const waves = document.getElementById('wave-container');
+            const instr = document.getElementById('instruction');
+
+            responseTxt.innerText = text;
+            panel.classList.add('show');
+            instr.innerText = "Robite is Speaking";
+            waves.classList.remove('hidden');
+
+            if(audioUrl) {
+                const audio = new Audio(audioUrl);
+                audio.play();
+                audio.onended = () => {
+                    setTimeout(resetUI, 1000);
+                };
+            } else {
+                setTimeout(resetUI, 3000);
+            }
+        }
+
+        function resetUI() {
+            const robot = document.getElementById('robot-trigger');
+            const eyes = document.querySelectorAll('.robot-eyes');
+            const panel = document.getElementById('response-panel');
+            const instr = document.getElementById('instruction');
+            const ring = document.getElementById('status-ring');
+            const waves = document.getElementById('wave-container');
+
+            isActive = false;
+            robot.classList.remove('listening', 'is-active');
+            ring.classList.remove('scale-110', 'border-[#38bdf8]/40');
+            eyes.forEach(e => e.classList.remove('scale-150'));
+            panel.classList.remove('show');
+            waves.classList.add('hidden');
+            instr.innerText = "Tap Robot to Start Contact";
+            instr.classList.remove('text-blue-400');
+        }
+    </script>
+</body>
+</html>
