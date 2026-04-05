@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}AI Camera - Dronacharya Tutor{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="text-center mb-8">
+    <h1 style="font-family:'Cinzel',serif;" class="text-3xl font-bold text-gray-900 mb-2">AI Camera Tutor</h1>
+    <p class="text-gray-500">Scan any question, math problem, or diagram for an instant explanation.</p>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-8">
+    <!-- Camera Viewfinder -->
+    <div class="relative group">
+      <div class="aspect-[3/4] rounded-3xl overflow-hidden bg-black shadow-2xl border-4 border-white">
+        <video id="video" class="w-full h-full object-cover" autoplay playsinline muted></video>
+        <canvas id="canvas" class="hidden"></canvas>
+        
+        <!-- Overlay HUD -->
+        <div class="absolute inset-0 border-[2px] border-amber-400/30 m-8 rounded-2xl pointer-events-none"></div>
+        <div class="absolute top-4 left-4 flex gap-2">
+            <span class="px-3 py-1 bg-black/50 backdrop-blur-md rounded-full text-white text-[10px] uppercase font-bold tracking-widest">Live Scan</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="absolute bottom-6 left-0 right-0 flex justify-center gap-4">
+        <button id="capture-btn" class="w-16 h-16 bg-white rounded-full border-8 border-gray-200/50 flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all">
+            <div class="w-10 h-10 bg-amber-500 rounded-full"></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="space-y-6">
+      <div class="card p-6 bg-white shadow-xl min-h-[400px] flex flex-col">
+        <div class="flex items-center gap-3 mb-6 border-b pb-4">
+            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl">🏹</div>
+            <div>
+                <h2 class="font-bold text-gray-900">Dronacharya AI</h2>
+                <p class="text-[10px] text-green-500 font-bold uppercase">Ready to solve</p>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden flex-grow flex flex-col items-center justify-center text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-amber-500 mb-4"></div>
+            <p class="text-gray-500 font-medium">Analyzing your image...</p>
+        </div>
+
+        <div id="intro-state" class="flex-grow flex flex-col items-center justify-center text-center p-8">
+            <div class="text-5xl mb-4 opacity-20">📸</div>
+            <p class="text-gray-400 text-sm">Center the question in the viewfinder and tap the shutter.</p>
+        </div>
+
+        <div id="result-text" class="hidden flex-grow text-gray-700 prose prose-sm max-w-none overflow-y-auto max-h-[400px] scrollbar-hide">
+            <!-- AI Response will appear here -->
+        </div>
+
+        <div id="captured-preview" class="hidden mt-4 p-2 bg-gray-50 rounded-xl border border-dashed text-center">
+            <p class="text-[10px] text-gray-400 mb-2 font-bold uppercase">Captured Input</p>
+            <img id="preview-img" class="max-h-32 mx-auto rounded-lg shadow-sm">
+        </div>
+      </div>
+
+      <div class="card p-4 bg-amber-50/50 border-amber-100 text-xs text-amber-800 flex gap-3">
+          <span class="text-xl">💡</span>
+          <p>Dronacharya can solve math equations, explain complex concepts, and even identify plants or historical artifacts from photos.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+    #result-text p { margin-bottom: 1rem; line-height: 1.6; }
+    #result-text h2, #result-text h3 { font-weight: bold; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #1e3a8a; }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureBtn = document.getElementById('capture-btn');
+    const loading = document.getElementById('loading');
+    const introState = document.getElementById('intro-state');
+    const resultText = document.getElementById('result-text');
+    const previewImg = document.getElementById('preview-img');
+    const capturedPreview = document.getElementById('captured-preview');
+
+    // Access Camera
+    async function initCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'environment' } 
+            });
+            video.srcObject = stream;
+        } catch (e) {
+            alert('Camera access denied. Please allow camera permissions.');
+        }
+    }
+
+    initCamera();
+
+    captureBtn.addEventListener('click', async () => {
+        // Show loading
+        introState.classList.add('hidden');
+        resultText.classList.add('hidden');
+        loading.classList.remove('hidden');
+        capturedPreview.classList.add('hidden');
+
+        // Capture frame
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+        const formData = new FormData();
+        formData.append('image', blob, 'capture.jpg');
+
+        // Show preview
+        previewImg.src = canvas.toDataURL('image/jpeg');
+        capturedPreview.classList.remove('hidden');
+
+        try {
+            const res = await fetch('/tutor/api/vision', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            
+            loading.classList.add('hidden');
+            resultText.classList.remove('hidden');
+            
+            if (data.success) {
+                resultText.innerHTML = marked.parse(data.answer);
+            } else {
+                resultText.innerHTML = `<p class="text-red-500 font-bold">Error: ${data.message}</p>`;
+            }
+        } catch (e) {
+            loading.classList.add('hidden');
+            resultText.classList.remove('hidden');
+            resultText.innerHTML = '<p class="text-red-500 font-bold">Network error processing image.</p>';
+        }
+    });
+</script>
+{% endblock %}

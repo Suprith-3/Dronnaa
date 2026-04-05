@@ -321,3 +321,34 @@ def generate_crossmath_puzzle(difficulty="Medium"):
                 "clues": [f"Row 1: {a}{r1_op}{b}={c}", f"Col 1: {a}{c1_op}{d}={g}"]
             }
         return None
+
+def generate_gemini_vision(image_path, prompt="Solve this educational problem or explain what is in the image. Be clear and helpful."):
+    """Uses Gemini vision to analyze an image (question/problem) and provide an answer."""
+    try:
+        with open(image_path, 'rb') as f:
+            image_data = f.read()
+            
+        # For the new SDK, we pass a list of parts, including the image as bytes
+        response = client.models.generate_content(
+            model=model_id,
+            contents=[prompt, {'mime_type': 'image/jpeg', 'data': image_data}]
+        )
+        return response.text
+    except Exception as e:
+        err_msg = str(e)
+        print(f"Gemini Vision Error: {err_msg}")
+        if "429" in err_msg or "quota" in err_msg.lower():
+             for fb_model in fallback_models:
+                try:
+                    import time
+                    time.sleep(1)
+                    with open(image_path, 'rb') as f:
+                         image_data = f.read()
+                    response = client.models.generate_content(
+                        model=fb_model,
+                        contents=[prompt, {'mime_type': 'image/jpeg', 'data': image_data}]
+                    )
+                    return response.text
+                except:
+                    continue
+        return f"AI Vision Error: {err_msg}"

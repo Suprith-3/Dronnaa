@@ -4,7 +4,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 from . import tutor_bp
 from ..models import User, Course, Video, Quiz, QuizHistory, db
-from modules.text_generation import generate_gemini_quiz, generate_gemini_chat, generate_gemini_notes
+from modules.text_generation import generate_gemini_quiz, generate_gemini_chat, generate_gemini_notes, generate_gemini_vision
 from modules.text_to_speech import generate_tts
 from modules.video_search import search_videos
 from modules.document_generator import create_docx
@@ -216,3 +216,33 @@ def change_password():
     db.session.commit()
     flash('Password changed!', 'success')
     return redirect(url_for('tutor.profile'))
+
+@tutor_bp.route('/camera')
+@login_required
+def camera_page():
+    return render_template('tutor/camera.html')
+
+@tutor_bp.route('/api/vision', methods=['POST'])
+@login_required
+def api_vision():
+    if 'image' not in request.files:
+        return jsonify({'success': False, 'message': 'No image uploaded'})
+    
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({'success': False, 'message': 'Empty file'})
+    
+    filename = f"capture_{uuid.uuid4().hex}.jpg"
+    temp_path = os.path.join(current_app.config['TEMP_FOLDER'], filename)
+    file.save(temp_path)
+    
+    try:
+        prompt = request.form.get('prompt', "Solve this educational problem or explain the handwriting.")
+        answer = generate_gemini_vision(temp_path, prompt)
+        
+        # Optionally delete temp file after processing
+        # os.remove(temp_path)
+        
+        return jsonify({'success': True, 'answer': answer})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
