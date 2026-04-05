@@ -50,6 +50,7 @@ def create_app():
         from .scholarships.routes import scholarship_bp
         from .notes.routes   import notes_bp
         from .games.routes   import games_bp
+        from .animated_learning.routes import animated_learning_bp
 
         app.register_blueprint(tutor_bp,    url_prefix='/tutor')
         app.register_blueprint(research_bp, url_prefix='/research')
@@ -57,6 +58,7 @@ def create_app():
         app.register_blueprint(scholarship_bp, url_prefix='/scholarships')
         app.register_blueprint(notes_bp,    url_prefix='/notes')
         app.register_blueprint(games_bp,    url_prefix='/games')
+        app.register_blueprint(animated_learning_bp, url_prefix='/animated_learning')
 
         # Homepage route
         from flask import render_template

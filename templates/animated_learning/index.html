@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+
+{% block title %}Animated Learning - AI Visual Educational Revolution{% endblock %}
+
+{% block head %}
+<style>
+  :root {
+    --bg-dark: #050b18;
+    --card-bg: rgba(16, 22, 38, 0.7);
+    --accent-cyan: #00f2ff;
+    --accent-purple: #9d50bb;
+    --text-primary: #f8f9fa;
+    --text-secondary: #94a3b8;
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --neon-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+  }
+
+  .animated-learning-container {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: calc(100vh - 64px);
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(157, 80, 187, 0.1) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(0, 242, 255, 0.1) 0%, transparent 40%);
+    padding: 3rem 1rem;
+  }
+
+  .hero-section {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .hero-section h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+    background: linear-gradient(to bottom, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .generator-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 1024px) {
+    .generator-grid {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+
+  .glass-panel {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .label-text {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+  }
+
+  .ai-textarea {
+    width: 100%;
+    height: 160px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.25rem;
+    color: white;
+    font-size: 1rem;
+    resize: none;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ai-textarea:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: var(--neon-shadow);
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .generate-button {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    color: #000;
+    border: none;
+    width: 100%;
+    padding: 1.25rem;
+    border-radius: 16px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .generate-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 242, 255, 0.3);
+    filter: brightness(1.1);
+  }
+
+  .generate-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .display-panel {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border: 2px dashed rgba(255,255,255,0.05);
+  }
+
+  .video-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, rgba(0, 242, 255, 0.05) 0%, rgba(157, 80, 187, 0.05) 100%);
+    border-radius: 16px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .video-placeholder::before {
+    content: "Animation Feature Under Maintenance 🛠️";
+    color: var(--accent-cyan);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    z-index: 1;
+    opacity: 0.6;
+  }
+
+  .loader-box {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .spinner {
+    width: 64px;
+    height: 64px;
+    border: 4px solid rgba(0, 242, 255, 0.1);
+    border-left-color: var(--accent-cyan);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .explanation-box {
+    margin-top: 3rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 2.5rem;
+    border-radius: 20px;
+    border-left: 5px solid var(--accent-cyan);
+    display: none;
+  }
+
+  .explanation-box h3 {
+    color: var(--accent-cyan);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-family: 'Sora', sans-serif;
+  }
+
+  .explanation-text {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+
+  .status-badge {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: rgba(0,0,0,0.7);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    display: none;
+    border: 1px solid var(--glass-border);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="animated-learning-container">
+    <div class="hero-section">
+        <div class="inline-block px-4 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-bold uppercase tracking-widest mb-4 border border-cyan-500/20">
+          Powered by Google Veo & Gemini
+        </div>
+        <h1>Visualize with <span class="text-cyan-400">AI Magic</span></h1>
+        <p class="text-gray-400 max-w-2xl mx-auto text-lg px-4">
+          Experimental AI visuals for deeper understanding. Transform any educational concept into a cinematic explanation video.
+        </p>
+    </div>
+
+    <div class="generator-grid px-4">
+        <!-- Input Section -->
+        <div class="glass-panel">
+            <div class="mb-6">
+                <label class="label-text">Learning Prompt</label>
+                <textarea id="prompt-input" class="ai-textarea" placeholder="Describe a concept... e.g. 'How photosynthesis works in a leaf' or 'The lifecycle of a star'"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="label-text">Model</label>
+                    <input type="text" id="model-id" value="veo-3.1-generate-preview" class="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="label-text">Style</label>
+                    <select id="style-select" class="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-cyan-500">
+                      <option value="cinematic">Cinematic 3D</option>
+                      <option value="technical">Technical Diagram</option>
+                      <option value="artistic">Artistic Visualization</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="generate-btn" class="generate-button">
+                <span class="text-xl">✨</span>
+                Generate Visual Explanation
+            </button>
+            
+            <p class="text-[10px] text-gray-500 mt-4 text-center">
+              Video generation typically takes 45-60 seconds. High-fidelity rendering in progress.
+            </p>
+        </div>
+
+        <!-- Output Section -->
+        <div class="glass-panel display-panel">
+            <div id="empty-state" class="text-center opacity-30">
+                <div class="text-6xl mb-4">🎬</div>
+                <p class="font-bold uppercase tracking-widest text-xs">Waiting for prompt</p>
+            </div>
+
+            <div id="loader" class="loader-box">
+                <div class="spinner"></div>
+                <div>
+                    <p class="text-cyan-400 font-bold" id="loader-status">Consulting the Brain...</p>
+                    <p class="text-gray-500 text-xs mt-2">Synthesizing frames & reasoning</p>
+                </div>
+            </div>
+
+            <video id="video-player" class="video-output" style="display:none;" controls playsinline loop></video>
+            <div id="video-placeholder" class="video-placeholder"></div>
+            <div id="status-badge" class="status-badge">AI Thinking Complete</div>
+        </div>
+    </div>
+
+    <!-- Explanation Area -->
+    <div id="explanation-area" class="explanation-box px-4">
+        <h3>💡 Brain Explanation</h3>
+        <div id="explanation-content" class="explanation-text"></div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const generateBtn = document.getElementById('generate-btn');
+    const promptInput = document.getElementById('prompt-input');
+    const emptyState = document.getElementById('empty-state');
+    const loader = document.getElementById('loader');
+    const loaderStatus = document.getElementById('loader-status');
+    const videoPlayer = document.getElementById('video-player');
+    const placeholder = document.getElementById('video-placeholder');
+    const explanationArea = document.getElementById('explanation-area');
+    const explanationContent = document.getElementById('explanation-content');
+    const statusBadge = document.getElementById('status-badge');
+
+    generateBtn.addEventListener('click', async function() {
+        const prompt = promptInput.value.trim();
+        const model = document.getElementById('model-id').value;
+
+        if (!prompt) return alert('Please enter a learning concept!');
+
+        // Reset UI
+        emptyState.style.display = 'none';
+        videoPlayer.style.display = 'none';
+        statusBadge.style.display = 'none';
+        explanationArea.style.display = 'none';
+        loader.style.display = 'flex';
+        loaderStatus.innerText = "Refining with Gemini Brain...";
+        generateBtn.disabled = true;
+
+        try {
+            const response = await fetch("{{ url_for('animated_learning.generate') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, model })
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                // Video part removed, showing placeholder
+                placeholder.style.display = 'flex';
+                
+                explanationContent.innerText = data.explanation;
+                explanationArea.style.display = 'block';
+                loader.style.display = 'none';
+                statusBadge.style.display = 'block';
+            } else {
+                alert('Thinking Error: ' + (data.message || data.error || 'The AI is taking a break. Please try in 60 seconds.'));
+                loader.style.display = 'none';
+                emptyState.style.display = 'block';
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Connection failed. Please check your internet.');
+            loader.style.display = 'none';
+            emptyState.style.display = 'block';
+        } finally {
+            generateBtn.disabled = false;
+        }
+    });
+
+    // Enter to generate
+    promptInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            generateBtn.click();
+        }
+    });
+});
+</script>
+{% endblock %}

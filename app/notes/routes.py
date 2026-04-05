@@ -56,9 +56,14 @@ def upload():
                 if supa_url:
                     final_path = supa_url
                 else:
+                    # Fallback to local
                     file.save(os.path.join(current_app.config['NOTES_FOLDER'], unique_filename))
+                    flash('Note saved locally. Warning: Permanence not guaranteed (Supabase storage error).', 'warning')
             else:
+                # Local only
                 file.save(os.path.join(current_app.config['NOTES_FOLDER'], unique_filename))
+                flash('Note saved locally. Configure Supabase for permanent storage.', 'info')
+
 
             
             new_note = Note(

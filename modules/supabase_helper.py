@@ -5,16 +5,28 @@ from flask import current_app
 def get_supabase_client() -> Client:
     url = current_app.config.get('SUPABASE_URL')
     key = current_app.config.get('SUPABASE_KEY')
-    if key and key.startswith('sb_publishable_'):
+    
+    # Check for common mistake: using a publishable key from another service (like Stripe/Clerk)
+    if key and (key.startswith('sb_publishable_') or key.startswith('pk_')):
         print("\n" + "!"*60)
-        print("CRITICAL ERROR: YOU ARE USING A STRIPE KEY AS A SUPABASE KEY!")
-        print("YOUR IMAGES WILL NOT UPLOAD PERMANENTLY UNTIL THIS IS FIXED.")
-        print("PLEASE REPLACE 'SUPABASE_KEY' WITH THE CORRECT ANON KEY FROM SUPABASE.")
+        print("CRITICAL CONFIG ERROR: INVALID SUPABASE_KEY DETECTED!")
+        print(f"Current Key starts with: {key[:15]}...")
+        print("Supabase 'anon' keys are long JWT strings starting with 'eyJ...'.")
+        print("Please get the correct 'anon public' key from your Supabase Dashboard:")
+        print("Settings -> API -> Project API keys -> anon public")
         print("!"*60 + "\n")
         return None
+        
     if not url or not key:
+        print("DEBUG: SUPABASE_URL or SUPABASE_KEY missing in config.")
         return None
-    return create_client(url, key)
+        
+    try:
+        return create_client(url, key)
+    except Exception as e:
+        print(f"DEBUG: Failed to initialize Supabase client: {str(e)}")
+        return None
+
 
 def upload_file_to_supabase(bucket: str, file_obj, remote_path: str):
     """

@@ -20,9 +20,9 @@
   </div>
 </section>
 
-<!-- 3 PRODUCT CARDS -->
-<section class="max-w-6xl mx-auto px-4 -mt-10 pb-16">
-  <div class="grid md:grid-cols-3 gap-6">
+<!-- 4 PRODUCT CARDS -->
+<section class="max-w-7xl mx-auto px-4 -mt-10 pb-16">
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
     <!-- Card 1: Tutor -->
     <div class="card p-8 border-t-4 border-blue-500 fade-in fade-in-1">
@@ -85,6 +85,28 @@
         class="btn-primary btn-books px-6 py-3 rounded-full inline-block font-semibold text-white">
         Find Books →
       </a>
+    </div>
+
+    <!-- Card 4: Animated Learning -->
+    <div class="card p-8 border-t-4 border-cyan-500 fade-in fade-in-4" style="background: linear-gradient(145deg, #ffffff 0%, #f0fdff 100%);">
+      <div class="text-5xl mb-4">🎬</div>
+      <h2 style="font-family:'Sora',sans-serif;" class="text-2xl font-bold text-gray-900 mb-3">Animated Learning</h2>
+      <p class="text-gray-500 mb-6 text-sm leading-relaxed">
+        Transform complex concepts into cinematic AI-generated videos. Visualize physics, lab experiments, or history with the power of Google Veo.
+      </p>
+      <ul class="text-sm text-gray-500 mb-6 space-y-1">
+        <li>✅ AI Video Generation</li>
+        <li>✅ Visual Science Explainer</li>
+        <li>✅ Google Veo Power</li>
+        <li>✅ Gemini Brain Reasoning</li>
+        <li>✅ Premium Visualizations</li>
+      </ul>
+      <a href="{{ url_for('animated_learning.index') }}"
+        class="btn-primary px-6 py-3 rounded-full inline-block font-semibold text-white" style="background: linear-gradient(to right, #06b6d4, #3b82f6);">
+        Watch Magic →
+      </a>
+    </div>
+
     </div>
 
   </div>
@@ -155,11 +177,10 @@
         Scholarships</h3>
       <p class="mb-4">
         Financial barriers should never prevent a deserving bright mind from obtaining a top-tier education. Dronacharya
-        Hub curates a massive database of verified government, private, and non-governmental scholarships. Students of
-        all ages, from primary school up to advanced PhD programs, can effortlessly navigate our intuitive scholarship
-        board. We track hundreds of financial support systems. Each listing provides detailed requirements—from income
-        certificates to domicile documentation—so applicants can prepare proactively and apply accurately.
+        Hub curates a massive database of verified scholarships, tracking hundreds of financial support systems to help students prepare proactively and apply accurately.
       </p>
+    </section>
+
     </section>
 
     <footer class="mt-12 p-6 bg-gray-50 rounded-2xl italic text-gray-500 border border-gray-100 text-sm">
