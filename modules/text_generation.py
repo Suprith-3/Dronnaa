@@ -4,15 +4,22 @@ from dotenv import load_dotenv
 
 load_dotenv()
 client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
-model_id = 'gemini-flash-latest' # More stable for free tier
-fallback_models = ['gemini-2.0-flash-lite', 'gemini-pro-latest', 'gemini-2.0-flash']
+model_id = 'gemini-1.5-flash' # More reliable for free tier
+fallback_models = ['gemini-2.0-flash-lite', 'gemini-pro-latest', 'gemini-2.0-flash', 'gemini-1.5-pro']
 
 def serialize_history(history):
+    if history is None: return []
     result = []
     for h in history:
+        # Compatibility check for both SDK types
         if hasattr(h, 'role') and hasattr(h, 'parts'):
-            result.append({'role': h.role, 'parts': [{'text': str(p.text) if hasattr(p, 'text') else str(p)} for p in h.parts]})
-        else:
+            parts = []
+            for p in h.parts:
+                if hasattr(p, 'text'): parts.append({'text': str(p.text)})
+                elif isinstance(p, dict) and 'text' in p: parts.append(p)
+                else: parts.append({'text': str(p)})
+            result.append({'role': h.role, 'parts': parts})
+        elif isinstance(h, dict) and 'role' in h:
             result.append(h)
     return result
 
@@ -55,7 +62,12 @@ def generate_gemini_chat(message, history):
     try:
         chat = client.chats.create(model=model_id, config={'system_instruction': system_instruction}, history=history)
         response = chat.send_message(message)
-        return response.text, serialize_history(chat.history)
+        # Fix: Ensure history is retrieved safely
+        try:
+            return response.text, serialize_history(chat.history)
+        except AttributeError:
+            # Fallback for SDK version differences
+            return response.text, history
     except Exception as e:
         err_msg = str(e)
         print(f"Gemini Chat Error: {err_msg}")
@@ -73,7 +85,10 @@ def generate_tumtum_chat(message, history):
     try:
         chat = client.chats.create(model=model_id, history=history)
         response = chat.send_message(message)
-        return response.text, serialize_history(chat.history)
+        try:
+            return response.text, serialize_history(chat.history)
+        except AttributeError:
+            return response.text, history
     except Exception as e:
         err_msg = str(e)
         print(f"TumTum API Error: {err_msg}")
