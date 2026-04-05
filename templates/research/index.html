@@ -179,6 +179,32 @@
                 btn.textContent = originalText;
             }
         }
+
+        // Global Handshake for Android Native SDK
+        window.verifyNativePayment = async function(paymentId, orderId) {
+            console.log("Research: Native Handshake Triggered:", paymentId);
+            try {
+                const baseUrl = window.location.origin;
+                const vRes = await fetch(baseUrl + '/research/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        razorpay_payment_id: paymentId,
+                        razorpay_order_id: orderId
+                    })
+                });
+                const vData = await vRes.json();
+                if (vData.success) {
+                    showToast('Native Payment Verified!', 'success');
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    showToast('Native Verification failed: ' + vData.message, 'error');
+                }
+            } catch (e) {
+                console.error("Native Handshake Error:", e);
+                showToast('Handshake error: ' + e.message, 'error');
+            }
+        };
     </script>
     {% else %}
 
