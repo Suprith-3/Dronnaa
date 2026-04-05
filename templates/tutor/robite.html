@@ -119,20 +119,26 @@
             instr.innerText = "Listening System...";
             instr.classList.add('text-blue-400');
 
-            // VOICE RECOGNITION (STT)
+            // VOICE RECOGNITION (STT) - Enhanced for better matching
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                alert("Browser does not support Neural Link.");
+                alert("Browser does not support Neural Link (Speech Recognition).");
                 resetUI();
                 return;
             }
 
             const recognition = new SpeechRecognition();
             recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
             
             recognition.onresult = async (event) => {
                 const transcript = event.results[0][0].transcript;
+                console.log(`ROBITE HEARD: ${transcript} (Confidence: ${event.results[0][0].confidence})`);
+                
                 instr.innerText = "Transmitting...";
+                instr.innerText = `Matched: "${transcript}"`;
                 
                 // SEND TO AI
                 try {
@@ -153,8 +159,20 @@
                 }
             };
 
-            recognition.onerror = () => resetUI();
-            recognition.onend = () => { if(!panel.classList.contains('show')) resetUI(); };
+            recognition.onspeechend = () => {
+                recognition.stop();
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Neural Sync Error:", event.error);
+                instr.innerText = `Error: ${event.error}`;
+                setTimeout(resetUI, 2000);
+            };
+            
+            recognition.onend = () => { 
+                if(!isActive) resetUI(); 
+            };
+            
             recognition.start();
         }
 
