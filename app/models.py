@@ -46,6 +46,7 @@ class Course(db.Model):
     title       = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, default='')
     level       = db.Column(db.String(30), default='Beginner')
+    is_permanent = db.Column(db.Boolean, default=False)
     videos      = db.relationship('Video', backref='course', lazy=True)
     quizzes     = db.relationship('Quiz',  backref='course', lazy=True)
 

@@ -1,10 +1,11 @@
 import os, json, uuid
+from concurrent.futures import ThreadPoolExecutor
 from flask import render_template, redirect, url_for, request, flash, jsonify, session, current_app, send_file
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 from . import tutor_bp
 from ..models import User, Course, Video, Quiz, QuizHistory, db
-from modules.text_generation import generate_gemini_quiz, generate_gemini_chat, generate_gemini_notes, generate_gemini_vision
+from modules.text_generation import generate_gemini_quiz, generate_gemini_chat, generate_gemini_notes, generate_gemini_vision, generate_gemini_courses, generate_specific_course
 from modules.text_to_speech import generate_tts
 from modules.video_search import search_videos
 from modules.document_generator import create_docx
@@ -22,6 +23,7 @@ def login():
         user = User.query.filter_by(email=request.form.get('email')).first()
         if user and user.check_password(request.form.get('password')):
             login_user(user)
+            flash('Login successful! You have 20 new scholarship opportunities waiting for you.', 'info')
             return redirect(url_for('tutor.dashboard'))
         flash('Invalid email or password', 'danger')
     return render_template('tutor/login.html')
@@ -42,6 +44,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
+        flash('Welcome to Dronacharya Hub! We have found 20 scholarships to help your educational journey.', 'info')
         return redirect(url_for('tutor.dashboard'))
     return render_template('tutor/register.html')
 
@@ -56,8 +59,8 @@ from sqlalchemy.orm import joinedload
 @tutor_bp.route('/dashboard')
 @login_required
 def dashboard():
-    # Fetch all courses with their videos eager-loaded (to avoid N+1 when counting total videos)
-    courses = Course.query.options(joinedload(Course.videos)).all()
+    # Only show the permanent 23 courses in the dashboard
+    courses = Course.query.filter_by(is_permanent=True).options(joinedload(Course.videos)).all()
     
     # Pre-fetch all completed video IDs for the current user in a single query
     completed_video_ids = {v.id for v in current_user.completed_videos}
@@ -75,7 +78,44 @@ def dashboard():
 
 @tutor_bp.route('/courses')
 def courses():
-    courses = Course.query.all()
+    query = request.args.get('q')
+    if query:
+        # Search ALL courses (including previously searched ones)
+        courses = Course.query.filter(Course.title.ilike(f'%{query}%')).all()
+        
+        # If none found, generate one specifically for this topic
+        if not courses:
+            try:
+                item = generate_specific_course(query)
+                # Check if this title was already generated/saved by another user but didn't show in ILIKE search exactly
+                existing = Course.query.filter_by(title=item.get('title')).first()
+                if existing:
+                    courses = [existing]
+                else:
+                    c = Course(
+                        title=item.get('title'),
+                        description=item.get('description'),
+                        level=item.get('level', 'Beginner')
+                    )
+                    db.session.add(c)
+                    db.session.flush()
+                    
+                    # Add a video
+                    yt_res = search_videos(f"{c.title} educational lecture", 1)
+                    v_url = yt_res[0]['video_url'] if yt_res else "https://www.youtube.com/watch?v=rfscVS0vtbw"
+                    v_title = yt_res[0]['title'] if yt_res else f"Introduction to {c.title}"
+                    
+                    v = Video(course_id=c.id, title=v_title, video_url=v_url)
+                    db.session.add(v)
+                    db.session.commit()
+                    courses = [c]
+            except Exception as e:
+                print(f"Error generating specific course: {e}")
+                courses = []
+    else:
+        # ONLY show the permanent 23 courses by default
+        courses = Course.query.filter_by(is_permanent=True).all()
+        
     return render_template('tutor/courses.html', courses=courses)
 
 @tutor_bp.route('/courses/<int:id>')
@@ -251,4 +291,68 @@ def api_vision():
         answer = generate_gemini_vision(temp_path, prompt)
         return jsonify({'success': True, 'answer': answer})
     except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@tutor_bp.route('/api/more-courses', methods=['POST'])
+@login_required
+def api_more_courses():
+    try:
+        new_data = generate_gemini_courses()
+        if not new_data:
+            return jsonify({'success': True, 'courses': []})
+
+        # Step 1: Filter out duplicates in ONE query
+        new_titles = [item.get('title') for item in new_data]
+        existing_titles = {c.title for c in Course.query.filter(Course.title.in_(new_titles)).all()}
+        unique_new_data = [item for item in new_data if item.get('title') not in existing_titles]
+        
+        if not unique_new_data:
+            return jsonify({'success': True, 'courses': []})
+
+        # Step 2: Parallel Video Search (Network Intensive)
+        def fetch_video_metadata(item):
+            title = item.get('title')
+            yt_res = search_videos(f"{title} educational lecture", 1)
+            return {
+                'item': item,
+                'video': yt_res[0] if yt_res else None
+            }
+
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            meta_results = list(executor.map(fetch_video_metadata, unique_new_data))
+        
+        # Step 3: Batch Save to DB
+        added_courses = []
+        for res in meta_results:
+            item = res['item']
+            video_data = res['video']
+            
+            c = Course(
+                title=item.get('title'),
+                description=item.get('description', ''),
+                level=item.get('level', 'Beginner')
+            )
+            db.session.add(c)
+            db.session.flush() # Get ID
+            
+            v_url = video_data['video_url'] if video_data else "https://www.youtube.com/watch?v=rfscVS0vtbw"
+            v_title = video_data['title'] if video_data else f"Introduction to {c.title}"
+            
+            v = Video(course_id=c.id, title=v_title, video_url=v_url)
+            db.session.add(v)
+            
+            added_courses.append({
+                'id': c.id,
+                'title': c.title,
+                'description': c.description,
+                'level': c.level,
+                'video_title': v_title,
+                'video_url': v_url
+            })
+            
+        db.session.commit()
+        return jsonify({'success': True, 'courses': added_courses})
+    except Exception as e:
+        db.session.rollback()
+        print(f"More Courses Error: {e}")
         return jsonify({'success': False, 'message': str(e)})

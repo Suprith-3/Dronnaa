@@ -142,12 +142,13 @@ def generate_gemini_paper(topic, language):
         f"2. MINIMAL QUOTES: Direct quotes must be <10% of the paper. Each quote max 2 sentences. Include page numbers if applicable.\n"
         f"3. AUTHENTIC PARAPHRASING: Reword source material completely with new structure. Do not just swap synonyms. Citations still required.\n"
         f"4. ORIGINAL VOICE: 85-90% of the paper must be your original analysis, interpretation, and synthesis of ideas. Lead with your own perspective.\n"
-        f"5. CITATION BREADTH: Cite unique theories, data, and findings. Common knowledge (e.g., 'The sun rises in the east') does not need citation.\n"
-        f"6. STYLE CONSISTENCY: Use APA style (unless the topic/language dictates otherwise) consistently for all citations.\n"
+        f"5. CITATION BREADTH: Cite unique theories, data, and findings. Common knowledge does not need citation.\n"
+        f"6. STYLE CONSISTENCY: Follow the chosen style (APA 7th, MLA 9th, Chicago 17th, IEEE, Harvard, or Vancouver) exactly as per current standards.\n"
         f"7. COMPLETE BIBLIOGRAPHY: Every source cited in-text must appear in an alphabetized References section at the end with proper hanging indents.\n"
         f"8. NO REPLICATION: Content must be unique and specifically tailored to this prompt. No bulk reuse of generic material.\n"
         f"9. LOW PLAGIARISM: Ensure the content would pass a Turnitin check with <10% similarity score by being highly original in synthesis.\n"
-        f"10. DOCUMENTATION: Ensure citations include real-world metadata (Author, Date, Title, Source) where possible to facilitate verification.\n\n"
+        f"10. CITATION CRITERIA: Ensure each reference includes Author, Year/Date, Title, Journal/Proceedings, Volume(Issue), Page Numbers, and DOI/URL. "
+        f"Identify the source type (Journal, Book, Conference, etc.) and apply the universal citation criteria for maximum accuracy and verifiability.\n\n"
         f"Include these exact markdown sections:\n"
         f"## Research Topic\n## Abstract\n## Introduction\n## Literature Review\n"
         f"## Theoretical Framework\n## Methodology\n## Main Findings / Discussion\n"
@@ -220,13 +221,26 @@ def generate_gemini_citation(source, style):
             pass
             
     system_instruction = (
-        f"You are a professional librarian and academic citation expert. "
+        f"You are a professional librarian and PhD-level academic citation expert. "
         f"Generate a high-precision, official {style} style citation for the provided source: '{source}'. "
         f"{context_info}"
-        f"\n\nRules:"
-        f"\n1. If a URL is given, use your knowledge to find the correct author, full paper title, publication year, and journal name."
-        f"\n2. If only a short snippet is provided, format it professionally based on the {style} manual."
-        f"\n3. Respond ONLY with the formatted citation string. No preamble, no conversational text."
+        f"\n\n### MANDATORY UNIVERSAL CRITERIA:"
+        f"\n1. ACCURACY: Verify all information. Identify if the source is a Journal, Conference Paper, Book, Thesis, or Website."
+        f"\n2. COMPLETENESS: Include Author(s), Year, Title, Source/Container, Volume/Issue, Page Numbers, and DOI/URL as per {style} standards."
+        f"\n3. FORMATTING: Adhere strictly to {style} version (APA 7th, MLA 9th, Chicago 17th, etc.)."
+        f"\n\n### STYLE-SPECIFIC RULES TO OBEY:"
+        f"\n- APA (7th): (Author, Year). Title. Journal, Vol(Issue), pp. DOI."
+        f"\n- MLA (9th): Author. 'Title.' Journal, vol., no., Year, pp. DOI/URL."
+        f"\n- CHICAGO: Author, Title (Publisher, Year), Page."
+        f"\n- IEEE: [#] Initials. Surname, 'Title,' Journal, vol. #, no. #, pp., Month Year, doi: DOI."
+        f"\n- HARVARD: Author (Year) 'Title', Journal, vol(issue), pp."
+        f"\n- VANCOUVER: Author Surname AF. Title. Abbr Journal. Year;Vol(Issue):pp. DOI."
+        f"\n\n### CRITERIA BY TYPE:"
+        f"\n- For Journals: Must include Volume, Issue, and inclusive Page Numbers."
+        f"\n- For Conferences: Include Proceedings name, location (if applicable), and Publisher."
+        f"\n- For Books: Include Publisher and Edition (if not 1st)."
+        f"\n- For Websites: Use Organization name if author unknown; include URL and Access Date."
+        f"\n\nRespond ONLY with the formatted citation string. No preamble, no conversational text."
     )
     try:
         response = client.models.generate_content(model=model_id, contents=system_instruction)
@@ -435,3 +449,62 @@ def generate_gemini_scholarships():
                 "status": "Open"
             }
         ]
+
+def generate_gemini_courses():
+    system_instruction = (
+        "You are an academic curriculum designer. Generate exactly 5 unique and diverse online course ideas for students. "
+        "Each course must have: a catchy title, a clear and engaging description (1-2 sentences), and a difficulty level (Beginner, Intermediate, or Advance). "
+        "The output MUST be a JSON list of objects: "
+        '[{"title":"...","description":"...","level":"..."}]'
+        "Return ONLY the valid JSON array."
+    )
+    try:
+        response = client.models.generate_content(model=model_id, contents=system_instruction)
+        text = response.text.strip()
+        if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
+        data = json.loads(text)
+        return data
+    except Exception as e:
+        print(f"Gemini Course Error: {e}")
+        for fb_model in fallback_models:
+            try:
+                fb_response = client.models.generate_content(model=fb_model, contents=system_instruction)
+                text = fb_response.text.strip()
+                if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
+                return json.loads(text)
+            except:
+                continue
+        # Hardcoded fallback
+        return [
+            {"title": "Introduction to Robotics", "description": "Learn the basics of robot design and programming.", "level": "Beginner"},
+            {"title": "Modern History of Asia", "description": "Explore the major events that shaped modern Asian nations.", "level": "Intermediate"},
+            {"title": "Advanced Data Structures", "description": "Master complex algorithms for efficient data handling.", "level": "Advance"},
+            {"title": "Sustainability in Design", "description": "Principles of eco-friendly and ethical design.", "level": "Beginner"},
+            {"title": "Particle Physics", "description": "Diving into the fundamental building blocks of the universe.", "level": "Advance"}
+        ]
+
+def generate_specific_course(topic):
+    system_instruction = (
+        f"You are an academic curriculum designer. Generate a single highly relevant and engaging online course idea for the topic: '{topic}'. "
+        "The course must have: a catchy title, a clear and engaging description (1-2 sentences), and a difficulty level (Beginner, Intermediate, or Advance). "
+        "The output MUST be a JSON object: "
+        '{"title":"...","description":"...","level":"..."}'
+        "Return ONLY the valid JSON object."
+    )
+    try:
+        response = client.models.generate_content(model=model_id, contents=system_instruction)
+        text = response.text.strip()
+        if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
+        return json.loads(text)
+    except Exception as e:
+        print(f"Gemini Specific Course Error: {e}")
+        # Try fallbacks
+        for fb_model in fallback_models:
+            try:
+                fb_response = client.models.generate_content(model=fb_model, contents=system_instruction)
+                text = fb_response.text.strip()
+                if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
+                return json.loads(text)
+            except:
+                continue
+        return {"title": topic.capitalize(), "description": f"A comprehensive course about {topic}.", "level": "Beginner"}

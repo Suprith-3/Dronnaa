@@ -41,7 +41,7 @@ def auto_seed_courses(db):
             v_title = f"Introduction to {title}"
 
         # Now do the DB work (fast, releases lock immediately)
-        c = Course(title=title, description=desc, level=level)
+        c = Course(title=title, description=desc, level=level, is_permanent=True)
         db.session.add(c)
         db.session.flush()
         

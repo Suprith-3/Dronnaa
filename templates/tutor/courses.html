@@ -2,12 +2,33 @@
 {% block title %}Explore Courses - Dronacharya Tutor{% endblock %}
 {% block content %}
 <section class="max-w-7xl mx-auto px-4 py-12">
-  <div class="mb-12">
-    <h1 style="font-family:'Cinzel',serif;" class="text-4xl font-bold text-gray-900 mb-4">Explore Our Free Courses</h1>
-    <p class="text-gray-500">Pick a course and start your journey with AI-enhanced learning.</p>
+  <div class="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <h1 style="font-family:'Cinzel',serif;" class="text-4xl font-bold text-gray-900 mb-4">Explore Our Free Courses</h1>
+      <p class="text-gray-500">Pick a course or search for anything you want to learn.</p>
+    </div>
+    
+    <form id="search-form" action="{{ url_for('tutor.courses') }}" method="GET" class="relative group w-full md:w-96">
+      <input type="text" name="q" placeholder="What do you want to learn today?" 
+             class="w-full bg-white border-2 border-gray-100 focus:border-blue-500 rounded-2xl py-4 pl-6 pr-14 shadow-sm transition-all outline-none text-gray-700 font-medium"
+             value="{{ request.args.get('q', '') }}">
+      <button type="submit" id="search-btn" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl shadow-lg transition-all transform hover:scale-105 active:scale-95">
+        <span id="search-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </span>
+        <span id="search-loading" class="hidden">
+           <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </span>
+      </button>
+    </form>
   </div>
 
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+  <div id="course-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
     {% for course in courses %}
       <div class="card p-4 md:p-8 group hover:border-blue-500 transition-all border-t-4 md:border-t-8 border-blue-500 flex flex-col">
         <div class="text-[10px] md:text-xs font-bold text-blue-600 mb-2 md:mb-4 uppercase inline-block bg-blue-50 px-2 md:px-3 py-1 rounded-full w-fit">{{ course.level }}</div>
@@ -24,5 +45,91 @@
       </div>
     {% endfor %}
   </div>
+
+  <div class="mt-16 flex justify-center">
+    <button id="view-more-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-full shadow-2xl transition-all transform hover:scale-105 flex items-center gap-2 group">
+      <span id="btn-text">View More Courses</span>
+      <span id="loading-spinner" class="hidden">
+        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </span>
+      <span class="group-hover:translate-x-1 transition-transform">✨</span>
+    </button>
+  </div>
 </section>
+
+<script>
+// Search form loading state
+document.getElementById('search-form').addEventListener('submit', function() {
+  const btn = document.getElementById('search-btn');
+  const icon = document.getElementById('search-icon');
+  const loading = document.getElementById('search-loading');
+  
+  btn.disabled = true;
+  icon.classList.add('hidden');
+  loading.classList.remove('hidden');
+});
+
+document.getElementById('view-more-btn').addEventListener('click', async function() {
+  const btn = this;
+  const btnText = document.getElementById('btn-text');
+  const spinner = document.getElementById('loading-spinner');
+  const grid = document.getElementById('course-grid');
+  
+  if (btn.disabled) return;
+  
+  // Start loading state
+  btn.disabled = true;
+  btnText.innerText = 'Generating Courses...';
+  spinner.classList.remove('hidden');
+  
+  try {
+    const response = await fetch('/tutor/api/more-courses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.success && data.courses.length > 0) {
+      data.courses.forEach(course => {
+        const card = document.createElement('div');
+        card.className = 'card p-4 md:p-8 group hover:border-blue-500 transition-all border-t-4 md:border-t-8 border-blue-500 flex flex-col';
+        card.innerHTML = `
+          <div class="text-[10px] md:text-xs font-bold text-blue-600 mb-2 md:mb-4 uppercase inline-block bg-blue-50 px-2 md:px-3 py-1 rounded-full w-fit">${course.level}</div>
+          <h2 style="font-family:'Sora',sans-serif;" class="text-base md:text-2xl font-bold mb-2 md:mb-4 group-hover:text-blue-700 line-clamp-2">${course.title}</h2>
+          <p class="text-gray-500 text-[10px] md:text-sm mb-4 md:mb-8 line-clamp-2 leading-relaxed">${course.description}</p>
+          <div class="flex items-center justify-between mt-auto">
+            <span class="text-[10px] md:text-xs text-gray-400 font-medium whitespace-nowrap">1 Lessons</span>
+            <a href="/tutor/courses/${course.id}" class="btn-primary btn-tutor p-2 md:p-3 rounded-full flex items-center justify-center w-8 h-8 md:w-12 md:h-12 shadow-lg">→</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      
+      // Scroll to new courses
+      window.scrollTo({
+        top: btn.offsetTop - 300,
+        behavior: 'smooth'
+      });
+      
+    } else {
+      alert(data.message || 'No more courses could be generated at this time.');
+    }
+    
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    alert('Failed to connect to the server. Please try again.');
+  } finally {
+    // Reset state
+    btn.disabled = false;
+    btnText.innerText = 'View More Courses';
+    spinner.classList.add('hidden');
+  }
+});
+</script>
 {% endblock %}

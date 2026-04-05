@@ -47,7 +47,7 @@ def seed_db():
 
         # 3. Add Courses and Lessons
         for title, desc, level in courses_data:
-            c = Course(title=title, description=desc, level=level)
+            c = Course(title=title, description=desc, level=level, is_permanent=True)
             db.session.add(c)
             db.session.flush()
 
