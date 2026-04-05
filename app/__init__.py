@@ -26,6 +26,15 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
+    
+    # SQLite performance optimization for Render
+    if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
+        from sqlalchemy import event
+        @event.listens_for(db.engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA busy_timeout = 30000") # 30 seconds
+            cursor.close()
 
     with app.app_context():
         from .models import User
