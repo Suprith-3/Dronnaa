@@ -100,6 +100,9 @@
             <div class="bg-black rounded-[32px] overflow-hidden aspect-video shadow-2xl relative border-4 border-gray-900 group">
                 <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
                 
+                <!-- Waiting Room Container -->
+                <div id="waiting-room-container" class="absolute top-4 right-4 z-30 flex flex-col gap-3"></div>
+                
                 <!-- Status Overlay overlay -->
                 <div id="status-overlay" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center backdrop-blur-sm transition-opacity duration-300 z-10 text-white">
                     <div class="text-6xl mb-4">🎥</div>
@@ -111,8 +114,17 @@
                 <div class="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md px-4 py-2 rounded-xl text-white font-medium text-sm flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <img src="{% if current_user.profile_pic.startswith('http') %}{{ current_user.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}{% endif %}" class="w-6 h-6 rounded-full" alt="Avatar">
                     {{ current_user.first_name }} {{ current_user.last_name }} 
-                    <span class="bg-red-500 px-2 py-0.5 rounded-full text-[10px] ml-2 font-bold animate-pulse">HOST</span>
+                    <span class="bg-red-500 px-2 py-0.5 rounded-full text-[10px] ml-2 font-bold animate-pulse" id="role-badge">HOST</span>
                 </div>
+                
+                <div class="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg text-white font-medium text-sm flex items-center gap-2">
+                    👥 Participants: <span id="participant-count">1</span>
+                </div>
+            </div>
+
+            <!-- Remote Participants Container (Horizontal Scroll) -->
+            <div id="participants-container" class="flex gap-4 overflow-x-auto pb-2 hidden scrollbar-hide">
+                <!-- Additional video streams will be injected here -->
             </div>
 
             <!-- Controls -->
@@ -120,12 +132,18 @@
                 <button id="btn-start" class="flex-1 py-3 px-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg border border-transparent transition-all flex justify-center items-center gap-2">
                     ▶️ Start Broadcast
                 </button>
-                <button id="btn-mic" disabled class="w-14 h-14 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full flex items-center justify-center text-xl transition-all disabled:opacity-50 border border-gray-200">
-                    🎤
-                </button>
+                <div class="flex gap-2">
+                    <button id="btn-mic" disabled class="w-14 h-14 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full flex items-center justify-center text-xl transition-all disabled:opacity-50 border border-gray-200" title="Toggle Microphone">
+                        🎤
+                    </button>
+                    <button id="btn-camera" disabled class="w-14 h-14 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full flex items-center justify-center text-xl transition-all disabled:opacity-50 border border-gray-200" title="Toggle Camera">
+                        📹
+                    </button>
+                </div>
                 <button id="btn-end" disabled class="flex-1 py-3 px-6 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-md transition-all disabled:opacity-50 flex justify-center items-center gap-2 border border-red-600">
-                    ⏹ End & Summarize
+                    <span id="btn-end-icon">⏹</span> <span id="btn-end-text">End Session</span>
                 </button>
+            </div>
             </div>
         </div>
 
@@ -224,14 +242,25 @@
     codeDisplay.innerText = meetingCode;
     
     if(!isHost) {
-        document.querySelector('.bg-red-500').innerText = "ATTENDEE";
-        document.querySelector('.bg-red-500').classList.replace('bg-red-500', 'bg-blue-500');
+        const badge = document.getElementById('role-badge');
+        if (badge) {
+            badge.innerText = "ATTENDEE";
+            badge.classList.replace('bg-red-500', 'bg-blue-500');
+        }
         btnStart.innerHTML = "🔗 Connecting to Session...";
         btnStart.classList.replace('from-green-500', 'from-blue-500');
+
+        // Attendee can leave anytime
+        document.getElementById('btn-end-text').innerText = "Leave Meeting";
+        document.getElementById('btn-end-icon').innerText = "🏃";
+        document.getElementById('btn-end').disabled = false;
     }
 
     // Initialize PeerJS
     peer = new Peer(myPeerId, { debug: 1 });
+    const acceptedPeers = new Set();
+    const peerConnections = new Map(); // Store active data connections
+    const myName = "{{ current_user.first_name }} {{ current_user.last_name }}";
 
     peer.on('open', (id) => {
         console.log('My Peer ID:', id);
@@ -240,50 +269,147 @@
         }
     });
 
-    // Host receives call
-    peer.on('call', (incomingCall) => {
-        if(isHost && localStream) {
-            incomingCall.answer(localStream);
+    // Host receives data connection (Wait Room Request)
+    peer.on('connection', (conn) => {
+        if(isHost) {
+            peerConnections.set(conn.peer, conn);
+            conn.on('data', (data) => {
+                if(data.action === 'request-join') {
+                    showAdmitUI(conn, data.name);
+                }
+            });
+            conn.on('close', () => peerConnections.delete(conn.peer));
+        } else {
+             // Attendee receives data from Host
+             conn.on('data', (data) => {
+                 if(data.action === 'speech') {
+                     appendBubble(data.text, true);
+                     translateAndAppend(data.text);
+                 }
+             });
         }
     });
 
-    async function connectToHost(hostId) {
-        btnStart.innerHTML = "🔗 Connecting...";
-        statusOverlay.querySelector('h3').innerText = "Waiting for Host...";
+    function showAdmitUI(conn, name) {
+        const toastId = 'toast-' + conn.peer;
+        if(document.getElementById(toastId)) return; // Already asking
+
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = 'bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-gray-200 flex items-center justify-between gap-4 animate-fade-in translate-y-0 transition-all';
+        toast.innerHTML = `
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl">👤</div>
+                <div class="max-w-[150px]"><strong class="text-gray-800 block truncate">${name}</strong><span class="text-gray-500 text-xs">wants to join</span></div>
+            </div>
+            <div class="flex gap-2">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold transition btn-admit">Admit</button>
+                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-bold transition btn-deny">Deny</button>
+            </div>
+        `;
+        document.getElementById('waiting-room-container').appendChild(toast);
         
-        let connected = false;
-        
-        const tryCall = () => {
-            if(connected || isHost) return;
+        toast.querySelector('.btn-admit').onclick = () => {
+            acceptedPeers.add(conn.peer);
+            updateParticipantCount();
+            conn.send({ action: 'accepted' });
+            toast.remove();
             
-            console.log("Attempting to connect to host...", hostId);
-            const call = peer.call(hostId, new MediaStream()); // trigger host
-            
-            if(call) {
-                call.on('stream', (remoteStream) => {
-                    console.log("Stream received!");
-                    videoElem.srcObject = remoteStream;
-                    statusOverlay.classList.add('opacity-0', 'pointer-events-none');
-                    btnStart.innerHTML = "📺 Viewing Live";
-                    btnStart.classList.replace('from-blue-500', 'from-green-500');
-                    btnStart.classList.add('pointer-events-none'); // disable clicking
-                    connected = true;
-                });
-                
-                call.on('error', (err) => console.log("Call error:", err));
-                call.on('close', () => { connected = false; });
+            // Push video immediately if we are already broadcasting
+            if (isBroadcasting && localStream) {
+                peer.call(conn.peer, localStream);
             }
-            
-            // Aggressively retry if not connected
-            setTimeout(() => {
-                if(!connected) {
-                    if(call) call.close();
-                    tryCall();
-                }
-            }, 4000);
         };
-        tryCall();
+        toast.querySelector('.btn-deny').onclick = () => {
+            conn.send({ action: 'denied' });
+            toast.remove();
+        };
     }
+
+    function updateParticipantCount() {
+        const count = isHost ? (acceptedPeers.size + 1) : 2; 
+        document.getElementById('participant-count').innerText = count;
+    }
+
+    // Attendee or Host receives video call
+    peer.on('call', (incomingCall) => {
+        if(!isHost) {
+            incomingCall.answer(); // Answer without our own stream
+            incomingCall.on('stream', (remoteStream) => {
+                videoElem.srcObject = remoteStream;
+                statusOverlay.classList.add('opacity-0', 'pointer-events-none');
+                btnStart.innerHTML = "📺 Viewing Live";
+                btnStart.classList.replace('from-blue-500', 'from-green-500');
+                
+                // Allow them to use their own Mic and Camera now!
+                document.getElementById('btn-mic').disabled = false;
+                document.getElementById('btn-camera').disabled = false;
+                updateParticipantCount();
+            });
+        } else if (isHost && acceptedPeers.has(incomingCall.peer)) {
+            // An Attendee turned on their Camera/Mic! Receive it.
+            incomingCall.answer(); 
+            incomingCall.on('stream', (remoteStream) => {
+                addRemoteVideo(incomingCall.peer, remoteStream);
+            });
+        } else {
+            incomingCall.close();
+        }
+    });
+
+    function addRemoteVideo(peerId, stream) {
+        const container = document.getElementById('participants-container');
+        container.classList.remove('hidden');
+        
+        let existing = document.getElementById('vid-' + peerId);
+        if(!existing) {
+            existing = document.createElement('video');
+            existing.id = 'vid-' + peerId;
+            existing.autoplay = true;
+            existing.playsInline = true;
+            existing.className = "w-48 h-32 rounded-xl object-cover border-2 border-gray-200 shadow-md transform -scale-x-100 flex-shrink-0 animate-fade-in";
+            container.appendChild(existing);
+        }
+        existing.srcObject = stream;
+    }
+
+    async function connectToHost(hostId) {
+        btnStart.innerHTML = "⏳ Requesting to join...";
+        statusOverlay.querySelector('h3').innerText = "Waiting in Lobby...";
+        statusOverlay.querySelector('p').innerText = "Please wait for the host to let you in.";
+
+        const conn = peer.connect(hostId, { reliable: true });
+        
+        conn.on('open', () => {
+             conn.send({ action: 'request-join', name: myName });
+        });
+
+        conn.on('data', (data) => {
+            if(data.action === 'accepted') {
+                statusOverlay.querySelector('h3').innerText = "Admitted! Connecting...";
+                
+                // Automatically turn on attendee camera that sends to host
+                setTimeout(() => {
+                    toggleMedia('camera');
+                }, 2000);
+
+            } else if (data.action === 'denied') {
+                statusOverlay.querySelector('h3').innerText = "Request Denied";
+                statusOverlay.querySelector('p').innerText = "The host declined your entry.";
+                btnStart.innerHTML = "❌ Connection Denied";
+            } else if (data.action === 'speech') {
+                // Receive speech from Host
+                appendBubble(data.text, true); 
+                translateAndAppend(data.text); 
+            }
+        });
+        
+        conn.on('error', () => {
+            setTimeout(() => connectToHost(hostId), 3000);
+        });
+    }
+
+    // --- Media & Broadcast Logic ---
 
     function copyMeetingLink() {
         const link = window.location.origin + "/tutor/live-session/" + meetingCode;
@@ -316,6 +442,11 @@
             isBroadcasting = true;
             document.getElementById('placeholder-text').style.display = 'none';
 
+            // Push video feed to anyone sitting in the admitted pool
+            for (const attendeeId of acceptedPeers) {
+                peer.call(attendeeId, localStream);
+            }
+
             if (SpeechRecognition) {
                 recognition = new SpeechRecognition();
                 recognition.continuous = true;
@@ -327,8 +458,20 @@
                     
                     if(text) {
                         fullTranscript += text + ". ";
-                        appendBubble(text, true); // User speech bubble
-                        translateAndAppend(text); // Trigger API
+                        
+                        // BROADCAST to all admitted attendees via existing connections
+                        for (const attendeeId of acceptedPeers) {
+                            const conn = peerConnections.get(attendeeId);
+                            if (conn && conn.open) {
+                                conn.send({ action: 'speech', text: text });
+                            }
+                        }
+
+                        // Host doesn't want to see it on their screen according to user request
+                        if(!isHost) {
+                            appendBubble(text, true); 
+                            translateAndAppend(text); 
+                        }
                     }
                 };
 
@@ -412,13 +555,19 @@
         statusOverlay.classList.remove('opacity-0', 'pointer-events-none');
         btnStart.disabled = false;
         btnStart.classList.replace('from-gray-400', 'from-green-500');
-        btnStart.innerHTML = "▶️ Start Broadcast";
+        btnStart.innerHTML = isHost ? "▶️ Start Broadcast" : "🔗 Connect to Session";
         
-        btnEnd.disabled = true;
         btnMic.disabled = true;
+        btnCamera.disabled = true;
         targetLangSelect.disabled = false;
 
-        // Show Summary
+        if(!isHost) {
+            // Redirect Attendee back to Lobby
+            window.location.href = "{{ url_for('tutor.live_session') }}";
+            return;
+        }
+
+        // Show Summary for Host
         showSummaryModal();
     }
 
@@ -477,21 +626,57 @@
     document.getElementById('close-modal').addEventListener('click', closeSummary);
     document.getElementById('btn-done').addEventListener('click', closeSummary);
 
-    btnMic.addEventListener('click', () => {
-        if(localStream) {
-            const audioTrack = localStream.getAudioTracks()[0];
-            if(audioTrack) {
-                audioTrack.enabled = !audioTrack.enabled;
-                isMicMuted = !audioTrack.enabled;
+    const btnCamera = document.getElementById('btn-camera');
+    let isCameraOff = false;
+
+    async function toggleMedia(type) {
+        if(!localStream && !isHost) {
+            try {
+                btnMic.innerHTML = '⏳';
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                // Instantly push this to the host!
+                peer.call(meetingCode, localStream);
+                
+                // Show our own PIP (Picture in Picture) in the participant container
+                addRemoteVideo('myself', localStream);
+            } catch(e) {
+                console.error(e);
+                alert("Please allow Camera and Mic permissions to participate!");
+                btnMic.innerHTML = '🎤';
+                return;
+            }
+        }
+
+        if(!localStream) return;
+
+        if(type === 'mic') {
+            const track = localStream.getAudioTracks()[0];
+            if(track) {
+                track.enabled = !track.enabled;
+                isMicMuted = !track.enabled;
                 btnMic.innerHTML = isMicMuted ? '🔇' : '🎤';
                 btnMic.classList.toggle('bg-red-100', isMicMuted);
                 btnMic.classList.toggle('text-red-600', isMicMuted);
                 
-                if(isMicMuted && recognition) recognition.stop();
-                if(!isMicMuted && recognition && isBroadcasting) recognition.start();
+                if(isHost) {
+                    if(isMicMuted && recognition) recognition.stop();
+                    if(!isMicMuted && recognition && isBroadcasting) recognition.start();
+                }
+            }
+        } else if (type === 'camera') {
+            const track = localStream.getVideoTracks()[0];
+            if(track) {
+                track.enabled = !track.enabled;
+                isCameraOff = !track.enabled;
+                btnCamera.innerHTML = isCameraOff ? '❌' : '📹';
+                btnCamera.classList.toggle('bg-red-100', isCameraOff);
+                btnCamera.classList.toggle('text-red-600', isCameraOff);
             }
         }
-    });
+    }
+
+    btnMic.addEventListener('click', () => toggleMedia('mic'));
+    btnCamera.addEventListener('click', () => toggleMedia('camera'));
 
     // Auto-start camera if we are the host that just created the room
     window.addEventListener('DOMContentLoaded', () => {
