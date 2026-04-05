@@ -95,6 +95,7 @@
 
 {% block scripts %}
 <script>
+{% if book.latitude and book.longitude %}
 document.addEventListener('DOMContentLoaded', () => {
     const map = L.map('book-map').setView([{{ book.latitude }}, {{ book.longitude }}], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -102,5 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
     L.marker([{{ book.latitude }}, {{ book.longitude }}], {icon: bookIcon}).addTo(map)
         .bindPopup("<b>{{ book.title }}</b><br>Available here!").openPopup();
 });
+{% else %}
+document.getElementById('book-map').style.display = 'none';
+{% endif %}
+
 </script>
 {% endblock %}
