@@ -31,11 +31,7 @@ def auto_seed_courses(db):
     ]
 
     for title, desc, level in courses_data:
-        c = Course(title=title, description=desc, level=level)
-        db.session.add(c)
-        db.session.flush()
-
-        # Try to find a real educational video
+        # Fetch data first (slow network call, no DB lock yet)
         yt_res = search_videos(f"{title} educational lecture", 1)
         if yt_res:
             v_url = yt_res[0]['video_url']
@@ -44,6 +40,11 @@ def auto_seed_courses(db):
             v_url = "https://www.youtube.com/watch?v=rfscVS0vtbw"
             v_title = f"Introduction to {title}"
 
+        # Now do the DB work (fast, releases lock immediately)
+        c = Course(title=title, description=desc, level=level)
+        db.session.add(c)
+        db.session.flush()
+        
         v = Video(course_id=c.id, title=v_title, video_url=v_url)
         db.session.add(v)
         db.session.commit()
