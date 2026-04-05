@@ -76,7 +76,7 @@
         async function startResearchPayment() {
             const btn = document.getElementById('pay-btn');
             const originalText = btn.textContent;
-            btn.disabled = true; 
+            btn.disabled = true;
             btn.textContent = '🔄 Waking up server...';
             console.log("Research: Initiating payment sequence...");
 
@@ -88,24 +88,24 @@
                 console.log("Research: Waking server via root ping...");
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout for wake
-                
+
                 await fetch(baseUrl + "/", { signal: controller.signal })
                     .then(() => console.log("Research: Wake ping successful."))
                     .catch(e => console.warn("Wake ping failed or timed out, continuing anyway:", e))
                     .finally(() => clearTimeout(timeoutId));
 
-                // Step 2: wait a bit for server to fully breathe
-                console.log("Research: Waiting 2s for server response stabilization...");
-                await new Promise(r => setTimeout(r, 2000));
+                // Step 2: wait a bit for server to fully breathe (Now optimized for maximum speed: 0s)
+                console.log("Research: Proceeding instantly to order creation...");
+                // No artificial delay anymore as requested for speed.
 
                 btn.textContent = '🧾 Preparing order...';
                 console.log("Research: Creating order via backend...");
 
-                const res = await fetch(baseUrl + '/research/create-order', { 
+                const res = await fetch(baseUrl + '/research/create-order', {
                     method: 'POST',
                     headers: { 'Accept': 'application/json' }
                 });
-                
+
                 if (!res.ok) {
                     const errText = await res.text();
                     console.error("Research: Order creation failed with status:", res.status, errText);
@@ -143,12 +143,12 @@
                             btn.disabled = false; btn.textContent = originalText;
                         }
                     },
-                    "modal": { 
-                        "ondismiss": function () { 
+                    "modal": {
+                        "ondismiss": function () {
                             console.log("Research: Modal dismissed by user.");
-                            btn.disabled = false; 
-                            btn.textContent = originalText; 
-                        } 
+                            btn.disabled = false;
+                            btn.textContent = originalText;
+                        }
                     },
                     "theme": { "color": "#7c3aed" }
                 };
@@ -162,9 +162,9 @@
                     console.log("Research: Using Native Android Payment Bridge...");
                     window.AndroidNative.openRazorpayNative(data.order_id, "100", RAZORPAY_KEY_ID);
                     btn.textContent = '🚀 Opening SDK...';
-                    setTimeout(() => { 
-                        btn.disabled = false; 
-                        btn.innerHTML = originalText; 
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
                     }, 5000);
                     return;
                 }
@@ -175,13 +175,13 @@
             } catch (e) {
                 console.error("Research Error:", e);
                 showToast(e.message, 'error');
-                btn.disabled = false; 
+                btn.disabled = false;
                 btn.textContent = originalText;
             }
         }
 
         // Global Handshake for Android Native SDK
-        window.verifyNativePayment = async function(paymentId, orderId, signature) {
+        window.verifyNativePayment = async function (paymentId, orderId, signature) {
             console.log("Research: Native Handshake Triggered:", paymentId);
             try {
                 const baseUrl = window.location.origin;

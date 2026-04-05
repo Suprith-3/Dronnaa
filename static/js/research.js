@@ -10,7 +10,7 @@ async function generatePaper(){
   const btn=document.getElementById('generate-paper-btn');
   btn.disabled=true; btn.textContent='Generating...';
   const msgs=['Analyzing academic sources...','Structuring your paper...','Generating references...','Finalizing content...'];
-  let mi=0; const interval=setInterval(()=>{ const el=document.getElementById('loading-msg'); if(el) el.textContent=msgs[mi++%msgs.length]; },3000);
+  let mi=0; const interval=setInterval(()=>{ const el=document.getElementById('loading-msg'); if(el) el.textContent=msgs[mi++%msgs.length]; },1500);
   try{
     const res=await fetch('/research/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic,language})});
     const data=await res.json();

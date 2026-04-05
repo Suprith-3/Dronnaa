@@ -4,7 +4,7 @@ import os
 port = os.environ.get("PORT", "10000")
 bind = f"0.0.0.0:{port}"
 
-# Gunicorn setup
+# Gunicorn setup (Tuned for faster response)
 timeout = 120
-workers = 1 
-preload_app = False # Set to False so Gunicorn binds to port BEFORE loading the app
+workers = 2 
+preload_app = False 

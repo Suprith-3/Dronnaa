@@ -5,8 +5,31 @@ from dotenv import load_dotenv
 
 load_dotenv()
 client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
-model_id = 'gemini-flash-latest' # Stable alias for 1.5-flash or 2.0-flash depending on region
+model_id = 'gemini-flash-latest' 
 fallback_models = ['gemini-flash-lite-latest', 'gemini-pro-latest', 'gemini-2.0-flash']
+
+# --- AI CACHE SECTION ---
+CACHE_FILE = os.path.join(os.path.dirname(__file__), '_ai_cache.json')
+
+def get_cached_response(key):
+    if not os.path.exists(CACHE_FILE): return None
+    try:
+        with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+            cache = json.load(f)
+            return cache.get(key)
+    except: return None
+
+def save_to_cache(key, value):
+    cache = {}
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f: cache = json.load(f)
+        except: pass
+    cache[key] = value
+    try:
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f: json.dump(cache, f, indent=2)
+    except: pass
+# ------------------------
 
 
 
@@ -28,6 +51,10 @@ def serialize_history(history):
     return result
 
 def generate_gemini_quiz(topic):
+    cache_key = f"quiz_{topic.lower()}"
+    cached = get_cached_response(cache_key)
+    if cached: return cached
+
     system_instruction = (
         f"You are an expert teacher. Generate exactly 10 multiple-choice questions about: '{topic}'. "
         f"Return ONLY valid JSON (no markdown, no extra text): "
@@ -37,7 +64,9 @@ def generate_gemini_quiz(topic):
         response = client.models.generate_content(model=model_id, contents=system_instruction)
         text = response.text.strip()
         if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
-        return json.loads(text)
+        result = json.loads(text)
+        save_to_cache(cache_key, result)
+        return result
     except Exception as e:
         err_msg = str(e)
         print(f"Gemini Quiz Error: {err_msg}")
@@ -133,6 +162,10 @@ def generate_tumtum_chat(message, history):
         return f"AI Assistant Error: {err_msg}", history
 
 def generate_gemini_paper(topic, language):
+    cache_key = f"paper_{topic.lower()}_{language.lower()}"
+    cached = get_cached_response(cache_key)
+    if cached: return cached
+
     system_instruction = (
         f"You are a PhD-level academic writer. Generate a comprehensive and extensive research paper about '{topic}' "
         f"written entirely in {language}. The paper MUST be between 2000 and 2500 words in length. "
@@ -165,7 +198,9 @@ def generate_gemini_paper(topic, language):
         if response.candidates and len(response.candidates) > 0:
             if response.candidates[0].finish_reason == 3:
                 return "ERROR: Restricted by safety filters."
-            return response.text
+            res_text = response.text
+            save_to_cache(cache_key, res_text)
+            return res_text
         return "ERROR: No response from AI."
     except Exception as e:
         err_msg = str(e)
@@ -204,6 +239,10 @@ Final results indicate clear trends...
         return f"ERROR: {err_msg}"
 
 def generate_gemini_citation(source, style):
+    cache_key = f"cite_{source.lower()}_{style.lower()}"
+    cached = get_cached_response(cache_key)
+    if cached: return cached
+
     # If the source is a URL, try to enrichment with title fetching
     context_info = ""
     if source.startswith("http") or "www." in source:
@@ -244,7 +283,9 @@ def generate_gemini_citation(source, style):
     )
     try:
         response = client.models.generate_content(model=model_id, contents=system_instruction)
-        return response.text.strip()
+        res_text = response.text.strip()
+        save_to_cache(cache_key, res_text)
+        return res_text
     except Exception as e:
         err_msg = str(e)
         print(f"Gemini Citation Error: {err_msg}")
@@ -412,6 +453,10 @@ def generate_gemini_vision(image_path, prompt="Solve this educational problem or
                     continue
         return f"AI Vision Error: {err_msg}"
 def generate_gemini_scholarships():
+    cache_key = "scholarships_global"
+    cached = get_cached_response(cache_key)
+    if cached: return cached
+
     system_instruction = (
         "You are an educational consultant. Generate exactly 8 real or highly realistic scholarship listings for Indian and international students. "
         "Each scholarship must include: title, agency (providing organization), category (Government, Private, or Non-Government), "
@@ -424,7 +469,9 @@ def generate_gemini_scholarships():
         response = client.models.generate_content(model=model_id, contents=system_instruction)
         text = response.text.strip()
         if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
-        return json.loads(text)
+        result = json.loads(text)
+        save_to_cache(cache_key, result)
+        return result
     except Exception as e:
         print(f"Gemini Scholarship Error: {e}")
         # Try fallbacks
@@ -451,6 +498,10 @@ def generate_gemini_scholarships():
         ]
 
 def generate_gemini_courses():
+    cache_key = "courses_global"
+    cached = get_cached_response(cache_key)
+    if cached: return cached
+
     system_instruction = (
         "You are an academic curriculum designer. Generate exactly 5 unique and diverse online course ideas for students. "
         "Each course must have: a catchy title, a clear and engaging description (1-2 sentences), and a difficulty level (Beginner, Intermediate, or Advance). "
@@ -463,6 +514,7 @@ def generate_gemini_courses():
         text = response.text.strip()
         if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
         data = json.loads(text)
+        save_to_cache(cache_key, data)
         return data
     except Exception as e:
         print(f"Gemini Course Error: {e}")
@@ -484,6 +536,10 @@ def generate_gemini_courses():
         ]
 
 def generate_specific_course(topic):
+    cache_key = f"course_spec_{topic.lower()}"
+    cached = get_cached_response(cache_key)
+    if cached: return cached
+
     system_instruction = (
         f"You are an academic curriculum designer. Generate a single highly relevant and engaging online course idea for the topic: '{topic}'. "
         "The course must have: a catchy title, a clear and engaging description (1-2 sentences), and a difficulty level (Beginner, Intermediate, or Advance). "
@@ -495,7 +551,9 @@ def generate_specific_course(topic):
         response = client.models.generate_content(model=model_id, contents=system_instruction)
         text = response.text.strip()
         if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
-        return json.loads(text)
+        result = json.loads(text)
+        save_to_cache(cache_key, result)
+        return result
     except Exception as e:
         print(f"Gemini Specific Course Error: {e}")
         # Try fallbacks
