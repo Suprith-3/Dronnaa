@@ -1,45 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}Login - Dronacharya Tutor{% endblock %}
 {% block content %}
-<section class="min-h-[calc(100vh-68px)] flex">
-  <!-- Decorative Side -->
-  <div class="hidden lg:flex flex-col justify-center px-16 w-3/5 relative overflow-hidden">
-    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/10 rounded-full blur-[120px] animate-pulse"></div>
-    <div class="relative z-10">
-      <h1 class="text-8xl font-black gold-text mb-6" style="font-family:'Cinzel', serif;">🏹<br>Dronacharya</h1>
-      <div class="h-1 w-24 bg-gold mb-8"></div>
-      <p class="text-3xl italic text-text-secondary max-w-lg leading-relaxed font-light" style="font-family:'Space Grotesk', sans-serif;">
-        "Assessing yourself is the first step toward true wisdom."
-      </p>
+<section class="max-w-md mx-auto py-20 px-4">
+  <div class="card p-8 bg-white/80 backdrop-blur-xl border border-blue-100 shadow-2xl">
+    <div class="text-center mb-8">
+      <div class="text-4xl mb-4">🔐</div>
+      <h1 style="font-family:'Cinzel',serif;" class="text-3xl font-bold text-gray-900">Login</h1>
+      <p class="text-gray-500 text-sm">Welcome back to Dronacharya Hub</p>
     </div>
-  </div>
-
-  <!-- Form Side -->
-  <div class="w-full lg:w-2/5 flex items-center justify-center p-6 bg-secondary/30 backdrop-blur-3xl border-l border-white/5">
-    <div class="w-full max-w-md card p-10 shadow-2xl border-gold/20 glow-pulse">
-      <div class="text-center mb-10">
-        <h2 class="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-        <p class="text-text-secondary text-sm">Continue your mastery with Dronacharya AI</p>
+    <form action="{{ url_for('tutor.login') }}" method="POST">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+        <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition outline-none" placeholder="Enter your email">
       </div>
-
-      <form action="{{ url_for('tutor.login') }}" method="POST" class="space-y-6">
-        <div>
-          <label class="block text-text-secondary text-xs font-bold uppercase tracking-widest mb-2 pl-1">Email Address</label>
-          <input type="email" name="email" required placeholder="scholar@dronacharya.edu">
-        </div>
-        <div>
-          <label class="block text-text-secondary text-xs font-bold uppercase tracking-widest mb-2 pl-1">Password</label>
-          <input type="password" name="password" required placeholder="••••••••">
-        </div>
-        
-        <button type="submit" class="w-full btn-gold py-4 text-lg font-bold shadow-xl">
-          Enter Academy →
-        </button>
-      </form>
-
-      <div class="mt-8 pt-8 border-t border-white/5 text-center text-sm text-text-secondary">
-        New to the Hub? <a href="{{ url_for('tutor.register') }}" class="text-gold font-bold hover:underline">Begin Registration</a>
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+        <input type="password" name="password" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition outline-none" placeholder="Enter your password">
       </div>
+      <button type="submit" class="w-full btn-primary btn-tutor py-4 rounded-xl font-bold text-lg shadow-lg">Login →</button>
+    </form>
+    <div class="text-center mt-6 text-sm text-gray-500">
+      Don't have an account? <a href="{{ url_for('tutor.register') }}" class="text-blue-600 font-bold hover:underline">Register now</a>
     </div>
   </div>
 </section>

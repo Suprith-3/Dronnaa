@@ -1,61 +1,49 @@
 {% extends 'base.html' %}
-{% block title %}Explanation: {{ question }} - Dronacharya Academy{% endblock %}
+{% block title %}Explanation: {{ question }} - Dronacharya Tutor{% endblock %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-6 py-24 relative z-10">
-  
-  <div class="mb-16 fade-in">
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border-gold/20 text-gold text-[10px] font-black uppercase tracking-[0.3em] mb-8 whitespace-nowrap">The Sage's Revelation</div>
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-10">
-        <h2 class="text-4xl lg:text-5xl font-black text-white leading-tight max-w-4xl" style="font-family:'Cinzel', serif;">"{{ question }}"</h2>
-        <div class="h-1 flex-grow bg-white/5 hidden md:block"></div>
-    </div>
+<div class="max-w-5xl mx-auto px-4 py-12">
+  <div class="mb-12">
+      <h1 class="text-gray-400 font-bold uppercase tracking-widest text-xs mb-2">Topic Investigation</h1>
+      <h2 style="font-family:'Cinzel',serif;" class="text-3xl font-bold text-gray-900 leading-tight">"{{ question }}"</h2>
   </div>
 
-  <div class="grid lg:grid-cols-3 gap-16">
-    <!-- Left: Answer Revelation -->
-    <div class="lg:col-span-2 space-y-16 fade-in-1">
-      
-      <!-- AI Answer Card -->
-      <div class="card p-12 bg-bg-secondary/40 border-white/5 relative group overflow-hidden shadow-3xl">
-          <div class="absolute -right-20 -top-20 w-40 h-40 bg-tutor/5 rounded-full blur-[80px]"></div>
-          
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 border-b border-white/5 pb-8 relative z-10">
-              <h3 class="text-2xl font-black text-white flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-2xl bg-tutor-dim flex items-center justify-center border border-tutor/20 text-tutor glow-pulse">🤖</div>
-                  Dronacharya Assistant
+  <div class="grid lg:grid-cols-3 gap-12">
+    <!-- Left: Answer -->
+    <div class="lg:col-span-2 space-y-10">
+      <!-- AI Answer -->
+      <div class="card p-10 bg-white shadow-2xl border-l-[12px] border-blue-600">
+          <div class="flex items-center justify-between mb-8">
+              <h3 class="font-bold text-blue-900 flex items-center gap-2 text-xl">
+                  <span>🤖</span> Dronacharya Assistant Says:
               </h3>
-              
               {% if audio_url %}
-              <div class="flex items-center gap-4 glass px-6 py-3 rounded-2xl border-white/10 group">
-                  <div class="text-[10px] font-black text-text-muted uppercase tracking-widest leading-none">Audio<br>Enlightenment</div>
+              <div class="flex items-center gap-3 bg-blue-50 px-4 py-2 rounded-full border border-blue-100 text-blue-600 font-bold text-xs">
+                  <span>🔊</span> Listen Now
                   <audio src="{{ audio_url }}" id="lesson-audio" class="hidden"></audio>
-                  <button onclick="document.getElementById('lesson-audio').play()" class="bg-gold hover:bg-gold-light text-bg-primary w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90">▶</button>
+                  <button onclick="document.getElementById('lesson-audio').play()" class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md">▶</button>
               </div>
               {% endif %}
           </div>
-
-          <div id="answer-content" class="text-text-secondary leading-relaxed text-lg space-y-6 font-light relative z-10">
+          <div id="answer-content" class="text-gray-700 leading-relaxed text-lg space-y-4">
               {{ answer|safe }}
           </div>
       </div>
 
-      <!-- Expert Insights (Video Gallery) -->
+      <!-- Video Gallery -->
       <div>
-          <h3 class="text-2xl font-black text-white mb-10 flex items-center gap-4">
-            <span class="text-gold">📽️</span> Expert Insights
-          </h3>
-          <div class="grid md:grid-cols-3 gap-8">
+          <h3 class="text-2xl font-bold mb-6">Expert YouTube Insights</h3>
+          <div class="grid md:grid-cols-3 gap-6">
               {% for video in videos %}
-                  <a href="{{ video.video_url }}" target="_blank" class="card overflow-hidden group hover:border-gold/30 transition-all duration-500 bg-bg-secondary/20 border-white/5">
-                      <div class="aspect-video relative overflow-hidden">
-                          <img src="{{ video.thumbnail }}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700">
-                          <div class="absolute inset-0 bg-black/40 group-hover:bg-gold/10 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                              <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-bg-primary shadow-2xl">▶</div>
+                  <a href="{{ video.video_url }}" target="_blank" class="card overflow-hidden group hover:translate-y-[-4px] transition-all">
+                      <div class="aspect-video relative">
+                          <img src="{{ video.thumbnail }}" class="w-full h-full object-cover">
+                          <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition flex items-center justify-center">
+                              <span class="text-white text-3xl opacity-0 group-hover:opacity-100 transition shadow-lg">▶️</span>
                           </div>
                       </div>
-                      <div class="p-6">
-                          <h4 class="text-sm font-bold text-white transition-colors group-hover:text-gold line-clamp-2 leading-tight">{{ video.title }}</h4>
-                          <span class="inline-block mt-4 text-[9px] font-black text-gold uppercase tracking-[0.2em]">External Knowledge</span>
+                      <div class="p-4">
+                          <h4 class="font-bold text-gray-900 text-sm line-clamp-2 leading-tight">{{ video.title }}</h4>
+                          <p class="text-[10px] text-blue-600 font-bold mt-2 uppercase">Watch on YouTube</p>
                       </div>
                   </a>
               {% endfor %}
@@ -63,44 +51,27 @@
       </div>
     </div>
 
-    <!-- Right: Contextual Guidance -->
-    <div class="fade-in-2">
-        <aside class="card p-10 bg-gradient-to-br from-bg-secondary/80 to-gold/10 border-white/10 shadow-3xl sticky top-28 overflow-hidden group">
-            <div class="absolute -right-10 -bottom-10 text-white/5 rotate-12 scale-150 transition-transform group-hover:rotate-0 duration-700">🏹</div>
-            
-            <h3 class="text-2xl font-black text-white mb-8 relative z-10">Sacred Axiom</h3>
-            <p class="text-base text-text-secondary leading-relaxed italic font-light relative z-10 mb-10">
-                "True wisdom is not only in the acquisition of knowledge, but in its application to the service of humanity."
-            </p>
-            
+    <!-- Right: Context -->
+    <div class="space-y-6">
+        <div class="card p-8 bg-blue-900 text-white border-none shadow-xl sticky top-24 overflow-hidden relative">
+            <div class="absolute -right-8 -bottom-8 text-white/10 rotate-12 scale-150">🏹</div>
+            <h3 class="font-bold text-lg mb-4 opacity-100 relative z-10">Wise Words</h3>
+            <p class="text-sm opacity-80 leading-relaxed italic relative z-10 mb-8">"Tell me and I forget. Teach me and I remember. Involve me and I learn."</p>
             <div class="space-y-4 relative z-10">
-                <a href="{{ url_for('tutor.chat_page') }}" class="w-full block glass hover:bg-gold/10 hover:border-gold/30 p-5 rounded-2xl transition-all text-xs font-black uppercase tracking-widest text-white text-center">💬 AI Oracle Link</a>
-                <a href="{{ url_for('tutor.quiz_page') }}" class="w-full block glass hover:bg-cyan/10 hover:border-cyan/30 p-5 rounded-2xl transition-all text-xs font-black uppercase tracking-widest text-white text-center">🏆 Trial of Mastery</a>
+                <a href="{{ url_for('tutor.chat_page') }}" class="w-full block bg-white/10 hover:bg-white/20 p-4 rounded-2xl border border-white/10 transition text-sm font-bold">💬 Chat more with AI</a>
+                <a href="{{ url_for('tutor.quiz_page') }}" class="w-full block bg-white/10 hover:bg-white/20 p-4 rounded-2xl border border-white/10 transition text-sm font-bold">🏆 Take a Quiz now</a>
             </div>
-        </aside>
+        </div>
     </div>
   </div>
 </div>
-
-<style>
-  /* Markdown Content Style Overrides */
-  #answer-content h2, #answer-content h3 { color: white; font-family: 'Space Grotesk', sans-serif; font-weight: 700; margin-top: 2rem; margin-bottom: 0.5rem; }
-  #answer-content strong { color: var(--gold); }
-  #answer-content code { background: rgba(0,0,0,0.4); color: var(--cyan); border: 1px solid var(--border); padding: 2px 6px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; }
-  #answer-content ul { padding-left: 1.5rem; list-style-type: disc; margin: 1rem 0; }
-  #answer-content li { margin-bottom: 0.5rem; color: var(--text-secondary); }
-</style>
 {% endblock %}
 
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const el = document.getElementById('answer-content');
-        if(el) {
-            // Pre-process for marked
-            const raw = el.innerHTML.trim();
-            el.innerHTML = marked.parse(raw);
-        }
+        if(el) el.innerHTML = marked.parse(el.innerHTML);
     });
 </script>
 {% endblock %}

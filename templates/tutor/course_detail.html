@@ -1,41 +1,30 @@
 {% extends 'base.html' %}
 {% block title %}{{ course.title }} - Dronacharya Tutor{% endblock %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-6 py-20 relative z-10">
-  
-  <div class="grid lg:grid-cols-3 gap-16">
-    
-    <!-- Left Column: Course Knowledge Base -->
-    <div class="lg:col-span-2 space-y-12">
-      <div class="fade-in">
-        <a href="{{ url_for('tutor.courses') }}" class="inline-flex items-center gap-2 text-xs font-black text-text-muted hover:text-gold uppercase tracking-[0.2em] mb-8 transition-colors">
-          <span class="text-lg">←</span> Back to Archives
-        </a>
-        <div class="flex items-center gap-4 mb-6">
-            <span class="badge {% if course.level == 'Beginner' %}badge-green{% elif course.level == 'Intermediate' %}badge-cyan{% else %}badge-violet{% endif %} !py-1 !text-[10px]">{{ course.level }} Level</span>
-            <div class="h-px flex-grow bg-white/5"></div>
-        </div>
-        <h1 class="text-5xl lg:text-6xl font-black text-white mb-8 leading-tight" style="font-family:'Cinzel', serif;">{{ course.title }}</h1>
-        <p class="text-text-secondary text-xl font-light leading-relaxed max-w-3xl">{{ course.description }}</p>
+<div class="max-w-7xl mx-auto px-4 py-12">
+  <div class="grid lg:grid-cols-3 gap-12">
+    <!-- Left Column: Course Info -->
+    <div class="lg:col-span-2 space-y-8">
+      <div class="mb-8">
+        <a href="{{ url_for('tutor.courses') }}" class="text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 mb-4">← Back to Courses</a>
+        <h1 style="font-family:'Cinzel',serif;" class="text-4xl font-bold text-gray-900 mb-4">{{ course.title }}</h1>
+        <p class="text-gray-600 text-lg leading-relaxed">{{ course.description }}</p>
       </div>
 
-      <div class="space-y-6 fade-in-1">
-        <h2 class="section-title !text-3xl mb-10">The Syllabus Modules</h2>
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold mb-6">Course Lessons</h2>
         <div class="space-y-4">
           {% for video in course.videos %}
-            <a href="{{ url_for('tutor.video_detail', id=video.id) }}" class="group block p-8 card bg-white/3 border-white/5 hover:border-gold/30 hover:bg-gold/5 transition-all duration-500">
+            <a href="{{ url_for('tutor.video_detail', id=video.id) }}" class="block p-6 card group bg-white hover:bg-blue-50/50 transition border-l-4 hover:border-blue-500">
               <div class="flex items-center justify-between">
-                <div class="flex items-center gap-8">
-                  <div class="w-14 h-14 rounded-2xl flex items-center justify-center bg-bg-secondary text-gold font-black border border-white/10 group-hover:border-gold/30 transition-all text-xl shadow-lg">{{ loop.index }}</div>
+                <div class="flex items-center gap-4">
+                  <div class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-600 font-bold">{{ loop.index }}</div>
                   <div>
-                    <h3 class="text-xl font-bold text-white group-hover:text-gold transition-colors">{{ video.title }}</h3>
-                    <p class="text-[10px] font-black text-text-muted uppercase tracking-widest mt-1">Foundational Module</p>
+                    <h3 class="font-bold text-gray-900">{{ video.title }}</h3>
+                    <p class="text-xs text-gray-400">Watch & Learn</p>
                   </div>
                 </div>
-                <div class="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span class="text-xs font-black text-gold uppercase tracking-widest">Master Module</span>
-                    <div class="w-10 h-10 rounded-full bg-gold flex items-center justify-center text-bg-primary">▶</div>
-                </div>
+                <div class="text-blue-600 font-bold">Start Lesson →</div>
               </div>
             </a>
           {% endfor %}
@@ -43,50 +32,36 @@
       </div>
     </div>
 
-    <!-- Right Column: Sidebar Progress -->
-    <div class="fade-in-2">
-      <div class="card p-10 bg-bg-secondary/60 border-white/10 shadow-3xl sticky top-28 overflow-hidden group">
-        <div class="absolute -top-20 -right-20 w-40 h-40 bg-gold/5 rounded-full blur-[80px] group-hover:bg-gold/10 transition-all duration-1000"></div>
-        
-        <h3 class="text-2xl font-black text-white mb-8 leading-tight">Mastery Progress</h3>
-        
-        <div class="space-y-10 relative z-10">
-            <p class="text-text-secondary italic text-sm font-light">"Consistent assessment is the catalyst for exponential growth."</p>
-            
+    <!-- Right Column: Card -->
+    <div>
+      <div class="card p-8 bg-white border border-blue-50 shadow-xl sticky top-24">
+        <h3 class="font-bold text-lg mb-4">Course Progress</h3>
+        <div class="space-y-6">
+            <div class="text-sm text-gray-500 italic">"Progress is the key to mastery."</div>
             {% if current_user.is_authenticated %}
-                <div class="space-y-4">
-                    <div class="flex justify-between items-end">
-                        <span class="text-xs font-black text-text-muted uppercase tracking-widest">Completed Units</span>
-                        <span class="text-2xl font-black gold-text">{{ current_user.completed_videos.filter_by(course_id=course.id).count() }} / {{ course.videos|length }}</span>
-                    </div>
-                    {% set pct = (current_user.completed_videos.filter_by(course_id=course.id).count() / course.videos|length * 100) if course.videos|length > 0 else 0 %}
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: {{ pct }}%"></div>
-                    </div>
-                    <p class="text-[10px] text-center text-text-muted font-bold uppercase tracking-widest">{{ pct|int }}% Overall Mastered</p>
+                <div class="text-sm font-bold">Completed: {{ current_user.completed_videos.filter_by(course_id=course.id).count() }} / {{ course.videos|length }}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ (current_user.completed_videos.filter_by(course_id=course.id).count() / course.videos|length * 100) if course.videos|length > 0 else 0 }}%"></div>
                 </div>
             {% else %}
-               <div class="p-4 rounded-2xl bg-gold/5 border border-gold/20 text-center">
-                  <p class="text-xs text-gold font-bold">Please <a href="{{ url_for('tutor.login') }}" class="underline uppercase tracking-[0.1em]">login</a> to record your mastery data.</p>
-               </div>
+               <p class="text-xs text-orange-600">Please <a href="{{ url_for('tutor.login') }}" class="underline font-bold">login</a> to track your progress.</p>
             {% endif %}
             
-            <div class="pt-8 border-t border-white/5 grid grid-cols-2 gap-6">
-                <div class="text-center group-hover:scale-110 transition-transform">
-                    <div class="text-3xl mb-2">💎</div>
-                    <div class="text-[9px] font-black text-text-muted uppercase tracking-widest">{{ course.level }}</div>
+            <div class="pt-6 border-t border-gray-100 grid grid-cols-2 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl">🎓</div>
+                    <div class="text-xs font-bold text-gray-400 uppercase tracking-tighter">{{ course.level }}</div>
                 </div>
-                <div class="text-center group-hover:scale-110 transition-transform">
-                    <div class="text-3xl mb-2">📜</div>
-                    <div class="text-[9px] font-black text-text-muted uppercase tracking-widest">{{ course.videos|length }} Modules</div>
+                <div class="text-center">
+                    <div class="text-2xl">⏳</div>
+                    <div class="text-xs font-bold text-gray-400 uppercase tracking-tighter">{{ course.videos|length }} Lessons</div>
                 </div>
             </div>
             
-            <a href="{{ url_for('tutor.quiz_page') }}?topic={{ course.title|urlencode }}" class="w-full btn-gold !py-5 !text-xs !font-black !uppercase !tracking-widest shadow-2xl shadow-gold/10">Practice AI Quiz</a>
+            <a href="{{ url_for('tutor.quiz_page') }}?topic={{ course.title|urlencode }}" class="w-full btn-primary btn-research text-center block rounded-xl py-3 font-bold mt-4 shadow-lg">Practice AI Quiz</a>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 {% endblock %}

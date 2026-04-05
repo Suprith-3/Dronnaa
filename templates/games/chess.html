@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Chess Master | Dronacharya Academy{% endblock %}
+
+{% block title %}Chess Master | Dronacharya Hub{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
@@ -7,103 +8,74 @@
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <style>
-  /* Custom Board Styles for Luxury Dark Academy */
+  .chess-container {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
   #myBoard {
-    width: 600px;
+    width: 500px;
     max-width: 100%;
     margin: 0 auto;
-    border: 12px solid var(--bg-secondary);
-    border-radius: 40px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 40px rgba(244,162,97,0.15);
-    overflow: hidden;
-    outline: 1px solid rgba(255,255,255,0.05);
+    border: 10px solid #F4A261;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(244, 162, 97, 0.3);
   }
-  /* Modern Chess Piece Overrides (using CSS filters) */
-  .white-1e1d7 { background-color: #ECE0D1 !important; color: #3E2723 !important; }
-  .black-3c85d { background-color: #8D6E63 !important; color: #ECE0D1 !important; }
-  
-  .square-55d63 { transition: background-color 0.2s ease; }
-  .highlight-white { box-shadow: inset 0 0 10px 5px rgba(244, 162, 97, 0.4); }
-  .highlight-black { box-shadow: inset 0 0 10px 5px rgba(0, 212, 255, 0.3); }
-
-  .bot-oracle-card {
-    background: linear-gradient(135deg, rgba(244, 162, 97, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-    border: 1px solid rgba(244, 162, 97, 0.2);
+  .white-1e1d7 { background-color: #f0d9b5 !important; color: #b58863 !important; }
+  .black-3c85d { background-color: #b58863 !important; color: #f0d9b5 !important; }
+  .status-badge {
+    background: #F4A261;
+    color: #070D26;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 12px;
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen py-24 px-6 relative overflow-hidden">
-  
-  <div class="max-w-5xl mx-auto relative z-10">
+<div class="min-h-screen bg-[#070D26] py-20 px-4">
+  <div class="max-w-4xl mx-auto">
     
-    <div class="text-center mb-16 fade-in">
-       <div class="inline-block px-5 py-2 rounded-full glass border-gold/20 text-gold text-[10px] font-black uppercase tracking-[0.4em] mb-10 glow-pulse">
-            Strategic Sovereignty
+    <div class="text-center mb-10">
+       <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent" style="font-family:'Cinzel', serif;">Chess Master</h1>
+       <div class="flex items-center justify-center gap-4">
+          <span class="status-badge" id="bot-status">Bot: Standby</span>
+          <p class="text-gray-400" id="game-info">White to move</p>
        </div>
-       <h1 class="text-6xl md:text-7xl font-black text-white mb-8 leading-tight" style="font-family:'Cinzel', serif;">Chess <span class="gold-text">Master</span></h1>
-       <div class="flex flex-wrap items-center justify-center gap-6">
-          <div class="glass px-6 py-2.5 rounded-2xl border-white/10 flex items-center gap-4">
-              <span class="w-2.5 h-2.5 rounded-full bg-gold glow-pulse" id="bot-pulse"></span>
-              <span class="text-[10px] font-black text-white uppercase tracking-widest" id="bot-status">System: Standby</span>
+    </div>
+
+    <div class="chess-container">
+       <div id="myBoard"></div>
+       <div class="mt-8 flex justify-center gap-4">
+          <button class="px-8 py-3 bg-amber-500 text-[#070D26] font-bold rounded-2xl hover:bg-amber-400 transition" onclick="resetGame()">New Game</button>
+          <button class="px-8 py-3 bg-white/5 hover:bg-white/10 text-white rounded-2xl transition border border-white/10" onclick="undoMove()">Undo</button>
+          <div class="flex-grow"></div>
+          <div class="flex flex-col text-right">
+             <span class="text-xs text-gray-500 uppercase font-bold tracking-widest">Opponent</span>
+             <span class="text-amber-500 font-bold">Gemini Bot <span class="text-xs italic">(Lv. 99)</span></span>
           </div>
-          <div class="h-2 w-px bg-white/10 hidden md:block"></div>
-          <p class="text-text-secondary text-xs font-black uppercase tracking-[0.2em]" id="game-info">Dominion: White to move</p>
        </div>
     </div>
 
-    <div class="grid lg:grid-cols-4 gap-12 items-start fade-in-1">
-        <!-- Left: Bot Presence -->
-        <div class="lg:col-span-1 space-y-8">
-            <div class="card p-8 bg-bg-secondary/40 border-white/5 shadow-3xl text-center group translate-y-20">
-                <div class="w-16 h-16 rounded-2xl bg-gold/10 text-gold flex items-center justify-center text-3xl mb-6 mx-auto border border-gold/20 shadow-xl group-hover:scale-110 transition-all duration-500">🤖</div>
-                <h3 class="text-xs font-black text-white uppercase tracking-[0.3em] mb-2">Grandmaster</h3>
-                <div class="text-lg font-black gold-text mb-4" style="font-family:'Cinzel', serif;">Gemini Oracle</div>
-                <div class="text-[9px] font-black text-text-muted uppercase tracking-widest bg-white/5 py-1 rounded-full">Neural Level 99</div>
-            </div>
-
-            <div class="card p-8 bg-black/40 border-white/5 shadow-2xl space-y-6">
-                <h4 class="text-[10px] font-black text-gold uppercase tracking-[0.4em] border-b border-white/5 pb-4">Protocols</h4>
-                <ul class="text-[10px] text-text-muted space-y-4 font-black uppercase tracking-widest leading-relaxed">
-                  <li class="flex items-start gap-3"><span class="text-gold">✦</span> Drag to Manipulate</li>
-                  <li class="flex items-start gap-3"><span class="text-gold">✦</span> Latency: ~1.2s</li>
-                  <li class="flex items-start gap-3"><span class="text-gold">✦</span> Revert Sequence Ready</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Center: The Board -->
-        <div class="lg:col-span-3 space-y-12">
-            <div class="card p-10 bg-bg-secondary/20 border-white/5 shadow-4xl backdrop-blur-3xl overflow-hidden relative">
-               <div class="absolute -right-40 -bottom-40 w-80 h-80 bg-gold/5 rounded-full blur-[100px]"></div>
-               <div id="myBoard"></div>
-               
-               <div class="mt-12 flex flex-wrap justify-between items-center gap-8 relative z-10">
-                  <div class="flex gap-4">
-                    <button class="btn-royal !px-10 !py-4 !rounded-2xl !text-[10px] !font-black !uppercase !tracking-widest shadow-2xl shadow-violet/20" onclick="resetGame()">Reset Reality</button>
-                    <button class="glass !border-white/10 !px-10 !py-4 !rounded-2xl !text-[10px] !font-black !uppercase !tracking-widest text-text-muted hover:text-white hover:bg-white/5 transition-all" onclick="undoMove()">Temporal Revert</button>
-                  </div>
-                  
-                  <div class="px-8 py-3 glass border-white/10 rounded-2xl flex items-center gap-6">
-                     <div class="text-right">
-                        <div class="text-[8px] font-black text-text-muted uppercase tracking-[0.3em]">Player Identity</div>
-                        <div class="text-xs font-black text-white uppercase tracking-widest">Lord Commander</div>
-                     </div>
-                     <div class="w-10 h-10 rounded-xl bg-violet text-white flex items-center justify-center font-black text-sm shadow-xl">W</div>
-                  </div>
-               </div>
-            </div>
-        </div>
+    <!-- Instructions -->
+    <div class="mt-12 bg-white/5 p-8 rounded-3xl border border-white/10">
+       <h4 class="text-amber-500 font-bold mb-4">How to play</h4>
+       <ul class="text-sm text-gray-400 space-y-2">
+         <li>Click and drag your pieces. You are playing as <b>White</b>.</li>
+         <li>The Gemini Bot will automatically think and respond.</li>
+         <li>Use the "Undo" button if you make a mistake.</li>
+         <li>The bot uses the latest Gemini flash model to calculate moves.</li>
+       </ul>
     </div>
+
   </div>
 </div>
-
-<style>
-  /* Override Piece Theme to be more premium */
-  .piece-417db { width: 100% !important; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)) contrast(1.1); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-  .piece-417db:hover { transform: scale(1.1) translateY(-5px); cursor: grab; }
-</style>
 {% endblock %}
 
 {% block scripts %}
@@ -112,7 +84,6 @@
   var game = new Chess();
   var $status = $('#game-info');
   var $botStatus = $('#bot-status');
-  var $botPulse = $('#bot-pulse');
 
   function onDragStart (source, piece, position, orientation) {
     if (game.game_over()) return false;
@@ -120,8 +91,8 @@
   }
 
   function makeBotMove() {
-     $botStatus.text("System: Synthesizing...");
-     $botPulse.addClass('animate-ping bg-cyan').removeClass('bg-gold');
+     $botStatus.text("Bot: Thinking...");
+     $botStatus.addClass('animate-pulse');
      
      $.ajax({
         url: "{{ url_for('games.chess_move_bot') }}",
@@ -130,6 +101,7 @@
         data: JSON.stringify({ fen: game.fen() }),
         success: function(data) {
            if (!data || !data.move || data.move.length < 4) {
+              console.log("Bot move invalid or empty, falling back to random.");
               var moves = game.moves();
               if (moves.length > 0) {
                  game.move(moves[Math.floor(Math.random() * moves.length)]);
@@ -142,6 +114,7 @@
               });
               
               if (move === null) {
+                 console.log("Gemini bot move technically invalid for this position.");
                  var m = game.moves();
                  if (m.length > 0) game.move(m[Math.floor(Math.random() * m.length)]);
               }
@@ -149,12 +122,12 @@
            
            board.position(game.fen());
            updateStatus();
-           $botStatus.text("System: Ready");
-           $botPulse.removeClass('animate-ping bg-cyan').addClass('bg-gold');
+           $botStatus.text("Bot: Ready");
+           $botStatus.removeClass('animate-pulse');
         },
         error: function(err) {
-           $botStatus.text("System: Error");
-           $botPulse.removeClass('animate-ping bg-cyan').addClass('bg-red');
+           console.log("Bot error", err);
+           $botStatus.text("Bot: Error");
         }
      });
   }
@@ -170,6 +143,7 @@
 
     updateStatus();
     
+    // Check if bot needs to move
     if (!game.game_over() && game.turn() === 'b') {
        window.setTimeout(makeBotMove, 250);
     }
@@ -181,19 +155,19 @@
 
   function updateStatus () {
     var status = '';
-    var moveColor = 'Lord (White)';
+    var moveColor = 'White';
     if (game.turn() === 'b') {
-      moveColor = 'Oracle (Black)';
+      moveColor = 'Black';
     }
 
     if (game.in_checkmate()) {
-      status = 'Collapse, ' + moveColor + ' is checkmated.';
+      status = 'Game over, ' + moveColor + ' is in checkmate.';
     } else if (game.in_draw()) {
-      status = 'Static Equilibrium: Drawn';
+      status = 'Game over, drawn position';
     } else {
-      status = 'Dominion: ' + moveColor + ' to act';
+      status = moveColor + ' to move';
       if (game.in_check()) {
-        status += ' (IMMINENT THREAT: CHECK)';
+        status += ', ' + moveColor + ' is in check';
       }
     }
 
@@ -219,8 +193,8 @@
   }
   
   function undoMove() {
-     game.undo();
-     game.undo();
+     game.undo(); // Undo bot move
+     game.undo(); // Undo player move
      board.position(game.fen());
      updateStatus();
   }

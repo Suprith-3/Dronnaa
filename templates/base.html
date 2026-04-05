@@ -10,60 +10,17 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 
-  <!-- Leaflet Maps -->
+  <!-- Leaflet Maps (loaded on all pages — books JS activates it) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- marked.js -->
+  <!-- marked.js for markdown rendering (Research Engine) -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <!-- Shared CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-  <style>
-    .nav-link {
-        position: relative;
-        color: var(--text-secondary);
-        transition: color 0.2s;
-        padding: 6px 14px;
-        border-radius: 8px;
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 500;
-    }
-    .nav-link:hover {
-        color: var(--gold);
-        background: rgba(244,162,97,0.08);
-    }
-    .nav-link.active {
-        color: var(--gold);
-        background: rgba(244,162,97,0.12);
-    }
-    .nav-link::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        width: 0;
-        height: 2px;
-        background: var(--gold);
-        transition: all 0.3s;
-        transform: translateX(-50%);
-    }
-    .nav-link:hover::after, .nav-link.active::after {
-        width: 60%;
-    }
-    
-    .profile-avatar {
-        padding: 2px;
-        background: linear-gradient(135deg, var(--gold), var(--violet));
-        border-radius: 50%;
-    }
-    
-    .leaflet-tile { filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7); }
-    .leaflet-container { background: var(--bg-secondary); }
-  </style>
 
   {% block head %}{% endblock %}
 </head>
@@ -72,94 +29,99 @@
 <!-- ═══════════════════════════════════════════
      UNIFIED NAVBAR
 ═══════════════════════════════════════════ -->
-<nav style="position: sticky; top: 0; z-index: 100; background: rgba(6,11,24,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(244,162,97,0.15); box-shadow: 0 4px 30px rgba(0,0,0,0.4);">
+<nav style="background: #0B1437;" class="sticky top-0 z-50 text-white shadow-xl">
   <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
 
     <!-- Logo -->
     <a href="{{ url_for('home') }}" class="flex items-center gap-2">
       <span class="text-2xl">🏹</span>
-      <span style="font-family:'Cinzel',serif; font-size:22px; font-weight:900;" class="gold-text">
-        Dronacharya
+      <span style="font-family:'Cinzel',serif; font-size:20px; color:#F4A261; font-weight:700;">
+        Dronacharya Hub
       </span>
     </a>
 
-    <!-- Desktop Nav Links -->
-    <div class="hidden lg:flex items-center gap-1">
-      <a href="{{ url_for('tutor.welcome') }}" class="nav-link {% if request.blueprint == 'tutor' %}active{% endif %}">
+    <!-- Desktop Nav Links — 3 Products -->
+    <div class="hidden md:flex items-center gap-1">
+      <a href="{{ url_for('tutor.welcome') }}"
+         class="px-4 py-2 rounded-lg hover:bg-blue-600/30 transition text-sm font-medium flex items-center gap-2">
         🎓 <span>Tutor</span>
       </a>
-      <a href="{{ url_for('research.index') }}" class="nav-link {% if request.blueprint == 'research' %}active{% endif %}">
+      <a href="{{ url_for('research.index') }}"
+         class="px-4 py-2 rounded-lg hover:bg-violet-600/30 transition text-sm font-medium flex items-center gap-2">
         📄 <span>Research</span>
       </a>
-      <a href="{{ url_for('books.index') }}" class="nav-link {% if request.blueprint == 'books' %}active{% endif %}">
+      <a href="{{ url_for('books.index') }}"
+         class="px-4 py-2 rounded-lg hover:bg-green-600/30 transition text-sm font-medium flex items-center gap-2">
         📚 <span>My Book</span>
       </a>
-      <a href="{{ url_for('scholarships.index') }}" class="nav-link {% if request.blueprint == 'scholarships' %}active{% endif %}">
-        💎 <span>Scholarship</span>
+      <a href="{{ url_for('scholarships.index') }}"
+         class="px-4 py-2 rounded-lg hover:bg-amber-600/30 transition text-sm font-medium flex items-center gap-2">
+        🎓 <span>Scholarship</span>
       </a>
-      <a href="{{ url_for('notes.index') }}" class="nav-link {% if request.blueprint == 'notes' %}active{% endif %}">
+      <a href="{{ url_for('notes.index') }}"
+         class="px-4 py-2 rounded-lg hover:bg-indigo-600/30 transition text-sm font-medium flex items-center gap-2">
         📝 <span>Notes</span>
       </a>
-      <a href="{{ url_for('games.index') }}" class="nav-link {% if request.blueprint == 'games' %}active{% endif %}">
+      <a href="{{ url_for('games.index') }}"
+         class="px-4 py-2 rounded-lg hover:bg-orange-600/30 transition text-sm font-medium flex items-center gap-2">
         🕹️ <span>Games</span>
       </a>
     </div>
 
     <!-- Right: Auth + List Book CTA -->
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-3">
       {% if current_user and current_user.is_authenticated %}
         <a href="{{ url_for('tutor.dashboard') }}"
-           class="hidden md:flex items-center gap-3 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-xl border border-white/10 transition group">
-          <div class="profile-avatar overflow-hidden w-8 h-8">
-            <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}"
-                 class="w-full h-full rounded-full object-cover">
-          </div>
-          <span class="text-sm font-semibold group-hover:text-gold transition">{{ current_user.first_name }}</span>
+           class="hidden md:flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 px-3 py-2 rounded-lg text-sm transition">
+          <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}"
+               class="w-7 h-7 rounded-full object-cover">
+          <span>{{ current_user.first_name }}</span>
         </a>
       {% else %}
-        <a href="{{ url_for('tutor.login') }}" class="hidden md:block text-gray-400 hover:text-white text-sm font-bold transition">Login</a>
+        <a href="{{ url_for('tutor.login') }}"
+           class="hidden md:block text-gray-300 hover:text-white text-sm px-3 py-2">Login</a>
       {% endif %}
-      <a href="{{ url_for('books.list_book') }}" class="btn-primary btn-gold text-xs ring-4 ring-gold/10">
-        List a Book
+      <a href="{{ url_for('books.list_book') }}"
+         class="bg-amber-500 hover:bg-amber-400 text-white font-bold px-4 py-2 rounded-full text-sm transition shadow-lg">
+        📖 List a Book
       </a>
     </div>
   </div>
 </nav>
-
 <!-- ═══════════════════════════════════════════
-     TUTOR SECONDARY MENU BAR
+     TUTOR SECONDARY MENU BAR (appears on tutor routes when logged in)
 ═══════════════════════════════════════════ -->
 {% if request.blueprint == 'tutor' and current_user and current_user.is_authenticated %}
-<div class="sticky top-[68px] z-40 bg-bg-secondary/80 backdrop-blur-md border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-4 flex items-center gap-1 overflow-x-auto whitespace-nowrap scrollbar-hide">
+<div class="bg-blue-50/80 backdrop-blur-md border-b border-blue-100 sticky top-[64px] z-40 transition-all">
+    <div class="max-w-7xl mx-auto px-4 flex items-center gap-1 overflow-x-auto whitespace-nowrap scrollbar-hide py-1">
       <a href="{{ url_for('tutor.dashboard') }}"
-         class="px-5 py-4 text-sm font-bold transition-all border-b-2 {% if request.endpoint == 'tutor.dashboard' %}text-gold border-gold{% else %}text-text-secondary border-transparent hover:text-white{% endif %}">
-         🏠 Dashboard
+         class="px-4 py-3 text-sm font-semibold transition-all flex items-center gap-2 {% if request.endpoint == 'tutor.dashboard' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-blue-600{% endif %}">
+         <span>🏠 Dashboard</span>
       </a>
       <a href="{{ url_for('tutor.courses') }}"
-         class="px-5 py-4 text-sm font-bold transition-all border-b-2 {% if request.endpoint == 'tutor.courses' or request.endpoint == 'tutor.course_detail' %}text-gold border-gold{% else %}text-text-secondary border-transparent hover:text-white{% endif %}">
-         📚 Courses
+         class="px-4 py-3 text-sm font-semibold transition-all flex items-center gap-2 {% if request.endpoint == 'tutor.courses' or request.endpoint == 'tutor.course_detail' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-blue-600{% endif %}">
+         <span>📚 Courses</span>
       </a>
       <a href="{{ url_for('tutor.chat_page') }}"
-         class="px-5 py-4 text-sm font-bold transition-all border-b-2 {% if request.endpoint == 'tutor.chat_page' %}text-gold border-gold{% else %}text-text-secondary border-transparent hover:text-white{% endif %}">
-         💬 Wisdom Chat
+         class="px-4 py-3 text-sm font-semibold transition-all flex items-center gap-2 {% if request.endpoint == 'tutor.chat_page' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-blue-600{% endif %}">
+         <span>💬 Wisdom Chat</span>
       </a>
       <a href="{{ url_for('tutor.quiz_page') }}"
-         class="px-5 py-4 text-sm font-bold transition-all border-b-2 {% if request.endpoint == 'tutor.quiz_page' %}text-gold border-gold{% else %}text-text-secondary border-transparent hover:text-white{% endif %}">
-         🎯 AI Quiz
+         class="px-4 py-3 text-sm font-semibold transition-all flex items-center gap-2 {% if request.endpoint == 'tutor.quiz_page' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-blue-600{% endif %}">
+         <span>🎯 AI Quiz</span>
       </a>
       <a href="{{ url_for('tutor.quiz_history') }}"
-         class="px-5 py-4 text-sm font-bold transition-all border-b-2 {% if request.endpoint == 'tutor.quiz_history' %}text-gold border-gold{% else %}text-text-secondary border-transparent hover:text-white{% endif %}">
-         📜 Quiz History
+         class="px-4 py-3 text-sm font-semibold transition-all flex items-center gap-2 {% if request.endpoint == 'tutor.quiz_history' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-blue-600{% endif %}">
+         <span>📜 Quiz History</span>
       </a>
       <a href="{{ url_for('tutor.profile') }}"
-         class="px-5 py-4 text-sm font-bold transition-all border-b-2 {% if request.endpoint == 'tutor.profile' %}text-gold border-gold{% else %}text-text-secondary border-transparent hover:text-white{% endif %}">
-         👤 Profile
+         class="px-4 py-3 text-sm font-semibold transition-all flex items-center gap-2 {% if request.endpoint == 'tutor.profile' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-blue-600{% endif %}">
+         <span>👤 Profile</span>
       </a>
       <div class="flex-grow"></div>
       <a href="{{ url_for('tutor.logout') }}"
-         class="px-5 py-4 text-sm font-bold text-red-500 hover:bg-red-500/10 transition-all">
-         🚪 Logout
+         class="px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition-all flex items-center gap-2">
+         <span>🚪 Logout</span>
       </a>
     </div>
 </div>
@@ -169,9 +131,9 @@
 <main class="flex-grow">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="max-w-7xl mx-auto px-4 mt-6">
+        <div class="max-w-7xl mx-auto px-4 mt-4">
           {% for category, message in messages %}
-            <div class="p-4 rounded-2xl text-white border-l-4 {% if category == 'success' %}border-green bg-green-dim{% elif category == 'danger' %}border-red bg-red/10{% else %}border-tutor bg-tutor-dim{% endif %} mb-4 shadow-xl backdrop-blur-md toast-anim">
+            <div class="p-4 rounded-xl text-white {% if category == 'success' %}bg-green-600{% elif category == 'danger' %}bg-red-600{% else %}bg-blue-600{% endif %} mb-4 shadow-md bg-opacity-90 backdrop-blur-sm">
               {{ message }}
             </div>
           {% endfor %}
@@ -184,59 +146,59 @@
 <!-- ═══════════════════════════════════════════
      UNIFIED FOOTER
 ═══════════════════════════════════════════ -->
-<footer style="background: linear-gradient(180deg, #060B18 0%, #0A0014 100%);" class="text-white mt-20 border-t border-white/5">
-  <div class="max-w-7xl mx-auto px-4 py-16 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-10">
-    <div class="col-span-2">
-      <div style="font-family:'Cinzel',serif; font-size:24px; font-weight:900;" class="gold-text mb-4">🏹 Dronacharya</div>
-      <p class="text-text-secondary text-sm max-w-xs leading-relaxed">
-        Next-generation AI learning ecosystem. Reimagining education through artificial intelligence and community collaboration.
-      </p>
-    </div>
-    
+<footer style="background:#0B1437;" class="text-white mt-12">
+  <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-4 lg:grid-cols-7 gap-8">
     <div>
-      <h4 class="font-bold text-gold text-sm uppercase tracking-widest mb-6">Tutor</h4>
-      <div class="flex flex-col gap-3 text-text-secondary text-sm">
-        <a href="{{ url_for('tutor.courses') }}" class="hover:text-gold transition">Courses</a>
-        <a href="{{ url_for('tutor.quiz_page') }}" class="hover:text-gold transition">AI Quiz</a>
-        <a href="{{ url_for('tutor.chat_page') }}" class="hover:text-gold transition">AI Chat</a>
+      <div style="font-family:'Cinzel',serif; color:#F4A261; font-size:18px; margin-bottom:8px;">🏹 Dronacharya Hub</div>
+      <p class="text-gray-400 text-sm">Three tools. One platform. Learn, Research, and Read — all in one place.</p>
+    </div>
+    <div>
+      <h4 class="font-semibold text-blue-400 mb-3">🎓 Tutor</h4>
+      <div class="flex flex-col gap-1 text-gray-400 text-sm">
+        <a href="{{ url_for('tutor.courses') }}"       class="hover:text-white">Courses</a>
+        <a href="{{ url_for('tutor.quiz_page') }}"     class="hover:text-white">AI Quiz</a>
+        <a href="{{ url_for('tutor.chat_page') }}"     class="hover:text-white">AI Chat</a>
       </div>
     </div>
-
     <div>
-      <h4 class="font-bold text-violet text-sm uppercase tracking-widest mb-6">Research</h4>
-      <div class="flex flex-col gap-3 text-text-secondary text-sm">
-        <a href="{{ url_for('research.index') }}" class="hover:text-violet transition">Generator</a>
-        <a href="{{ url_for('research.index') }}#cite" class="hover:text-violet transition">Citations</a>
+      <h4 class="font-semibold text-violet-400 mb-3">📄 Research</h4>
+      <div class="flex flex-col gap-1 text-gray-400 text-sm">
+        <a href="{{ url_for('research.index') }}"      class="hover:text-white">Generate Paper</a>
+        <a href="{{ url_for('research.index') }}#cite" class="hover:text-white">Citation Engine</a>
       </div>
     </div>
-
     <div>
-      <h4 class="font-bold text-green text-sm uppercase tracking-widest mb-6">Books</h4>
-      <div class="flex flex-col gap-3 text-text-secondary text-sm">
-        <a href="{{ url_for('books.browse') }}" class="hover:text-green transition">Browse</a>
-        <a href="{{ url_for('books.list_book') }}" class="hover:text-green transition">List Book</a>
+      <h4 class="font-semibold text-green-400 mb-3">📚 My Book</h4>
+      <div class="flex flex-col gap-1 text-gray-400 text-sm">
+        <a href="{{ url_for('books.browse') }}"        class="hover:text-white">Browse Books</a>
+        <a href="{{ url_for('books.list_book') }}"     class="hover:text-white">List Your Book</a>
       </div>
     </div>
-
     <div>
-      <h4 class="font-bold text-cyan text-sm uppercase tracking-widest mb-6">Games</h4>
-      <div class="flex flex-col gap-3 text-text-secondary text-sm">
-        <a href="{{ url_for('games.index') }}" class="hover:text-cyan transition">Arcade</a>
-        <a href="{{ url_for('games.chess') }}" class="hover:text-cyan transition">Chess</a>
+      <h4 class="font-semibold text-amber-400 mb-3">🎓 Scholarship</h4>
+      <div class="flex flex-col gap-1 text-gray-400 text-sm">
+        <a href="{{ url_for('scholarships.index') }}" class="hover:text-white">Recent Scholarships</a>
+        <a href="{{ url_for('scholarships.index') }}" class="hover:text-white">Apply Now</a>
       </div>
     </div>
-
     <div>
-      <h4 class="font-bold text-gold text-sm uppercase tracking-widest mb-6">Links</h4>
-      <div class="flex flex-col gap-3 text-text-secondary text-sm">
-        <a href="{{ url_for('scholarships.index') }}" class="hover:text-gold transition">Scholarship</a>
-        <a href="{{ url_for('notes.index') }}" class="hover:text-gold transition">Notes</a>
+      <h4 class="font-semibold text-indigo-400 mb-3">📝 Notes</h4>
+      <div class="flex flex-col gap-1 text-gray-400 text-sm">
+        <a href="{{ url_for('notes.index') }}"  class="hover:text-white">Browse Notes</a>
+        <a href="{{ url_for('notes.upload') }}" class="hover:text-white">Share Your Notes</a>
+      </div>
+    </div>
+    <div>
+      <h4 class="font-semibold text-orange-400 mb-3">🕹️ Games</h4>
+      <div class="flex flex-col gap-1 text-gray-400 text-sm">
+        <a href="{{ url_for('games.chess') }}"        class="hover:text-white">Chess Master</a>
+        <a href="{{ url_for('games.crossmath') }}"    class="hover:text-white">Crossmath</a>
+        <a href="{{ url_for('games.skills') }}"       class="hover:text-white">Logic Skills</a>
       </div>
     </div>
   </div>
-  
-  <div class="border-t border-white/5 text-center py-8 text-text-muted text-xs font-medium uppercase tracking-[0.2em]">
-    © 2025 Dronacharya Hub • Built for the Future of Learning
+  <div class="border-t border-gray-800 text-center py-3 text-gray-500 text-xs">
+    © 2025 Dronacharya Hub. Built for learners, researchers, and readers.
   </div>
 </footer>
 

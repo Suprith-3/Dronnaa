@@ -1,124 +1,28 @@
 {% extends 'base.html' %}
-{% block title %}Wisdom Chat - Dronacharya AI{% endblock %}
+{% block title %}AI Chat - Dronacharya Tutor{% endblock %}
 {% block content %}
-<div class="flex min-h-[calc(100vh-68px)] relative overflow-hidden">
-  
-  <!-- Particle Background for Chat -->
-  <div class="absolute inset-0 pointer-events-none opacity-20">
-    <div class="absolute top-0 right-0 w-1/2 h-full bg-violet/10 blur-[150px]"></div>
-    <div class="absolute bottom-0 left-0 w-1/2 h-full bg-tutor/10 blur-[150px]"></div>
+<div class="max-w-4xl mx-auto px-4 py-12 h-[calc(100vh-200px)] min-h-[600px] flex flex-col">
+  <div class="text-center mb-8">
+    <h1 style="font-family:'Cinzel',serif;" class="text-3xl font-bold text-gray-900 mb-2">Dronacharya AI Assistant</h1>
+    <p class="text-gray-500 text-sm italic">"Ask, and the light of knowledge shall shine upon your doubts."</p>
   </div>
 
-  <!-- Left Sidebar (Chat History / Settings) -->
-  <aside class="hidden lg:flex flex-col w-72 bg-bg-secondary/95 border-r border-white/5 backdrop-blur-3xl p-6 relative z-10">
-    <div class="flex items-center gap-3 mb-10">
-      <div class="text-3xl">🏹</div>
-      <div>
-        <h3 class="text-lg font-black gold-text" style="font-family:'Cinzel', serif;">Dronacharya</h3>
-        <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-green animate-pulse shadow-[0_0_8px_var(--green)]"></span>
-            <span class="text-[10px] text-text-muted font-bold uppercase tracking-widest">Enlightened AI</span>
+  <div id="chat-messages" class="flex-grow overflow-y-auto mb-6 space-y-4 p-6 scroll-smooth bg-gray-50/50 rounded-3xl border border-gray-100 shadow-inner">
+    <div class="flex justify-start mb-3">
+        <div class="bg-white border border-gray-200 px-4 py-3 rounded-2xl rounded-bl-sm max-w-sm text-sm text-gray-800 shadow-sm">
+            Greetings, seeker of truth. I am Dronacharya. How may I assist your learning journey today?
         </div>
-      </div>
     </div>
+  </div>
 
-    <div class="flex-grow space-y-4">
-      <button class="w-full btn-ghost !border-dashed !border-white/10 !text-text-muted hover:!border-gold hover:!text-gold py-4 text-xs font-bold uppercase tracking-widest">
-        + Start New Wisdom
-      </button>
-      
-      <div class="pt-6">
-        <h4 class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">Past Sessions</h4>
-        <div class="space-y-2">
-           <div class="p-3 rounded-xl bg-white/5 border border-white/5 text-xs text-text-secondary cursor-pointer hover:bg-white/10 transition">
-              Understanding Relativity...
-           </div>
-           <div class="p-3 rounded-xl hover:bg-white/5 border border-transparent text-xs text-text-muted cursor-not-allowed">
-              History of Dynasties...
-           </div>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Main Chat Window -->
-  <div class="flex-grow flex flex-col relative z-20 h-[calc(100vh-68px)]">
-    
-    <!-- Chat Header -->
-    <header class="p-6 border-b border-white/5 bg-bg-primary/40 backdrop-blur-md flex items-center gap-4">
-      <div class="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-2xl border border-gold/20 glow-pulse">🤖</div>
-      <div>
-        <h2 class="text-xl font-bold text-white leading-none mb-1">Dronacharya Sage</h2>
-        <p class="text-[10px] text-text-muted font-bold uppercase tracking-widest">The Multi-Domain Master AI</p>
-      </div>
-    </header>
-
-    <!-- Messages Area -->
-    <div id="chat-messages" class="flex-grow overflow-y-auto p-6 md:p-10 space-y-10 scrollbar-hide">
-      <!-- Welcome Message -->
-      <div class="flex justify-start fade-in">
-        <div class="flex gap-4 max-w-[85%]">
-            <div class="w-8 h-8 rounded-xl bg-gold/10 flex-shrink-0 flex items-center justify-center text-lg border border-gold/20">📜</div>
-            <div class="glass p-6 rounded-3xl rounded-tl-none border-white/10 shadow-xl">
-                <p class="text-text-secondary text-sm leading-relaxed font-light">
-                    Greetings, seeker of truth. I am Dronacharya, your sentinel on the path of knowledge. What doubts shall we illuminate today?
-                </p>
-            </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Input Area -->
-    <footer class="p-6 md:p-10 bg-gradient-to-t from-bg-primary to-transparent">
-      <div class="max-w-4xl mx-auto relative group">
-        <div class="absolute -inset-1 bg-gradient-to-r from-gold/20 via-violet/20 to-cyan/20 rounded-[28px] blur-xl opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
-        
-        <div class="relative flex items-end gap-4 p-2 bg-secondary/80 backdrop-blur-3xl border border-white/10 rounded-[28px] shadow-2xl">
-          <textarea id="chat-input" rows="1" 
-                    crossorigin="anonymous"
-                    class="w-full !bg-transparent !border-none !ring-0 !text-base !py-4 !pl-6 !pr-2 !max-h-48 overflow-y-auto scrollbar-hide text-white placeholder-text-muted resize-none"
-                    placeholder="Enter your prompt for the Sage... (Shift+Enter for newline)"></textarea>
-          
-          <button onclick="sendChatMessage()" 
-                  class="bg-gold hover:bg-gold-light text-bg-primary w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all active:scale-95 group-hover:glow-pulse">
-            <span class="text-2xl">⚡</span>
-          </button>
-        </div>
-        
-        <div class="mt-4 flex justify-center items-center gap-6 text-[10px] text-text-muted font-bold uppercase tracking-[0.2em]">
-            <span>Markdown Enabled</span>
-            <span class="w-1 h-1 rounded-full bg-text-muted"></span>
-            <span>Gemini Pro 1.5</span>
-            <span class="w-1 h-1 rounded-full bg-text-muted"></span>
-            <span>Educational Mode</span>
-        </div>
-      </div>
-    </footer>
+  <div class="relative group">
+    <textarea id="chat-input" rows="2" 
+              class="w-full pl-6 pr-16 py-4 rounded-3xl border-2 border-blue-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none text-base resize-none shadow-xl bg-white/90 backdrop-blur-xl" 
+              placeholder="Type your question here... (Shift+Enter for newline)"></textarea>
+    <button onclick="sendChatMessage()" 
+            class="absolute right-4 bottom-4 btn-primary btn-tutor p-3 rounded-2xl w-12 h-12 shadow-xl hover:scale-105 transition-transform flex items-center justify-center">
+        🚀
+    </button>
   </div>
 </div>
-
-<style>
-  /* Markdown Styling in Chat */
-  #chat-messages h2, #chat-messages h3 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--gold); }
-  #chat-messages code { font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.4); padding: 0.2rem 0.4rem; border-radius: 6px; color: var(--cyan); font-size: 0.9em; border: 1px solid var(--cyan-dim); }
-  #chat-messages pre { background: #010409; padding: 1.5rem; border-radius: 16px; margin: 1.5rem 0; overflow-x: auto; border: 1px solid var(--border); }
-  #chat-messages pre code { background: transparent; padding: 0; color: #79c0ff; border: none; }
-  #chat-messages strong { color: white; font-weight: 700; }
-  #chat-messages ul, #chat-messages ol { margin: 1rem 0; padding-left: 1.5rem; }
-  #chat-messages li { margin-bottom: 0.5rem; color: var(--text-secondary); }
-  
-  /* Bubbles */
-  .bot-bubble { animation: fadeSlideUp 0.5s ease forwards; }
-  .user-bubble { 
-    background: linear-gradient(135deg, var(--tutor), #3A0CA3) !important;
-    border-radius: 32px 32px 4px 32px !important;
-    padding: 1.25rem 1.75rem !important;
-    box-shadow: 0 10px 30px rgba(67,97,238,0.2) !important;
-    border: none !important;
-    color: white !important;
-    font-weight: 500 !important;
-    max-width: 75% !important;
-    align-self: flex-end !important;
-  }
-</style>
 {% endblock %}

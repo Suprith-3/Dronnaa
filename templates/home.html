@@ -2,99 +2,82 @@
 {% block title %}Dronacharya Hub — Learn · Research · Read{% endblock %}
 {% block content %}
 
-<!-- LUXURY HERO SECTION -->
-<section class="relative min-h-[85vh] flex items-center justify-center pt-28 pb-32 px-4 overflow-hidden">
-  <!-- Stars Animation -->
-  <div class="absolute inset-0 z-0 pointer-events-none">
-    {% for i in range(20) %}
-    <div class="absolute rounded-full bg-white shadow-[0_0_10px_white]" style="
-        width: 2px; height: 2px;
-        top: {{ range(10, 90)|random }}%; left: {{ range(10, 90)|random }}%;
-        animation: twinkle {{ range(2, 6)|random }}s infinite; 
-        animation-delay: {{ range(0, 5)|random }}s;"></div>
-    {% endfor %}
-  </div>
-
-  <div class="max-w-5xl mx-auto text-center relative z-10 fade-in">
-    <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full glass border-cyan/20 text-cyan text-xs font-bold uppercase tracking-widest mb-10 glow-pulse">
-      ⚡ <span>Powered by Gemini AI</span>
+<!-- HERO -->
+<section style="background:linear-gradient(135deg,#0B1437 0%,#112060 50%,#1a0533 100%);" class="py-20 px-4 text-white text-center">
+  <div class="max-w-3xl mx-auto">
+    <div class="inline-block bg-amber-400/20 text-amber-300 text-xs font-bold px-4 py-2 rounded-full mb-6 uppercase tracking-widest">
+      Powered by Gemini AI
     </div>
-    
-    <h1 class="hero-title text-white mb-8 leading-[1.1]" style="font-size: clamp(40px, 8vw, 82px); font-weight: 900;">
+    <h1 style="font-family:'Cinzel',serif; font-size:clamp(32px,5vw,58px);" class="font-bold mb-6 leading-tight">
       Your Complete<br>
-      <span class="gold-text">Learning Platform</span>
+      <span style="background:linear-gradient(to right,#F4A261,#FFD580);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+        Learning Platform
+      </span>
     </h1>
-
-    <p class="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto mb-14 leading-relaxed font-light">
-      Experience the future of education. A unified ecosystem for <span class="text-tutor font-bold">AI Tutoring</span>, <span class="text-violet font-bold">Scientific Research</span>, and <span class="text-green font-bold">Book Exchange</span>.
+    <p class="text-gray-300 text-lg mb-10 max-w-xl mx-auto">
+      Three powerful tools — AI tutoring, instant research papers, and a local book marketplace — all in one place.
     </p>
-
-    <div class="flex flex-wrap justify-center gap-6">
-      <a href="{{ url_for('tutor.welcome') }}" class="btn-primary btn-gold px-10 py-4 text-lg">
-        Begin Journey 🏹
-      </a>
-      <a href="{{ url_for('games.index') }}" class="btn-ghost px-10 py-4 text-lg">
-        Explore Games 🕹️
-      </a>
-    </div>
   </div>
 </section>
 
-<!-- THE THREE PILLARS (PRODUCT CARDS) -->
-<section class="max-w-7xl mx-auto px-4 -mt-24 relative z-20 pb-20">
-  <div class="grid md:grid-cols-3 gap-8">
+<!-- 3 PRODUCT CARDS -->
+<section class="max-w-6xl mx-auto px-4 -mt-10 pb-16">
+  <div class="grid md:grid-cols-3 gap-6">
 
-    <!-- Pillar 1: Tutor -->
-    <div class="card p-10 relative overflow-hidden group fade-in-1" style="border-top: 4px solid var(--tutor);">
-      <div class="absolute -top-10 -right-10 w-40 h-40 bg-tutor/10 rounded-full blur-3xl group-hover:bg-tutor/20 transition-all duration-500"></div>
-      <div class="text-6xl mb-8 float-anim">🎓</div>
-      <h2 class="text-3xl font-bold text-white mb-4 group-hover:text-tutor transition-colors">Dronacharya Tutor</h2>
-      <p class="text-text-secondary mb-8 text-sm leading-relaxed">
-        Personalized mentorship through AI. Generate quizes with anti-cheat protection, download pro-grade notes, and track your curriculum progress.
+    <!-- Card 1: Tutor -->
+    <div class="card p-8 border-t-4 border-blue-500 fade-in fade-in-1">
+      <div class="text-5xl mb-4">🎓</div>
+      <h2 style="font-family:'Sora',sans-serif;" class="text-2xl font-bold text-gray-900 mb-3">Dronacharya Tutor</h2>
+      <p class="text-gray-500 mb-6 text-sm leading-relaxed">
+        Browse structured courses, watch YouTube lessons, take AI-generated quizzes, download study notes as DOCX, and chat with your AI tutor.
       </p>
-      <ul class="text-sm text-text-muted mb-10 space-y-3">
-        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-tutor"></span> AI Adaptive Quiz Engine</li>
-        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-tutor"></span> Voice-Enabled AI Chat</li>
-        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-tutor"></span> Proctoring Security (Webcam)</li>
+      <ul class="text-sm text-gray-500 mb-6 space-y-1">
+        <li>✅ AI Quiz Generator</li>
+        <li>✅ AI Chat Tutor</li>
+        <li>✅ Study Notes (DOCX)</li>
+        <li>✅ Course Progress Tracking</li>
+        <li>✅ Text-to-Speech Lessons</li>
       </ul>
-      <a href="{{ url_for('tutor.welcome') }}" class="w-full btn-primary btn-tutor py-4 rounded-xl font-bold shadow-lg shadow-tutor/20">
-        Launch Tutor →
+      <a href="{{ url_for('tutor.welcome') }}" class="btn-primary btn-tutor px-6 py-3 rounded-full inline-block font-semibold text-white">
+        Start Learning →
       </a>
     </div>
 
-    <!-- Pillar 2: Research -->
-    <div class="card p-10 relative overflow-hidden group fade-in-2" style="border-top: 4px solid var(--violet);">
-      <div class="absolute -top-10 -right-10 w-40 h-40 bg-violet/10 rounded-full blur-3xl group-hover:bg-violet/20 transition-all duration-500"></div>
-      <div class="text-6xl mb-8 float-anim">📄</div>
-      <h2 class="text-3xl font-bold text-white mb-4 group-hover:text-violet transition-colors">Research Engine</h2>
-      <p class="text-text-secondary mb-8 text-sm leading-relaxed">
-        Academic writing reimagined. Generate multi-lingual research papers with instant formatting and multi-style citation support.
+    <!-- Card 2: Research -->
+    <div class="card p-8 border-t-4 border-violet-500 fade-in fade-in-2">
+      <div class="text-5xl mb-4">📄</div>
+      <h2 style="font-family:'Sora',sans-serif;" class="text-2xl font-bold text-gray-900 mb-3">Research Engine</h2>
+      <p class="text-gray-500 mb-6 text-sm leading-relaxed">
+        Generate complete structured research papers on any topic in 12+ languages. Format citations in APA, MLA, Chicago, IEEE. Download as PDF or DOCX.
       </p>
-      <ul class="text-sm text-text-muted mb-10 space-y-3">
-        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-violet"></span> Full Structured Papers</li>
-        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-violet"></span> 12+ Citation Formats</li>
-        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-violet"></span> Multi-Language Support</li>
+      <ul class="text-sm text-gray-500 mb-6 space-y-1">
+        <li>✅ Full Research Papers</li>
+        <li>✅ 12+ Languages</li>
+        <li>✅ PDF & DOCX Download</li>
+        <li>✅ Citation Generator</li>
+        <li>✅ No Login Needed</li>
       </ul>
-      <a href="{{ url_for('research.index') }}" class="w-full btn-primary btn-research py-4 rounded-xl font-bold shadow-lg shadow-violet/20">
-        Research Now →
+      <a href="{{ url_for('research.index') }}" class="btn-primary btn-research px-6 py-3 rounded-full inline-block font-semibold text-white">
+        Generate Paper →
       </a>
     </div>
 
-    <!-- Pillar 3: Books -->
-    <div class="card p-10 relative overflow-hidden group fade-in-3" style="border-top: 4px solid var(--green);">
-      <div class="absolute -top-10 -right-10 w-40 h-40 bg-green/10 rounded-full blur-3xl group-hover:bg-green/20 transition-all duration-500"></div>
-      <div class="text-6xl mb-8 float-anim">📚</div>
-      <h2 class="text-3xl font-bold text-white mb-4 group-hover:text-green transition-colors">My Book</h2>
-      <p class="text-text-secondary mb-8 text-sm leading-relaxed">
-        A community-first book marketplace. Use our GPS-enabled map to find readers nearby to swap, sell, or donate books instantly.
+    <!-- Card 3: Books -->
+    <div class="card p-8 border-t-4 border-green-600 fade-in fade-in-3">
+      <div class="text-5xl mb-4">📚</div>
+      <h2 style="font-family:'Sora',sans-serif;" class="text-2xl font-bold text-gray-900 mb-3">My Book</h2>
+      <p class="text-gray-500 mb-6 text-sm leading-relaxed">
+        Buy, sell, swap, or donate used books with people near you. Sellers pin their exact GPS location. Buyers find books on a live map and contact sellers directly.
       </p>
-      <ul class="text-sm text-text-muted mb-10 space-y-3">
-        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-green"></span> Live GPS Mapping</li>
-        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-green"></span> Direct WhatsApp Connect</li>
-        <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full bg-green"></span> Swap or Free Donation</li>
+      <ul class="text-sm text-gray-500 mb-6 space-y-1">
+        <li>✅ Live Map with Seller Pins</li>
+        <li>✅ GPS-Based Nearby Search</li>
+        <li>✅ WhatsApp & Call Seller</li>
+        <li>✅ Book Swap & Free Donate</li>
+        <li>✅ No Login Needed</li>
       </ul>
-      <a href="{{ url_for('books.index') }}" class="w-full btn-primary btn-books py-4 rounded-xl font-bold shadow-lg shadow-green/20">
-        Browse Library →
+      <a href="{{ url_for('books.index') }}" class="btn-primary btn-books px-6 py-3 rounded-full inline-block font-semibold text-white">
+        Find Books →
       </a>
     </div>
 

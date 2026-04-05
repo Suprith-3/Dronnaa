@@ -1,41 +1,40 @@
 {% extends 'base.html' %}
-{% block title %}Research Engine - Dronacharya Academy{% endblock %}
+{% block title %}Research Engine - Dronacharya Hub{% endblock %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-6 py-24 relative z-10">
-  
-  <div class="text-center mb-20 fade-in">
-    <div class="inline-block px-5 py-2 rounded-full glass border-violet/20 text-violet text-[10px] font-black uppercase tracking-[0.4em] mb-8 glow-pulse">
-        Academic Intelligence Protocol
+<div class="max-w-7xl mx-auto px-4 py-12">
+  <div class="text-center mb-16 px-4">
+    <div class="inline-block bg-violet-600/10 text-violet-600 text-[10px] font-black px-4 py-2 rounded-full mb-4 uppercase tracking-[0.25em] animate-pulse">
+        Academic Excellence Powered by AI
     </div>
-    <h1 class="text-6xl font-black text-white mb-8 leading-none" style="font-family:'Cinzel', serif;">
-      Universal <span class="gold-text italic">Researcher</span>
+    <h1 style="font-family:'Cinzel',serif; font-size:clamp(36px,6vw,64px);" class="font-bold text-gray-900 leading-none mb-6">
+      Future of <span class="text-violet-600 italic">Research</span>
     </h1>
-    <p class="text-text-secondary text-lg max-w-2xl mx-auto leading-relaxed font-light">
-      Synthesize professional academic papers and valid citations across 12+ global languages with a single prompt.
+    <p class="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">
+      Instantly generate comprehensive, structured academic papers and formatted citations across 12+ global languages.
     </p>
   </div>
 
-  <div class="mb-16">
-    <div class="flex items-center justify-center gap-2 p-1.5 glass rounded-3xl w-fit mx-auto mb-16 border-white/5 shadow-2xl">
-      <button id="tab-btn-paper" onclick="switchMainTab('paper')" class="px-10 py-3.5 rounded-2xl transition-all text-xs font-black uppercase tracking-widest bg-violet text-white shadow-xl shadow-violet/20">
+  <div class="mb-12">
+    <div class="flex items-center justify-center gap-1 bg-white p-2 rounded-2xl shadow-xl w-fit mx-auto border border-violet-100 mb-12">
+      <button onclick="switchMainTab('paper')" data-tab="paper-tab" class="px-8 py-3 rounded-xl transition text-sm font-bold border-b-2 border-violet-600">
         📄 Research Paper
       </button>
-      <button id="tab-btn-citation" onclick="switchMainTab('citation')" class="px-10 py-3.5 rounded-2xl transition-all text-xs font-black uppercase tracking-widest text-text-muted hover:text-white hover:bg-white/5">
+      <button onclick="switchMainTab('citation')" data-tab="citation-tab" class="px-8 py-3 rounded-xl transition text-sm font-medium hover:bg-violet-50">
         📌 Citation Engine
       </button>
     </div>
 
     <!-- Paper Tab -->
-    <div id="paper-tab" class="space-y-12 fade-in">
-      <div class="card p-12 bg-bg-secondary/40 border-t-4 border-violet shadow-3xl backdrop-blur-3xl">
-        <div class="grid md:grid-cols-4 gap-8 items-end">
+    <div id="paper-tab" class="space-y-8 fade-in">
+      <div class="card p-10 bg-white/80 backdrop-blur-3xl shadow-2xl border-t-8 border-violet-600">
+        <div class="grid md:grid-cols-4 gap-6 items-end">
             <div class="md:col-span-2">
-                <label class="block text-text-muted text-[10px] font-black uppercase tracking-[0.3em] mb-4 pl-1">Research Objective</label>
-                <input type="text" id="topic-input" class="!py-5 !text-xl !font-bold" placeholder="e.g., Quantum Entanglement Ethics">
+                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Research Topic</label>
+                <input type="text" id="topic-input" class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-lg font-bold" placeholder="e.g., Quantum Computing in the 21st Century">
             </div>
             <div>
-                <label class="block text-text-muted text-[10px] font-black uppercase tracking-[0.3em] mb-4 pl-1">Target Lexicon</label>
-                <select id="language-select" class="!py-5 !text-lg !font-bold">
+                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Language</label>
+                <select id="language-select" class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-lg font-bold bg-white cursor-pointer">
                     <option value="English">🇬🇧 English</option>
                     <option value="Hindi">🇮🇳 Hindi</option>
                     <option value="Spanish">🇪🇸 Spanish</option>
@@ -45,189 +44,158 @@
                     <option value="Japanese">🇯🇵 Japanese</option>
                 </select>
             </div>
-            <button onclick="generatePaper()" id="generate-paper-btn" class="btn-primary btn-research !py-5 !rounded-2xl !text-sm !font-black !uppercase !tracking-widest shadow-2xl shadow-violet/20">Synthesize Paper</button>
+            <button onclick="generatePaper()" id="generate-paper-btn" class="btn-primary btn-research py-[18px] rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl transition-all">Generate Paper</button>
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div id="skeleton-area" class="hidden animate-pulse">
-          <div class="flex items-center justify-center py-24 glass rounded-[40px] border-dashed border-violet/30 bg-violet/5">
+      <!-- Loading State (Shared Skeleton) -->
+      <div id="skeleton-area" class="hidden space-y-8 animate-pulse">
+          <div class="flex items-center justify-center py-20 bg-violet-50/50 rounded-3xl border-2 border-dashed border-violet-200">
               <div class="text-center">
-                  <div class="text-6xl mb-8 float-anim">⌛</div>
-                  <h3 id="loading-msg" class="text-2xl font-black text-white mb-3">Scanning Global Archives...</h3>
-                  <p class="text-violet text-[10px] font-bold uppercase tracking-[0.2em]">The Sage is structuring your legacy.</p>
+                  <div class="text-4xl mb-4">⌛</div>
+                  <h3 id="loading-msg" class="text-xl font-bold text-violet-900 mb-2">Analyzing sources...</h3>
+                  <p class="text-violet-700 text-xs">Wait while Dronacharya AI structures your knowledge.</p>
               </div>
           </div>
       </div>
 
       <!-- Paper Output -->
-      <div id="paper-output-area" class="hidden space-y-10">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-8 card p-8 border-violet/10 bg-violet/5">
-          <div class="flex items-center gap-12">
-              <div class="text-center border-r border-white/5 pr-12">
-                  <div id="word-count" class="text-4xl font-black gold-text" style="font-family:'Cinzel', serif;">~800</div>
-                  <div class="text-[9px] font-bold text-text-muted uppercase tracking-widest mt-1">Lexicon Units</div>
+      <div id="paper-output-area" class="hidden space-y-6">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 card p-6 border-violet-100 bg-violet-50/50">
+          <div class="flex items-center gap-10">
+              <div class="text-center border-r border-violet-200 pr-10">
+                  <div id="word-count" class="text-2xl font-black text-violet-900">~800 words</div>
+                  <div class="text-[10px] font-bold text-violet-400 uppercase tracking-widest">Document length</div>
               </div>
               <div class="hidden md:block">
-                  <div class="flex p-1.5 glass rounded-2xl gap-1">
-                      <button onclick="switchOutputTab('preview')" class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase bg-white/10 text-white transition-all">🎨 Preview</button>
-                      <button onclick="switchOutputTab('raw')" class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase text-text-muted hover:text-white transition-all">🛠 Raw MD</button>
+                  <div class="flex gap-1">
+                      <button onclick="switchOutputTab('preview')" class="output-tab px-6 py-2 rounded-full text-xs font-black bg-violet-100 text-violet-700 transition">🎨 Preview</button>
+                      <button onclick="switchOutputTab('raw')" class="output-tab px-6 py-2 rounded-full text-xs font-bold text-gray-500 hover:bg-violet-200 transition">🛠 Raw MD</button>
                   </div>
               </div>
           </div>
-          <div class="flex items-center gap-4 w-full md:w-auto">
-              <select id="download-format" class="!px-6 !py-3 !rounded-xl !text-xs !font-black !uppercase !tracking-widest !w-32">
-                  <option value="docx">DOCX</option>
-                  <option value="pdf">PDF</option>
-                  <option value="txt">TXT</option>
+          <div class="flex items-center gap-3 w-full md:w-auto">
+              <select id="download-format" class="px-5 py-3 rounded-xl border-2 border-violet-200 text-sm font-black text-violet-900 outline-none">
+                  <option value="docx">📄 DOCX</option>
+                  <option value="pdf">📕 PDF</option>
+                  <option value="txt">📝 TXT</option>
               </select>
-              <button onclick="downloadPaper()" id="download-btn" class="btn-primary btn-books !px-10 !py-3.5 !rounded-xl !text-xs !font-black !uppercase !tracking-widest !shadow-none !flex-grow md:!flex-none">Export</button>
-              <button onclick="copyPaper()" class="p-4 glass !border-violet/20 text-violet hover:bg-violet hover:text-white transition-all rounded-xl shadow-xl">📋</button>
+              <button onclick="downloadPaper()" id="download-btn" class="btn-primary btn-research px-10 py-3 rounded-xl font-black text-sm shadow-xl flex-grow md:flex-none">⬇ Download Paper</button>
+              <button onclick="copyPaper()" class="p-3 bg-white border-2 border-violet-100 text-violet-600 rounded-xl hover:bg-violet-600 hover:text-white transition shadow-lg">📋</button>
           </div>
         </div>
 
-        <div id="paper-preview" class="card p-16 bg-white shadow-3xl prose prose-slate max-w-none leading-relaxed text-gray-800 prose-headings:font-cinzel prose-headings:text-gray-900 prose-strong:text-black">
+        <div id="paper-preview" class="card p-12 bg-white shadow-2xl prose prose-violet max-w-none prose-sm leading-relaxed text-gray-700 prose-headings:font-cinzel prose-headings:text-gray-900">
             <!-- Rendered Markdown -->
         </div>
-        <textarea id="paper-raw" class="hidden card !p-16 !bg-[#0D1117] !text-green !font-mono !text-sm !w-full !min-h-[700px] !border-none !shadow-inner !leading-relaxed !outline-none" readonly></textarea>
+        <textarea id="paper-raw" class="hidden card p-12 bg-gray-900 text-emerald-400 font-mono text-xs w-full min-h-[600px] border-none shadow-2xl leading-relaxed outline-none" readonly></textarea>
         
-        <div class="text-center pt-10">
-            <button onclick="regeneratePaper()" class="text-[10px] font-black text-text-muted hover:text-violet uppercase tracking-[0.3em] transition-all">↻ Reconceive Result</button>
+        <div class="text-center py-6">
+            <button onclick="regeneratePaper()" class="text-sm font-bold text-violet-600 hover:text-violet-800 transition">↻ Regenerate this response</button>
         </div>
       </div>
     </div>
 
     <!-- Citation Tab -->
-    <div id="citation-tab" class="hidden fade-in space-y-12">
-        <div class="grid lg:grid-cols-3 gap-12">
-            <div class="lg:col-span-2 space-y-10">
-                <div class="card p-12 bg-bg-secondary/40 border-t-4 border-violet shadow-3xl">
-                    <h3 class="text-2xl font-black text-white mb-10">Citation Synthesizer</h3>
-                    <div class="space-y-10">
+    <div id="citation-tab" class="hidden fade-in space-y-8">
+        <div class="grid md:grid-cols-3 gap-10">
+            <div class="md:col-span-2 space-y-6">
+                <div class="card p-10 bg-white shadow-2xl border-t-8 border-violet-600">
+                    <h3 class="text-xl font-bold mb-6">Citation Generator</h3>
+                    <div class="space-y-6">
                         <div>
-                            <label class="block text-text-muted text-[10px] font-black uppercase tracking-[0.3em] mb-4 pl-1">Source Artifact</label>
-                            <textarea id="citation-input" rows="4" class="!py-5 !px-6 !text-sm !font-light !leading-relaxed" placeholder="Author, Year, Title, Journal/URL..."></textarea>
+                            <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Paste Reference Source</label>
+                            <textarea id="citation-input" rows="4" class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-sm font-medium leading-relaxed" placeholder="Author, Year, Title, Journal/URL, etc."></textarea>
                         </div>
-                        <div class="grid grid-cols-2 gap-8">
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-text-muted text-[10px] font-black uppercase tracking-[0.3em] mb-4 pl-1">Standard Style</label>
-                                <select id="citation-style" class="!py-4 !text-sm !font-bold">
-                                    <option value="APA">APA 7th</option>
-                                    <option value="MLA">MLA 9th</option>
-                                    <option value="Chicago">Chicago</option>
-                                    <option value="IEEE">IEEE</option>
+                                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Style Preference</label>
+                                <select id="citation-style" class="w-full px-6 py-3 rounded-2xl border-2 border-gray-100 focus:border-violet-400 transition outline-none text-sm font-bold bg-white">
+                                    <option value="APA">APA Style</option>
+                                    <option value="MLA">MLA Style</option>
+                                    <option value="Chicago">Chicago Manual</option>
+                                    <option value="IEEE">IEEE Reference</option>
                                     <option value="Vancouver">Vancouver</option>
                                 </select>
                             </div>
-                            <button onclick="generateCitation()" id="citation-btn" class="w-full btn-primary btn-research !rounded-2xl !text-xs !font-black !uppercase !tracking-widest shadow-2xl shadow-violet/20">Format Reference</button>
+                            <button onclick="generateCitation()" id="citation-btn" class="w-full btn-primary btn-research py-3 rounded-2xl font-black text-sm shadow-xl">Format Citation →</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="card p-10 bg-violet/5 border-violet/20 shadow-inner group">
-                    <div class="flex items-center justify-between mb-6">
-                        <label class="block text-violet text-[10px] font-black uppercase tracking-[0.4em]">Formatted Outcome</label>
-                        <button onclick="copyCitation()" class="text-[10px] font-black text-white hover:text-gold uppercase tracking-widest transition-all">Copy Artifact</button>
+                <div class="card p-8 bg-violet-50/50 border-violet-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="block text-violet-900 text-xs font-black uppercase tracking-widest">Formatted Response</label>
+                        <button onclick="copyCitation()" class="text-xs font-bold text-violet-600 hover:text-violet-800">Copy Result</button>
                     </div>
-                    <textarea id="citation-output" rows="2" class="!bg-transparent !border-none !outline-none !font-bold !text-white !p-0 !resize-none !text-xl !italic !leading-tight" placeholder="Awaiting synthesis..." readonly></textarea>
+                    <textarea id="citation-output" rows="2" class="w-full bg-transparent border-none outline-none font-bold text-gray-900 resize-none text-lg italic leading-snug" placeholder="Your citation will appear here..." readonly></textarea>
                 </div>
             </div>
 
-            <aside class="space-y-8">
-                <div class="card p-10 bg-bg-primary text-white border-white/5 shadow-3xl relative overflow-hidden group">
-                    <div class="absolute -right-10 -bottom-10 text-white/5 scale-[4.0] rotate-12 transition-transform duration-700 group-hover:rotate-0">📄</div>
-                    <h3 class="text-xl font-black mb-6 relative z-10">Protocols</h3>
-                    <p class="text-xs text-text-secondary leading-relaxed mb-10 relative z-10 font-light">Supporting global academic constraints for publication-ready exports.</p>
-                    <ul class="text-[9px] font-black space-y-5 relative z-10 uppercase tracking-widest">
-                        <li class="flex items-center gap-4 text-violet">✓ Journal Metadata</li>
-                        <li class="flex items-center gap-4 text-violet">✓ Digital Artifacts</li>
-                        <li class="flex items-center gap-4 text-violet">✓ Multimedia Media</li>
-                        <li class="flex items-center gap-4 text-violet">✓ Symposia Papers</li>
+            <div class="space-y-6">
+                <div class="card p-8 bg-black text-white border-none shadow-2xl relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 text-white/10 scale-[3.0] rotate-12 rotate-y-180">📄</div>
+                    <h3 class="font-bold text-lg mb-4 opacity-100 relative z-10">Citation Standards</h3>
+                    <p class="text-xs opacity-60 leading-relaxed mb-8 relative z-10">We support the latest standards including APA 7th ed, MLA 9th Ed, and IEEE for technical papers.</p>
+                    <ul class="text-[11px] font-bold space-y-3 relative z-10">
+                        <li class="flex items-center gap-2">✅ Journal Articles</li>
+                        <li class="flex items-center gap-2">✅ Web Resources</li>
+                        <li class="flex items-center gap-2">✅ Books & Media</li>
+                        <li class="flex items-center gap-2">✅ Conference Papers</li>
                     </ul>
                 </div>
 
-                <div class="card p-10 bg-violet border-none shadow-3xl group">
-                    <h3 class="text-lg font-black text-bg-primary mb-4 leading-none uppercase">The Sage's Tip</h3>
-                    <p class="text-xs text-bg-primary/80 leading-relaxed font-bold">AI validation cross-references style guides. Verify volume/issue counts for absolute accuracy.</p>
+                <div class="card p-8 bg-violet-600 text-white border-none shadow-2xl">
+                    <h3 class="font-bold mb-4">Pro Tip</h3>
+                    <p class="text-xs opacity-80 leading-relaxed">Generated citations are AI-verified against style guides. Always double-check volume and page numbers before publishing.</p>
                 </div>
-            </aside>
+            </div>
         </div>
     </div>
   </div>
 </div>
 
 <!-- ── TUMTUM CHATBOT ── -->
-<div class="fixed bottom-8 right-8 z-[100]">
-    <!-- Trigger -->
-    <button onclick="toggleTumTum()" id="tumtum-trigger" class="w-20 h-20 bg-violet rounded-[28px] shadow-[0_20px_60px_rgba(123,47,190,0.4)] flex items-center justify-center text-4xl hover:scale-110 active:scale-95 transition-all group relative border-4 border-bg-primary">
+<div class="fixed bottom-6 right-6 z-[60]">
+    <!-- Floating Toggle -->
+    <button onclick="toggleTumTum()" id="tumtum-trigger" class="w-16 h-16 bg-violet-600 rounded-full shadow-2xl flex items-center justify-center text-3xl hover:scale-110 active:scale-95 transition-all group relative">
         🤖
-        <div class="absolute -top-14 right-0 glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border-white/10 glow-pulse">
-            Summon TumTum 👋
-        </div>
+        <span class="absolute -top-12 right-0 bg-white text-violet-900 text-xs font-black px-4 py-2 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-opacity border border-violet-100 whitespace-nowrap">
+            Hi, I'm TumTum! 👋
+        </span>
     </button>
 
-    <!-- Window -->
-    <div id="tumtum-window" class="hidden absolute bottom-24 right-0 w-80 md:w-96 glass rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.8)] border border-white/10 flex flex-col overflow-hidden max-h-[600px] animate-slide-up">
-        <div class="bg-violet p-8 text-bg-primary flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-bg-primary rounded-2xl flex items-center justify-center text-2xl">🤖</div>
+    <!-- Chat Window -->
+    <div id="tumtum-window" class="hidden absolute bottom-20 right-0 w-80 md:w-96 bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(124,58,237,0.3)] border border-violet-100 flex flex-col overflow-hidden max-h-[500px] animate-slide-up">
+        <div class="bg-violet-600 p-6 text-white flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl">🤖</div>
                 <div>
-                    <div class="font-black text-base leading-none mb-1">TumTum</div>
-                    <div class="text-[9px] font-black uppercase tracking-[0.1em] opacity-70">Archive Master</div>
+                    <div class="font-black text-sm">TumTum Assistant</div>
+                    <div class="text-[10px] opacity-70">Research Expert • Online</div>
                 </div>
             </div>
-            <button onclick="toggleTumTum()" class="p-3 hover:bg-black/10 rounded-2xl transition-all">✕</button>
+            <button onclick="toggleTumTum()" class="p-2 hover:bg-white/10 rounded-lg transition">✕</button>
         </div>
         
-        <div id="tumtum-messages" class="flex-grow p-8 space-y-6 overflow-y-auto min-h-[350px] max-h-[400px] scrollbar-hide">
-            <div class="flex items-start gap-4">
-                <div class="w-8 h-8 bg-violet/10 rounded-xl flex items-center justify-center text-sm border border-violet/20 flex-shrink-0">📜</div>
-                <div class="glass p-5 rounded-3xl rounded-tl-none border-white/5 text-[13px] text-text-secondary leading-relaxed font-light">
-                    Greetings, architect of research. I am <b>TumTum</b>. I exist to optimize your citation accuracy and thematic focus.
+        <div id="tumtum-messages" class="flex-grow p-6 space-y-4 overflow-y-auto bg-gray-50/50 min-h-[300px] max-h-[350px]">
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-sm">🤖</div>
+                <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm text-xs text-gray-700 leading-relaxed border border-violet-50">
+                    Hello! I'm <b>TumTum</b>, your Research Assistant. 🎓<br><br>
+                    Need help brainstorming a topic or choosing a citation style? Ask me anything!
                 </div>
             </div>
         </div>
 
-        <div class="p-6 bg-white/5 border-t border-white/5 flex gap-3">
-            <input type="text" id="tumtum-input" onkeypress="if(event.key==='Enter') sendTumTumTip()" class="flex-grow !py-4 !text-sm !rounded-2xl" placeholder="Awaiting prompt...">
-            <button onclick="sendTumTumTip()" class="btn-primary btn-research !p-4 !rounded-2xl shadow-xl active:scale-90 transition-all">➤</button>
+        <div class="p-4 bg-white border-t border-gray-100 flex gap-2">
+            <input type="text" id="tumtum-input" onkeypress="if(event.key==='Enter') sendTumTumTip()" class="flex-grow px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 text-xs outline-none focus:border-violet-400 transition" placeholder="Ask TumTum for a tip...">
+            <button onclick="sendTumTumTip()" class="p-3 bg-violet-600 text-white rounded-xl hover:bg-violet-700 active:scale-90 transition shadow-lg">➤</button>
         </div>
     </div>
 </div>
 
-<style>
-  /* Local Overrides for Tabs */
-  .active-blue-tab { background: var(--violet); color: white; box-shadow: 0 10px 30px rgba(123,47,190,0.25); }
-  @keyframes slide-up {
-    from { transform: translateY(30px); opacity: 0; }
-    to   { transform: translateY(0); opacity: 1; }
-  }
-  .animate-slide-up { animation: slide-up 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-</style>
-
 <script>
-// Internal Tab Management
-const tabBtnPaper = document.getElementById('tab-btn-paper');
-const tabBtnCitation = document.getElementById('tab-btn-citation');
-
-function switchMainTab(type){
-    const paper = document.getElementById('paper-tab');
-    const cite = document.getElementById('citation-tab');
-    
-    if(type === 'paper'){
-        paper.classList.remove('hidden');
-        cite.classList.add('hidden');
-        tabBtnPaper.className = "px-10 py-3.5 rounded-2xl transition-all text-xs font-black uppercase tracking-widest bg-violet text-white shadow-xl shadow-violet/20";
-        tabBtnCitation.className = "px-10 py-3.5 rounded-2xl transition-all text-xs font-black uppercase tracking-widest text-text-muted hover:text-white hover:bg-white/5";
-    } else {
-        cite.classList.remove('hidden');
-        paper.classList.add('hidden');
-        tabBtnCitation.className = "px-10 py-3.5 rounded-2xl transition-all text-xs font-black uppercase tracking-widest bg-violet text-white shadow-xl shadow-violet/20";
-        tabBtnPaper.className = "px-10 py-3.5 rounded-2xl transition-all text-xs font-black uppercase tracking-widest text-text-muted hover:text-white hover:bg-white/5";
-    }
-}
-
-// TumTum Management
 function toggleTumTum(){
     const win = document.getElementById('tumtum-window');
     win.classList.toggle('hidden');
@@ -253,18 +221,18 @@ async function sendTumTumTip(){
             appendMessage('bot', data.response);
         }
     } catch(e) {
-        appendMessage('bot', "The neural link has been interrupted.");
+        appendMessage('bot', "Sorry, I'm a bit tied up right now!");
     }
 }
 
 function appendMessage(role, text){
     const container = document.getElementById('tumtum-messages');
     const div = document.createElement('div');
-    div.className = `flex items-start gap-4 ${role === 'user' ? 'flex-row-reverse' : ''} fade-in`;
+    div.className = `flex items-start gap-3 ${role === 'user' ? 'flex-row-reverse' : ''}`;
     
     div.innerHTML = `
-        <div class="w-10 h-10 ${role==='bot'?'bg-violet/10':'bg-violet text-bg-primary'} rounded-2xl flex items-center justify-center text-xl shadow-lg border border-white/5 flex-shrink-0">${role==='bot'?'📖':'👤'}</div>
-        <div class="${role==='bot'?'glass border-white/5 rounded-tl-none':'bg-violet text-bg-primary rounded-tr-none'} p-5 rounded-3xl shadow-2xl text-[13px] leading-relaxed max-w-[85%] font-light">
+        <div class="w-8 h-8 ${role==='bot'?'bg-violet-100':'bg-violet-600 text-white'} rounded-full flex items-center justify-center text-sm">${role==='bot'?'🤖':'👤'}</div>
+        <div class="${role==='bot'?'bg-white border border-violet-50 rounded-tl-none':'bg-violet-600 text-white rounded-tr-none'} p-4 rounded-2xl shadow-sm text-xs leading-relaxed max-w-[80%] markdown-content">
             ${marked.parse(text)}
         </div>
     `;

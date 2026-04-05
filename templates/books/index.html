@@ -1,113 +1,86 @@
 {% extends 'base.html' %}
-{% block title %}The Library - Local Book Marketplace{% endblock %}
+{% block title %}My Book - Local Marketplace{% endblock %}
 {% block content %}
-<section class="max-w-7xl mx-auto px-6 py-24 relative z-10">
-  
-  <div class="mb-20 text-center fade-in">
-    <div class="inline-block px-5 py-2 rounded-full glass border-green/20 text-green text-[10px] font-black uppercase tracking-[0.4em] mb-8 glow-pulse">
-        Localized Reading Nexus
+<section class="max-w-7xl mx-auto px-4 py-12">
+  <div class="mb-12">
+    <div class="inline-block bg-green-600/10 text-green-700 text-[10px] font-black px-4 py-2 rounded-full mb-4 uppercase tracking-[0.2em] animate-pulse">
+        Find Books Near You
     </div>
-    <h1 class="text-6xl font-black text-white mb-8 leading-none" style="font-family:'Cinzel', serif;">
-      Read. Reuse. <span class="gold-text italic">Rejoice.</span>
-    </h1>
-    <p class="text-text-secondary text-lg max-w-2xl mx-auto leading-relaxed font-light">
-      The elite local marketplace where scholars find rare volumes within their immediate geographic coordinates.
-    </p>
+    <h1 style="font-family:'Cinzel',serif;" class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Read. Reuse. <span class="text-green-600">Rejoice.</span></h1>
+    <p class="text-gray-500 max-w-2xl text-lg leading-relaxed">The only local marketplace where readers find books within a few kilometers using GPS intelligence.</p>
   </div>
 
-  <div class="mb-24">
-    <div class="card p-16 bg-bg-secondary/40 border-t-4 border-green shadow-3xl backdrop-blur-3xl overflow-hidden group">
-        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-green/5 rounded-full blur-[100px] group-hover:bg-green/10 transition-all duration-1000"></div>
-        <div class="grid lg:grid-cols-2 gap-16 items-center relative z-10">
+  <div class="mb-16">
+    <div class="card p-12 bg-white/80 backdrop-blur-3xl shadow-2xl border-t-8 border-green-600">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
             <div>
-                <h2 class="text-4xl font-black text-white mb-8 border-b border-white/5 pb-6 leading-tight" style="font-family:'Space Grotesk', sans-serif;">Discover Nearby Artifacts</h2>
-                <p class="text-text-secondary mb-12 leading-relaxed italic text-lg font-light max-w-md">"A book is a temporal bridge. Secure one from your immediate surroundings today."</p>
-                
-                <div class="flex flex-col sm:flex-row gap-6">
-                    <button onclick="findNearbyBooks()" class="px-12 py-5 btn-gold rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-gold/20 hover:scale-105 transition-all">📍 GPS Pulse Search</button>
-                    <a href="{{ url_for('books.browse') }}" class="px-12 py-5 glass !border-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all text-center">Archive Browse →</a>
+                <h2 class="text-3xl font-black text-gray-900 mb-6">Discover Nearby Books</h2>
+                <p class="text-gray-500 mb-10 leading-relaxed italic">"A book is a gift you can open again and again. Find one in your neighborhood today."</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="findNearbyBooks()" class="px-10 py-4 btn-primary btn-books rounded-xl font-black text-lg shadow-xl hover:shadow-2xl transition-all">📍 Find Books Near Me</button>
+                    <a href="{{ url_for('books.browse') }}" class="px-10 py-4 bg-gray-100 text-gray-700 rounded-xl font-black text-lg hover:bg-gray-200 transition text-center">Browse All →</a>
                 </div>
             </div>
-            
-            <div class="hidden lg:block relative">
-                <div class="absolute inset-0 bg-green/5 blur-3xl rounded-full animate-pulse"></div>
-                <div class="aspect-video glass border-white/10 rounded-[40px] flex flex-col items-center justify-center p-12 text-center group-hover:border-green/30 transition-all duration-500 shadow-2xl overflow-hidden border-2 border-dashed">
-                    <div class="text-8xl mb-8 grayscale group-hover:grayscale-0 group-hover:scale-125 transition-all duration-700 float-anim">🌍</div>
-                    <p class="text-text-muted font-black text-[10px] uppercase tracking-[0.3em]">Temporal GPS Activation Protocol</p>
+            <div class="hidden md:block">
+                <div class="aspect-video card bg-gray-50 border-dashed border-2 flex items-center justify-center text-center p-10 group overflow-hidden relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent"></div>
+                    <div class="relative z-10 transition group-hover:scale-110">
+                        <div class="text-7xl mb-6 grayscale group-hover:grayscale-0 transition">🌎</div>
+                        <p class="text-gray-400 font-bold text-sm">Interactive GPS Map Activation</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
   </div>
 
-  <!-- Nearby Section -->
-  <div id="nearby-section" class="hidden space-y-12 mb-24 fade-in">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-10 border-b border-white/5 pb-10">
-        <div>
-            <h2 class="text-4xl font-black text-white mb-2" style="font-family:'Cinzel', serif;">Proximal Findings</h2>
-            <p class="text-text-muted text-[10px] font-black uppercase tracking-widest">Books within your search perimeter</p>
-        </div>
-        <div class="flex items-center gap-6 glass px-6 py-3 rounded-2xl border-white/10">
-            <label class="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]">Radii Search</label>
-            <select id="radius-select" onchange="updateNearbyRadius()" class="!bg-transparent !border-none !text-xs !font-black !text-green !p-0 !cursor-pointer">
-                <option value="5" class="!bg-bg-primary">5 Kilometers</option>
-                <option value="10" selected class="!bg-bg-primary">10 Kilometers</option>
-                <option value="25" class="!bg-bg-primary">25 Kilometers</option>
-                <option value="50" class="!bg-bg-primary">50 Kilometers</option>
+  <!-- Nearby Section (Hidden initially) -->
+  <div id="nearby-section" class="hidden space-y-8 mb-20 fade-in">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">Nearby Findings</h2>
+        <div class="flex items-center gap-4">
+            <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Radius</label>
+            <select id="radius-select" onchange="updateNearbyRadius()" class="px-4 py-2 rounded-xl border-2 border-gray-100 text-sm font-bold bg-white cursor-pointer outline-none">
+                <option value="5">5 km</option>
+                <option value="10" selected>10 km</option>
+                <option value="25">25 km</option>
+                <option value="50">50 km</option>
             </select>
         </div>
     </div>
-    
-    <div id="nearby-map" class="h-[500px] rounded-[48px] shadow-3xl border-8 border-bg-secondary mb-12 relative z-10 overflow-hidden"></div>
-    <div id="nearby-status" class="text-center text-[10px] font-black text-text-muted uppercase tracking-[0.4em] mb-12 glow-pulse">🔍 Synchronizing GPS Coordinates...</div>
-    <div id="nearby-results" class="grid md:grid-cols-3 gap-10">
+    <div id="nearby-map" class="h-[450px] rounded-3xl shadow-2xl border-4 border-white mb-8 relative z-10"></div>
+    <div id="nearby-status" class="text-center text-sm font-bold text-gray-400">🔍 Connecting to GPS...</div>
+    <div id="nearby-results" class="grid md:grid-cols-3 gap-6">
         <!-- Results dynamically added -->
     </div>
   </div>
 
-  <div class="mb-20">
-    <div class="flex items-center gap-6 mb-12">
-        <h2 class="section-title !m-0">Global Collections</h2>
-        <div class="h-px flex-grow bg-white/5"></div>
-    </div>
-    
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+  <div class="mb-12">
+    <h2 class="text-2xl font-bold mb-8">Featured on Dronacharya</h2>
+    <div class="grid md:grid-cols-3 gap-8">
         {% for book in books %}
-            <div class="card group hover:-translate-y-4 transition-all duration-500 bg-bg-secondary/40 border-white/5 shadow-2xl relative cursor-pointer overflow-hidden p-0" 
-                 onclick="window.location='{{ url_for('books.book_detail', id=book.id) }}'">
-                
-                <div class="aspect-[3/4] overflow-hidden relative">
+            <div class="card group hover:translate-y-[-10px] transition-all bg-white shadow-xl relative" onclick="window.location='{{ url_for('books.book_detail', id=book.id) }}'">
+                <div class="aspect-[3/4] overflow-hidden rounded-t-2xl relative">
                     <img src="{{ url_for('static', filename='uploads/' + (book.cover_image or 'default_book.png')) }}" 
-                         class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110">
-                    
-                    <div class="absolute top-6 left-6">
+                         class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 left-4">
                         {% if book.listing_type == 'sell' %}
-                            <span class="badge badge-gold !px-5 !py-1.5 !text-[9px] !font-black !uppercase !tracking-widest shadow-2xl">Acquisition</span>
+                            <span class="bg-black text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow-lg">Sale</span>
                         {% elif book.listing_type == 'swap' %}
-                            <span class="badge badge-cyan !px-5 !py-1.5 !text-[9px] !font-black !uppercase !tracking-widest shadow-2xl">Alchemy</span>
+                            <span class="bg-blue-600 text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow-lg">Swap</span>
                         {% else %}
-                            <span class="badge badge-violet !px-5 !py-1.5 !text-[9px] !font-black !uppercase !tracking-widest shadow-2xl">Legacy</span>
+                            <span class="bg-violet-600 text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow-lg">Donate</span>
                         {% endif %}
                     </div>
-                    
-                    <div class="absolute inset-0 bg-gradient-to-t from-bg-primary via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
-
-                <div class="p-8 relative">
-                    <h3 class="text-2xl font-black text-white mb-3 truncate group-hover:text-gold transition-colors" style="font-family:'Space Grotesk', sans-serif;">{{ book.title }}</h3>
-                    <p class="text-[10px] text-text-muted font-black uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
-                        <span class="text-green opacity-50">📍</span> {{ book.address.split(',')[0] }}
-                    </p>
-                    
-                    <div class="flex items-center justify-between border-t border-white/5 pt-6 mt-auto">
-                        <div class="text-3xl font-black gold-text" style="font-family:'Cinzel', serif;">
-                            {% if book.listing_type == 'sell' %}
-                                <span class="text-xs font-bold text-text-muted mr-1">₹</span>{{ book.price|int }}
-                            {% else %}
-                                <span class="text-lg">{{ book.listing_type|capitalize }}</span>
-                            {% endif %}
+                <div class="p-6">
+                    <h3 class="font-bold text-gray-900 mb-2 truncate text-xl group-hover:text-green-700">{{ book.title }}</h3>
+                    <p class="text-xs text-gray-500 mb-6 flex items-center gap-1">📍 {{ book.address.split(',')[0] }}</p>
+                    <div class="flex items-center justify-between mt-auto">
+                        <div class="text-2xl font-black text-green-700">
+                            {% if book.listing_type == 'sell' %}₹{{ book.price|int }}{% else %}{{ book.listing_type|capitalize }}{% endif %}
                         </div>
-                        <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10 group-hover:bg-green group-hover:text-bg-primary group-hover:border-green group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700">→</div>
+                        <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 font-black group-hover:bg-green-600 group-hover:text-white transition shadow-sm">→</div>
                     </div>
                 </div>
             </div>
@@ -115,11 +88,4 @@
     </div>
   </div>
 </section>
-
-<style>
-  /* Leaflet Map Custom Darkness */
-  .leaflet-container { background: #060B18 !important; }
-  .leaflet-tile { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
-  .leaflet-bar a { background-color: #0A0F1E !important; color: #F4A261 !important; border-bottom: 1px solid #1A1F2E !important; }
-</style>
 {% endblock %}

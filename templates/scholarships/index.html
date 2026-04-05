@@ -1,72 +1,87 @@
 {% extends "base.html" %}
-{% block title %}Scholarship Nexus | Dronacharya Hub{% endblock %}
+
+{% block title %}Scholarships | Dronacharya Hub{% endblock %}
+
+{% block head %}
+<style>
+  .scholarship-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .scholarship-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    border-color: rgba(244, 162, 97, 0.4);
+  }
+  .glass-nav {
+    background: rgba(11, 20, 55, 0.8);
+    backdrop-filter: blur(12px);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="min-h-screen py-24 px-6 relative overflow-hidden">
-  
-  <div class="max-w-7xl mx-auto relative z-10">
+<div class="min-h-screen bg-[#070D26] text-white py-20 px-4">
+  <div class="max-w-7xl mx-auto">
     <!-- Header Section -->
-    <div class="text-center mb-24 fade-in">
-      <div class="inline-block px-5 py-2 rounded-full glass border-gold/20 text-gold text-[10px] font-black uppercase tracking-[0.4em] mb-8 glow-pulse">
-          Educational Endowment
-      </div>
-      <h1 class="text-6xl md:text-7xl font-black text-white mb-8 leading-tight" style="font-family:'Cinzel', serif;">
-        Educational <span class="gold-text">Endowments</span>
+    <div class="text-center mb-16" data-aos="fade-up">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-200 bg-clip-text text-transparent" style="font-family:'Cinzel', serif;">
+        Educational Scholarships
       </h1>
-      <p class="text-text-secondary text-xl font-light max-w-2xl mx-auto leading-relaxed italic">
-        "Empowering the scholarly elite from genesis to mastery. Explore local and global financial support architectures."
+      <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+        Empowering your educational journey from Class 1 to Master's. Explore government, non-government, and private scholarships tailored for every stage of your education.
       </p>
     </div>
 
     <!-- Filters -->
-    <div class="flex flex-wrap items-center justify-center gap-4 mb-20 fade-in-1" id="filter-buttons">
-      <button data-filter="all" class="filter-btn px-10 py-3.5 rounded-full bg-gold text-bg-primary font-black text-[10px] uppercase tracking-widest transition-all shadow-3xl shadow-gold/20 active:scale-95">All Protocols</button>
-      <button data-filter="Government" class="filter-btn px-10 py-3.5 rounded-full glass border-white/10 text-text-muted hover:text-white hover:border-gold/40 text-[10px] font-black uppercase tracking-widest transition-all">Governmental</button>
-      <button data-filter="Private" class="filter-btn px-10 py-3.5 rounded-full glass border-white/10 text-text-muted hover:text-white hover:border-gold/40 text-[10px] font-black uppercase tracking-widest transition-all">Private Guilds</button>
-      <button data-filter="Non-Government" class="filter-btn px-10 py-3.5 rounded-full glass border-white/10 text-text-muted hover:text-white hover:border-gold/40 text-[10px] font-black uppercase tracking-widest transition-all">Non-Gov Trusts</button>
+    <div class="flex flex-wrap items-center justify-center gap-4 mb-12" id="filter-buttons">
+      <button data-filter="all" class="filter-btn px-6 py-2 rounded-full bg-amber-500 text-[#070D26] font-bold transition hover:bg-amber-400 shadow-[0_0_15px_rgba(244,162,97,0.3)]">All</button>
+      <button data-filter="Government" class="filter-btn px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 transition border border-white/10">Government</button>
+      <button data-filter="Private" class="filter-btn px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 transition border border-white/10">Private</button>
+      <button data-filter="Non-Government" class="filter-btn px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 transition border border-white/10">Non-Government</button>
     </div>
 
     <!-- Scholarship Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 fade-in-2" id="scholarship-grid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="scholarship-grid">
       {% for sch in scholarships %}
-      <div class="card p-10 flex flex-col h-full relative overflow-hidden group hover:-translate-y-4 transition-all duration-700 bg-bg-secondary/40 border-white/5 shadow-3xl" data-category="{{ sch.category }}">
-        <div class="absolute -right-20 -top-20 w-40 h-40 bg-gold/5 rounded-full blur-[80px] group-hover:bg-gold/10 transition-all duration-700"></div>
-        
+      <div class="scholarship-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden group" data-category="{{ sch.category }}">
         <!-- Floating Badge -->
-        <span class="absolute top-8 right-8 text-[8px] font-black uppercase tracking-[0.2em] px-4 py-1.5 bg-gold/20 text-gold border border-gold/30 rounded-full shadow-2xl relative z-20">
+        <span class="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-full">
           {{ sch.category }}
         </span>
 
-        <div class="mb-10 relative z-10 pr-20">
-          <div class="text-gold text-[10px] font-black uppercase tracking-[0.3em] mb-4 opacity-80">{{ sch.agency }}</div>
-          <h3 class="text-2xl font-black text-white group-hover:text-gold transition-colors leading-tight" style="font-family:'Space Grotesk', sans-serif;">{{ sch.title }}</h3>
+        <div class="mb-4">
+          <div class="text-amber-500 text-sm font-medium mb-1 opacity-80">{{ sch.agency }}</div>
+          <h3 class="text-xl font-bold text-white group-hover:text-amber-400 transition">{{ sch.title }}</h3>
         </div>
 
-        <div class="flex-grow space-y-8 relative z-10">
-          <div class="flex items-center gap-3 text-[10px] font-black text-white/50 uppercase tracking-widest">
-            <span class="w-2.5 h-2.5 rounded-full bg-green glow-pulse"></span>
-            <span>Status: <span class="text-white">{{ sch.status }}</span></span>
+        <div class="flex-grow">
+          <div class="flex items-center gap-2 mb-4 text-sm text-gray-400">
+            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+            <span>Status: {{ sch.status }}</span>
           </div>
           
-          <div class="space-y-6">
+          <div class="space-y-4">
             <div>
-              <p class="text-[9px] font-black text-text-muted uppercase tracking-[0.3em] mb-3">Eligibility Index</p>
-              <p class="text-sm text-text-secondary line-clamp-2 italic font-light">{{ sch.eligibility }}</p>
+              <p class="text-xs font-bold text-gray-500 uppercase tracking-tighter mb-1">Eligibility</p>
+              <p class="text-sm text-gray-300 line-clamp-2">{{ sch.eligibility }}</p>
             </div>
             <div>
-              <p class="text-[9px] font-black text-text-muted uppercase tracking-[0.3em] mb-3">Narrative</p>
-              <p class="text-sm text-text-secondary leading-relaxed line-clamp-3 font-light">{{ sch.description }}</p>
+              <p class="text-xs font-bold text-gray-500 uppercase tracking-tighter mb-1">Description</p>
+              <p class="text-sm text-gray-400 leading-relaxed">{{ sch.description }}</p>
             </div>
-            <div class="flex justify-between items-center pt-8 border-t border-white/5 mt-auto">
-              <span class="gold-text font-black text-2xl" style="font-family:'Cinzel', serif;">{{ sch.amount }}</span>
+            <div class="flex justify-between items-center pt-4 border-t border-white/5 mt-auto">
+              <span class="text-amber-500 font-bold text-lg">{{ sch.amount }}</span>
             </div>
           </div>
         </div>
 
-        <div class="mt-10 relative z-10">
+        <div class="mt-6">
           <a href="{{ sch.link }}" target="_blank" 
-             class="block w-full text-center py-5 rounded-2xl bg-gradient-to-r from-violet to-cyan text-bg-primary font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-violet/30 hover:scale-[1.02] active:scale-95 transition-all">
-            Initiate Application
+             class="block w-full text-center py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold hover:from-blue-500 hover:to-indigo-600 transition shadow-lg shadow-blue-900/20">
+            Apply Now
           </a>
         </div>
       </div>
@@ -74,37 +89,36 @@
     </div>
 
     <!-- Info Section -->
-    <div class="mt-32 p-16 rounded-[48px] bg-bg-secondary/40 border-white/10 shadow-4xl backdrop-blur-3xl relative overflow-hidden group fade-in-3">
-      <div class="absolute -right-40 -bottom-40 w-96 h-96 bg-gold/5 rounded-full blur-[100px]"></div>
-      <div class="grid lg:grid-cols-2 gap-20 items-center relative z-10">
+    <div class="mt-24 p-8 rounded-3xl bg-gradient-to-br from-[#0B1437] to-[#121B41] border border-white/10 shadow-2xl">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <h2 class="text-4xl font-black text-white mb-8 border-b border-white/5 pb-8" style="font-family:'Cinzel', serif;">Universal Academic Support</h2>
-          <p class="text-text-secondary leading-relaxed text-lg font-light italic">
-            "Dronacharya Hub synthesizes the most authoritative endowment schemes, enabling scholars to focus exclusively on their intellectual pursuit. From primary genesis to doctoral mastery, the financial architecture is secure."
+          <h2 class="text-3xl font-bold mb-6 text-white" style="font-family:'Cinzel', serif;">Helping Every Learner</h2>
+          <p class="text-gray-400 leading-relaxed space-y-4">
+            Dronacharya Hub identifies and indexes the most reliable scholarship opportunities so students can focus on what matters most — learning. 
+            Whether you are in Primary School or pursuing a PhD, there is a financial support system waiting for you.
           </p>
-          <div class="mt-12 flex gap-12">
+          <div class="mt-8 flex gap-6">
             <div class="flex flex-col">
-              <span class="text-5xl font-black gold-text" style="font-family:'Cinzel', serif;">100+</span>
-              <span class="text-[9px] font-black text-text-muted uppercase tracking-[0.3em] mt-2">Active Protocols</span>
+              <span class="text-3xl font-bold text-amber-500">100+</span>
+              <span class="text-xs text-gray-500 uppercase">Scholarships Found</span>
             </div>
             <div class="flex flex-col">
-              <span class="text-5xl font-black text-cyan" style="font-family:'Cinzel', serif;">24/7</span>
-              <span class="text-[9px] font-black text-text-muted uppercase tracking-[0.3em] mt-2">Archive Updates</span>
+              <span class="text-3xl font-bold text-blue-500">24/7</span>
+              <span class="text-xs text-gray-500 uppercase">Updates Daily</span>
             </div>
           </div>
         </div>
-        
         <div class="relative group">
-          <div class="absolute -inset-2 bg-gradient-to-r from-gold/30 to-violet/30 rounded-[40px] blur-3xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-          <div class="relative glass bg-bg-primary/40 p-12 rounded-[40px] border border-white/10 backdrop-blur-2xl shadow-3xl">
-            <h4 class="text-gold font-black text-xs uppercase tracking-[0.3em] mb-8 border-b border-white/5 pb-6">Required Documentation</h4>
-            <ul class="text-sm text-text-secondary space-y-5 font-light">
-              <li class="flex items-center gap-4 text-xs"><span class="text-green text-sm">✔</span> Previous Marks Records</li>
-              <li class="flex items-center gap-4 text-xs"><span class="text-green text-sm">✔</span> Economic Standing Certificate</li>
-              <li class="flex items-center gap-4 text-xs"><span class="text-green text-sm">✔</span> Caste/Guild Validation</li>
-              <li class="flex items-center gap-4 text-xs"><span class="text-green text-sm">✔</span> Domicile/Territorial Proof</li>
-              <li class="flex items-center gap-4 text-xs"><span class="text-green text-sm">✔</span> Sovereign Bank Identification</li>
-              <li class="flex items-center gap-4 text-xs"><span class="text-green text-sm">✔</span> Captured Visage (Photograph)</li>
+          <div class="absolute -inset-1 bg-gradient-to-r from-amber-500 to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+          <div class="relative bg-black/40 p-8 rounded-2xl backdrop-blur-xl border border-white/10">
+            <h4 class="text-amber-500 font-bold mb-4">Required Documents for Most Schemes</h4>
+            <ul class="text-sm text-gray-300 space-y-2">
+              <li class="flex items-center gap-2">✔ Marksheet of previous examination</li>
+              <li class="flex items-center gap-2">✔ Income Certificate</li>
+              <li class="flex items-center gap-2">✔ Caste Certificate (if applicable)</li>
+              <li class="flex items-center gap-2">✔ Domicile Certificate</li>
+              <li class="flex items-center gap-2">✔ Bank Passbook photocopy</li>
+              <li class="flex items-center gap-2">✔ Passport size photograph</li>
             </ul>
           </div>
         </div>
@@ -112,23 +126,13 @@
     </div>
   </div>
 </div>
-
-<style>
-  /* Dynamic Filter Styles */
-  .filter-btn.active-gold { 
-    background: var(--gold) !important; 
-    color: var(--bg-primary) !important; 
-    border-color: rgba(244,162,97,0.4) !important;
-    box-shadow: 0 10px 40px rgba(244,162,97,0.3) !important;
-  }
-</style>
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const cards = document.querySelectorAll('.card[data-category]');
+    const cards = document.querySelectorAll('.scholarship-card');
 
     filterButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -136,18 +140,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // UI Update
             filterButtons.forEach(b => {
-                b.className = "filter-btn px-10 py-3.5 rounded-full glass border-white/10 text-text-muted hover:text-white hover:border-gold/40 text-[10px] font-black uppercase tracking-widest transition-all";
+                b.classList.remove('bg-amber-500', 'text-[#070D26]', 'font-bold', 'shadow-[0_0_15px_rgba(244,162,97,0.3)]');
+                b.classList.add('bg-white/10', 'border-white/10');
             });
-            btn.className = "filter-btn px-10 py-3.5 rounded-full bg-gold text-bg-primary font-black text-[10px] uppercase tracking-widest transition-all shadow-3xl shadow-gold/20 active:scale-95";
+            btn.classList.add('bg-amber-500', 'text-[#070D26]', 'font-bold', 'shadow-[0_0_15px_rgba(244,162,97,0.3)]');
+            btn.classList.remove('bg-white/10', 'border-white/10');
 
             // Filtering
             cards.forEach(card => {
                 if (filter === 'all' || card.getAttribute('data-category') === filter) {
                     card.style.display = 'flex';
-                    card.classList.add('fade-in');
                 } else {
                     card.style.display = 'none';
-                    card.classList.remove('fade-in');
                 }
             });
         });

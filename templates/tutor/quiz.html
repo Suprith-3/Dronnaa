@@ -1,107 +1,84 @@
 {% extends 'base.html' %}
 {% block title %}AI Quiz - Dronacharya Tutor{% endblock %}
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 py-20 relative z-10">
-  
-  <div class="text-center mb-16 fade-in">
-    <div class="inline-block px-4 py-1.5 rounded-full glass border-gold/20 text-gold text-[10px] font-bold uppercase tracking-[0.3em] mb-6">Proctored Session</div>
-    <h1 class="text-5xl font-black text-white mb-4" style="font-family:'Cinzel', serif;">AI Quiz <span class="gold-text">Chamber</span></h1>
-    <p class="text-text-secondary font-light text-lg">Master any domain through 10 intelligent challenges.</p>
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <div class="text-center mb-12">
+    <h1 style="font-family:'Cinzel',serif;" class="text-4xl font-bold text-gray-900 mb-4">Dronacharya AI Quiz</h1>
+    <p class="text-gray-500">Master any topic with 10 intelligent MCQs.</p>
   </div>
 
   <!-- Input Area -->
-  <div id="quiz-input-area" class="card p-12 text-center border-t-4 border-gold bg-bg-secondary/40 backdrop-blur-3xl fade-in-1">
-    <div class="flex flex-col items-center">
-      <div class="text-7xl mb-8 float-anim">🏆</div>
-      <h2 class="text-3xl font-bold text-white mb-4">Choose Your Subject</h2>
-      <p class="text-text-secondary max-w-sm mb-10 italic font-light">"Knowledge is a weapon. Sharpen it through assessment."</p>
-      
-      <div class="w-full max-w-md group">
+  <div id="quiz-input-area" class="card p-10 bg-white shadow-2xl border-t-8 border-amber-400">
+    <div class="flex flex-col items-center gap-6">
+      <div class="text-6xl mb-4">🏆</div>
+      <h2 class="text-2xl font-bold text-gray-800">Choose a Topic</h2>
+      <p class="text-center text-gray-500 max-w-sm mb-4 italic">"Test yourself, for the path to wisdom begins with self-assessment."</p>
+      <div class="w-full max-w-md">
         <input type="text" id="quiz-topic" value="{{ request.args.get('topic','') }}" 
-               class="text-center !text-xl !py-5" 
-               placeholder="e.g. Modern History, Quantum Physics, JS Basics">
+               class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-amber-400 focus:ring-4 focus:ring-amber-100 transition outline-none text-lg font-medium" 
+               placeholder="e.g. History of India, DSA, Python Basics">
       </div>
-      
-      <button onclick="generateQuiz()" id="start-btn" class="mt-10 btn-gold px-16 py-5 text-xl font-black tracking-widest uppercase shadow-2xl shadow-gold/20">
-        Awaken Quiz →
-      </button>
+      <button onclick="generateQuiz()" id="start-btn" class="btn-primary btn-gold px-12 py-4 rounded-full text-lg shadow-xl hover:shadow-2xl transition-all">Start AI Quiz →</button>
     </div>
   </div>
 
   <!-- Loading -->
-  <div id="quiz-loading" class="hidden card p-24 text-center border-white/5 bg-bg-secondary/60 backdrop-blur-3xl">
-    <div class="quiz-spinner mb-10"></div>
-    <h2 class="text-3xl font-black gold-text mb-4">Summoning Questions...</h2>
-    <p class="text-text-secondary italic font-light tracking-wide">"The sage Dronacharya is crafting your challenge..."</p>
+  <div id="quiz-loading" class="hidden card p-20 text-center shadow-xl">
+    <div class="flex justify-center mb-6">
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-amber-500"></div>
+    </div>
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Generating Questions...</h2>
+    <p class="text-gray-500 italic">"Dronacharya is preparing your test..."</p>
   </div>
 
   <!-- Quiz Display -->
-  <div id="quiz-display" class="hidden space-y-8 fade-in">
-    <div class="flex items-center justify-between">
-        <div id="q-number" class="badge badge-gold !px-6 !py-2 !text-xs">Question 1 of 10</div>
-        <div class="flex items-center gap-3 glass px-5 py-2 rounded-2xl border-white/10">
+  <div id="quiz-display" class="hidden">
+    <div class="flex items-center justify-between mb-6">
+        <div id="q-number" class="text-sm font-bold text-amber-600 uppercase tracking-widest">Question 1 of 10</div>
+        <div class="flex items-center gap-2 text-gray-500 font-bold">
             <span class="text-xl">⏱</span>
-            <span id="timer" class="text-2xl font-black mono text-gold">30</span>
-            <span class="text-xs uppercase tracking-widest text-text-muted font-bold">seconds</span>
+            <span id="timer" class="text-lg w-10 text-right">30</span>s
         </div>
     </div>
-    
-    <div class="progress-bar">
-        <div id="q-progress" class="progress-fill" style="width: 10%"></div>
+    <div class="progress-bar mb-8 h-2">
+        <div id="q-progress" class="progress-fill h-full bg-amber-500" style="width: 10%"></div>
     </div>
     
-    <div class="card p-12 bg-bg-secondary/40 border-white/5 shadow-3xl">
-        <h2 id="q-text" class="text-3xl font-bold text-white mb-12 leading-snug">Loading your test...</h2>
-        <div id="q-options" class="grid grid-cols-1 gap-5">
+    <div class="card p-10 bg-white shadow-2xl mb-8">
+        <h2 id="q-text" class="text-2xl font-bold text-gray-900 mb-8 leading-relaxed">Loading question...</h2>
+        <div id="q-options" class="grid grid-cols-1 gap-4">
             <!-- Options dynamically added -->
         </div>
     </div>
   </div>
 
   <!-- Results -->
-  <div id="results-display" class="hidden card p-16 text-center border-t-8 border-green bg-green-dim/10 backdrop-blur-3xl shadow-3xl">
-    <div class="text-6xl mb-6">📜</div>
-    <h2 class="text-4xl font-black text-white mb-6">Assessment Complete</h2>
-    
-    <div class="flex flex-col items-center justify-center gap-2 mb-12">
-        <span id="final-score" class="text-9xl font-black gold-text drop-shadow-[0_0_30px_rgba(244,162,97,0.3)]">0/10</span>
-        <span id="final-pct" class="text-3xl font-bold text-text-secondary">0% Proficiency</span>
+  <div id="results-display" class="hidden card p-12 text-center shadow-2xl border-t-8 border-green-500">
+    <h2 class="text-3xl font-bold text-gray-900 mb-4">Quiz Completed!</h2>
+    <div class="flex justify-center items-end gap-2 mb-8">
+        <span id="final-score" class="text-6xl font-black text-green-600">0/10</span>
+        <span id="final-pct" class="text-2xl font-bold text-gray-400 mb-2">0%</span>
     </div>
-    
-    <p class="text-text-secondary text-lg mb-12 italic font-light max-w-lg mx-auto">"Wisdom is identifying what you don't know. Seek perfection in the next round."</p>
-    
-    <div class="flex flex-col sm:flex-row gap-6 justify-center">
-        <button onclick="location.reload()" class="btn-gold px-12 py-4 text-sm font-black uppercase tracking-widest">Retry Quest</button>
-        <a href="{{ url_for('tutor.quiz_history') }}" class="btn-ghost px-12 py-4 text-sm font-black uppercase tracking-widest">View Archives →</a>
+    <p class="text-gray-500 mb-10 italic">"Knowledge without practice is poison. Well done on practicing!"</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button onclick="location.reload()" class="btn-primary btn-gold px-10 py-3 rounded-full font-bold shadow-lg">Try Again</button>
+        <a href="{{ url_for('tutor.quiz_history') }}" class="px-10 py-3 rounded-full font-bold text-gray-600 hover:text-gray-900 transition">View History →</a>
     </div>
   </div>
 </div>
 
 <!-- Anti-Cheat Overlay & Camera -->
-<div id="anti-cheat-container" class="fixed bottom-6 right-6 w-56 h-40 bg-black rounded-3xl overflow-hidden border-2 border-gold shadow-[0_0_40px_rgba(244,162,97,0.3)] z-50 hidden group">
-    <video id="cheat-video" class="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-500" autoplay muted playsinline></video>
+<div id="anti-cheat-container" class="fixed bottom-4 right-4 w-48 h-36 bg-black rounded-2xl overflow-hidden border-2 border-amber-400 shadow-2xl z-50 hidden">
+    <video id="cheat-video" class="w-full h-full object-cover" autoplay muted playsinline></video>
     <canvas id="cheat-canvas" class="hidden"></canvas>
-    <div id="cheat-status" class="absolute top-3 left-3 px-3 py-1.5 bg-green/80 backdrop-blur-md text-white text-[9px] rounded-full font-black uppercase tracking-widest shadow-lg">Monitoring Active</div>
+    <div id="cheat-status" class="absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-[10px] rounded-full font-bold uppercase">Monitoring</div>
 </div>
 
 <style>
-  .quiz-spinner { position: relative; width: 80px; height: 80px; margin: 0 auto; }
-  .quiz-spinner::before, .quiz-spinner::after { 
-    content: ''; position: absolute; border-radius: 50%; border: 3px solid transparent;
-  }
-  .quiz-spinner::before { 
-    inset: 0; border-top-color: var(--gold); 
-    animation: spin 1s linear infinite; 
-  }
-  .quiz-spinner::after { 
-    inset: 12px; border-top-color: var(--cyan); 
-    animation: spin 0.8s linear infinite reverse; 
-  }
-
   @keyframes flicker-bg {
-    0% { background-color: rgba(239, 68, 68, 0.4); }
-    50% { background-color: rgba(16, 185, 129, 0.4); }
-    100% { background-color: rgba(239, 68, 68, 0.4); }
+    0% { background-color: rgba(255, 0, 0, 0.8); }
+    50% { background-color: rgba(0, 255, 0, 0.8); }
+    100% { background-color: rgba(255, 0, 0, 0.8); }
   }
   .cheating-alert-active {
     animation: flicker-bg 0.15s infinite !important;
@@ -110,38 +87,6 @@
   }
   .cheating-alert-active * {
     pointer-events: none;
-  }
-  
-  /* Option Style Override */
-  .quiz-option-btn {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 20px 28px;
-    text-align: left;
-    color: var(--text-secondary);
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 17px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-  }
-  .quiz-option-btn:hover {
-    background: rgba(244,162,97,0.08);
-    border-color: var(--gold);
-    color: white;
-    transform: translateX(8px);
-    box-shadow: 0 10px 30px -10px rgba(244,162,97,0.3);
-  }
-  .quiz-option-btn.correct {
-    background: var(--green-dim) !important;
-    border-color: var(--green) !important;
-    color: var(--green) !important;
-    box-shadow: 0 0 40px rgba(16, 185, 129, 0.2) !important;
-  }
-  .quiz-option-btn.incorrect {
-    background: rgba(239, 68, 68, 0.1) !important;
-    border-color: var(--red) !important;
-    color: var(--red) !important;
   }
 </style>
 {% endblock %}
@@ -234,7 +179,7 @@
     cheatDetected = true;
     document.body.classList.add('cheating-alert-active');
     document.getElementById('cheat-status').textContent = reason;
-    document.getElementById('cheat-status').className = "absolute top-3 left-3 px-3 py-1.5 bg-red-600 text-white text-[9px] rounded-full font-black uppercase tracking-widest shadow-lg";
+    document.getElementById('cheat-status').className = "absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-[10px] rounded-full font-bold uppercase";
     
     // Voice alert
     const now = Date.now();
@@ -283,8 +228,8 @@
     
     cheatDetected = false;
     document.body.classList.remove('cheating-alert-active');
-    document.getElementById('cheat-status').textContent = "Monitoring Active";
-    document.getElementById('cheat-status').className = "absolute top-3 left-3 px-3 py-1.5 bg-green/80 backdrop-blur-md text-white text-[9px] rounded-full font-black uppercase tracking-widest shadow-lg";
+    document.getElementById('cheat-status').textContent = "Monitoring";
+    document.getElementById('cheat-status').className = "absolute top-2 left-2 px-2 py-1 bg-green-500 text-white text-[10px] rounded-full font-bold uppercase";
   }
 
   // Hook into the existing start quiz button

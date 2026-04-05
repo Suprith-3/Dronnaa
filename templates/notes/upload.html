@@ -1,69 +1,74 @@
 {% extends "base.html" %}
+
 {% block title %}Share Your Knowledge | Dronacharya Hub{% endblock %}
 
+{% block head %}
+<style>
+  .upload-glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="min-h-screen py-24 px-6 relative flex items-center justify-center overflow-hidden">
-  
-  <div class="max-w-3xl w-full relative z-10">
+<div class="min-h-screen bg-[#070D26] py-24 px-4 flex items-center justify-center">
+  <div class="max-w-2xl w-full">
     
-    <div class="mb-16 text-center fade-in">
-        <div class="inline-block px-5 py-2 rounded-full glass border-violet/20 text-violet text-[10px] font-black uppercase tracking-[0.4em] mb-8 glow-pulse">
-            Knowledge Transfer Protocol
-        </div>
-        <h1 class="text-6xl font-black text-white mb-6 leading-tight uppercase" style="font-family:'Cinzel', serif;">
-           Share Your <span class="gold-text">Manuscript</span>
-        </h1>
-        <p class="text-text-secondary italic font-light text-lg">"Knowledge is the only treasure that grows when shared with the collective."</p>
+    <div class="mb-10 text-center">
+       <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent" style="font-family:'Cinzel', serif;">
+          Share Your Notes
+       </h1>
+       <p class="text-gray-400 italic">"Knowledge is the only treasure that grows when shared."</p>
     </div>
 
-    <div class="card p-12 md:p-16 bg-bg-secondary/40 border-white/5 shadow-3xl backdrop-blur-3xl relative overflow-hidden group">
-      <div class="absolute -right-20 -top-20 w-40 h-40 bg-violet/5 rounded-full blur-[80px]"></div>
-      
-      <form action="{{ url_for('notes.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-10 relative z-10">
+    <div class="upload-glass rounded-3xl p-8 md:p-12">
+      <form action="{{ url_for('notes.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         
-        <div class="space-y-3">
-          <label class="block text-text-muted text-[10px] font-black uppercase tracking-[0.3em] mb-3 pl-1">Manuscript Title</label>
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-gray-300 ml-1">Title</label>
           <input type="text" name="title" required placeholder="e.g. Physics Chapter 3: Thermodynamics" 
-                 class="!py-5 !text-lg !font-bold">
+                 class="w-full bg-[#111827] border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition">
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div class="space-y-3">
-            <label class="block text-text-muted text-[10px] font-black uppercase tracking-[0.3em] mb-3 pl-1">Primary Subject</label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-300 ml-1">Subject</label>
             <input type="text" name="subject" required placeholder="e.g. Physics, History, Math" 
-                   class="!py-4 !text-sm !font-bold">
+                   class="w-full bg-[#111827] border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition">
           </div>
           {% if not current_user.is_authenticated %}
-          <div class="space-y-3">
-            <label class="block text-text-muted text-[10px] font-black uppercase tracking-[0.3em] mb-3 pl-1">Scribe Identity</label>
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-300 ml-1">Your Name</label>
             <input type="text" name="uploader_name" placeholder="Leave empty for Anonymous" 
-                   class="!py-4 !text-sm !font-bold">
+                   class="w-full bg-[#111827] border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition">
           </div>
           {% endif %}
         </div>
 
-        <div class="space-y-3">
-          <label class="block text-text-muted text-[10px] font-black uppercase tracking-[0.3em] mb-3 pl-1">Chronicle Context (Optional)</label>
-          <textarea name="description" rows="3" placeholder="Briefly explain the essence of these notes..." 
-                    class="!py-5 !px-6 !text-base !font-light !leading-relaxed"></textarea>
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-gray-300 ml-1">Short Description (optional)</label>
+          <textarea name="description" rows="3" placeholder="Briefly explain what's inside these notes..." 
+                    class="w-full bg-[#111827] border border-white/5 rounded-2xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition resize-none"></textarea>
         </div>
 
-        <div class="pt-6">
-          <label class="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-[32px] p-16 cursor-pointer hover:border-violet/40 hover:bg-white/5 transition-all duration-500 group relative overflow-hidden shadow-2xl">
-             <div class="absolute inset-0 bg-violet/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-             <div class="text-7xl mb-6 group-hover:scale-125 transition-all duration-700 float-anim relative z-10">📤</div>
-             <div class="font-black text-white text-xl mb-2 relative z-10" id="file-label">Select Artifact (PDF/Image)</div>
-             <div class="text-[9px] font-black text-text-muted uppercase tracking-[0.3em] relative z-10">Max size: 10 Standard Units (MB)</div>
+        <div class="pt-4">
+          <label class="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-3xl p-10 cursor-pointer hover:bg-white/5 transition border-indigo-500/30 group">
+             <div class="text-5xl mb-4 group-hover:scale-110 transition duration-300">📤</div>
+             <div class="font-bold text-lg mb-1" id="file-label">Choose File (PDF or Image)</div>
+             <div class="text-xs text-gray-500">Max size: 10MB</div>
              <input type="file" name="file" required class="hidden" id="file-input" onchange="updateLabel()">
           </label>
         </div>
 
-        <button type="submit" class="w-full btn-royal !py-6 !rounded-[32px] !text-xs !font-black !uppercase !tracking-[0.3em] shadow-3xl shadow-violet/30 hover:scale-[1.02] transition-all">
-           Register Artifact to Archives
+        <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-bold text-lg hover:from-indigo-500 hover:to-purple-600 transition shadow-xl shadow-indigo-900/40 transform hover:-translate-y-1">
+           Submit Notes
         </button>
 
-        <a href="{{ url_for('notes.index') }}" class="block text-center text-[10px] font-black text-text-muted hover:text-white uppercase tracking-[0.4em] transition-colors border-b-2 border-transparent hover:border-white/10 pb-2 w-fit mx-auto">
-           Return to Vault
+        <a href="{{ url_for('notes.index') }}" class="block text-center text-sm text-gray-500 hover:text-indigo-400 transition font-medium underline">
+           Cancel and Return
         </a>
       </form>
     </div>
@@ -78,8 +83,8 @@
      const input = document.getElementById('file-input');
      const label = document.getElementById('file-label');
      if (input.files.length > 0) {
-        label.innerText = "Selected Fragment: " + input.files[0].name;
-        label.className = "font-black text-gold text-xl mb-2 relative z-10 glow-pulse";
+        label.innerText = "Selected: " + input.files[0].name;
+        label.classList.add('text-indigo-400');
      }
   }
 </script>

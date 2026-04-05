@@ -1,73 +1,87 @@
 {% extends "base.html" %}
-{% block title %}Game Universe | Dronacharya Hub{% endblock %}
+
+{% block title %}Game Zone | Dronacharya Hub{% endblock %}
+
+{% block head %}
+<style>
+  .game-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+  }
+  .game-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    border-color: #F4A261;
+    box-shadow: 0 20px 40px rgba(244, 162, 97, 0.2);
+  }
+  .game-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+  }
+  .neon-glow {
+    text-shadow: 0 0 10px rgba(244, 162, 97, 0.5), 0 0 20px rgba(244, 162, 97, 0.3);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="min-h-screen py-24 px-6 relative overflow-hidden">
-  
-  <div class="max-w-7xl mx-auto relative z-10">
+<div class="min-h-screen bg-[#070D26] text-white py-20 px-4">
+  <div class="max-w-7xl mx-auto">
     <!-- Header -->
-    <div class="text-center mb-24 fade-in">
-        <div class="inline-block px-5 py-2 rounded-full glass border-gold/20 text-gold text-[10px] font-black uppercase tracking-[0.4em] mb-10 glow-pulse">
-            Cognitive Arena
-        </div>
-        <h1 class="text-6xl md:text-8xl font-black text-white mb-8 border-b border-white/5 pb-10 leading-tight" style="font-family:'Cinzel', serif;">
-            Game <span class="gold-text">Universe</span>
-        </h1>
-        <p class="text-text-secondary text-xl font-light max-w-2xl mx-auto leading-relaxed italic">
-            "Push the boundaries of your biological processing. Relax, compete, and evolve with our AI-powered neural games."
-        </p>
+    <div class="text-center mb-16" data-aos="zoom-in">
+      <h1 class="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-200 bg-clip-text text-transparent neon-glow" style="font-family:'Cinzel', serif;">
+        Game Universe
+      </h1>
+      <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+        Relax, play, and learn. Push your cognitive limits with our AI-powered brain games.
+      </p>
     </div>
 
     <!-- Games Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 fade-in-1">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
       
       <!-- Crossmath -->
-      <a href="{{ url_for('games.crossmath') }}" class="card p-12 text-center group hover:-translate-y-4 transition-all duration-700 bg-bg-secondary/40 border-white/5 shadow-3xl flex flex-col items-center">
-         <div class="w-24 h-24 rounded-3xl bg-gold/10 text-gold flex items-center justify-center text-5xl mb-8 border border-gold/20 group-hover:rotate-[360deg] transition-all duration-1000">➕</div>
-         <h2 class="text-3xl font-black mb-4 text-white uppercase tracking-widest" style="font-family:'Space Grotesk', sans-serif;">Crossmath</h2>
-         <p class="text-text-secondary text-sm font-light leading-relaxed mb-10 italic">"Master the arithmetic grid. AI-synthesized mathematical enigmas for the logical mind."</p>
-         <div class="mt-auto px-10 py-3 glass border-gold/20 rounded-2xl text-[9px] font-black text-gold uppercase tracking-[0.3em] group-hover:bg-gold group-hover:text-bg-primary transition-all duration-500 shadow-xl">Synthesize Logic</div>
+      <a href="{{ url_for('games.crossmath') }}" class="game-card rounded-3xl p-8 text-center group">
+         <div class="game-icon group-hover:scale-110 transition">➕</div>
+         <h2 class="text-2xl font-bold mb-3 text-orange-400">Crossmath</h2>
+         <p class="text-gray-400 text-sm">AI-generated math puzzles! Master arithmetic and logic in a grid.</p>
+         <div class="mt-6 px-4 py-2 bg-orange-400/10 rounded-full text-xs font-bold text-orange-400 uppercase tracking-widest border border-orange-400/20">Analyze & Solve</div>
       </a>
 
       <!-- Chess -->
-      <a href="{{ url_for('games.chess') }}" class="card p-12 text-center group hover:-translate-y-4 transition-all duration-700 bg-bg-secondary/40 border-white/5 shadow-3xl flex flex-col items-center">
-         <div class="w-24 h-24 rounded-3xl bg-cyan/10 text-cyan flex items-center justify-center text-5xl mb-8 border border-cyan/20 group-hover:scale-125 transition-all duration-500">♟️</div>
-         <h2 class="text-3xl font-black mb-4 text-white uppercase tracking-widest" style="font-family:'Space Grotesk', sans-serif;">Chess Master</h2>
-         <p class="text-text-secondary text-sm font-light leading-relaxed mb-10 italic">"Confront the Grandmaster Gemini Bot. A strategic duel at the edge of neural capacity."</p>
-         <div class="mt-auto px-10 py-3 glass border-cyan/20 rounded-2xl text-[9px] font-black text-cyan uppercase tracking-[0.3em] group-hover:bg-cyan group-hover:text-bg-primary transition-all duration-500 shadow-xl">Initiate Duel</div>
+      <a href="{{ url_for('games.chess') }}" class="game-card rounded-3xl p-8 text-center group">
+         <div class="game-icon group-hover:scale-110 transition">♟️</div>
+         <h2 class="text-2xl font-bold mb-3 text-white">Chess Master</h2>
+         <p class="text-gray-400 text-sm">Play against our Grandmaster Gemini Bot. Strategy at its finest.</p>
+         <div class="mt-6 px-4 py-2 bg-white/10 rounded-full text-xs font-bold text-white uppercase tracking-widest border border-white/20">Checkmate</div>
       </a>
 
       <!-- Skills -->
-      <a href="{{ url_for('games.skills') }}" class="card p-12 text-center group hover:-translate-y-4 transition-all duration-700 bg-bg-secondary/40 border-white/5 shadow-3xl flex flex-col items-center">
-         <div class="w-24 h-24 rounded-3xl bg-violet/10 text-violet flex items-center justify-center text-5xl mb-8 border border-violet/20 group-hover:rotate-12 transition-all duration-500">🧠</div>
-         <h2 class="text-3xl font-black mb-4 text-white uppercase tracking-widest" style="font-family:'Space Grotesk', sans-serif;">Logic Skills</h2>
-         <p class="text-text-secondary text-sm font-light leading-relaxed mb-10 italic">"Calibrate your reaction, precision, and mnemonic focus with high-speed cognitive trials."</p>
-         <div class="mt-auto px-10 py-3 glass border-violet/20 rounded-2xl text-[9px] font-black text-violet uppercase tracking-[0.3em] group-hover:bg-violet group-hover:text-white transition-all duration-500 shadow-xl">Neural Calibration</div>
+      <a href="{{ url_for('games.skills') }}" class="game-card rounded-3xl p-8 text-center group">
+         <div class="game-icon group-hover:rotate-12 transition">🧠</div>
+         <h2 class="text-2xl font-bold mb-3 text-blue-400">Logic Skills</h2>
+         <p class="text-gray-400 text-sm">Train your reaction, focus, and memory with cognitive speed games.</p>
+         <div class="mt-6 px-4 py-2 bg-blue-400/10 rounded-full text-xs font-bold text-blue-400 uppercase tracking-widest border border-blue-400/20">Brain Training</div>
       </a>
 
       <!-- Word Search -->
-      <a href="{{ url_for('games.word_search') }}" class="card p-12 text-center group hover:-translate-y-4 transition-all duration-700 bg-bg-secondary/40 border-white/5 shadow-3xl flex flex-col items-center">
-         <div class="w-24 h-24 rounded-3xl bg-green/10 text-green flex items-center justify-center text-5xl mb-8 border border-green/20 group-hover:skew-x-12 transition-all duration-500">🔠</div>
-         <h2 class="text-3xl font-black mb-4 text-white uppercase tracking-widest" style="font-family:'Space Grotesk', sans-serif;">Word Explorer</h2>
-         <p class="text-text-secondary text-sm font-light leading-relaxed mb-10 italic">"Decrypt hidden vocabularies across the lexicon. Expand your linguistic influence."</p>
-         <div class="mt-auto px-10 py-3 glass border-green/20 rounded-2xl text-[9px] font-black text-green uppercase tracking-[0.3em] group-hover:bg-green group-hover:text-bg-primary transition-all duration-500 shadow-xl">Lexicon Expansion</div>
+      <a href="{{ url_for('games.word_search') }}" class="game-card rounded-3xl p-8 text-center group">
+         <div class="game-icon group-hover:rotate-12 transition">🔠</div>
+         <h2 class="text-2xl font-bold mb-3 text-amber-500">Word Explorer</h2>
+         <p class="text-gray-400 text-sm">Find hidden words! Expand your vocabulary while exploring the cosmos.</p>
+         <div class="mt-6 px-4 py-2 bg-amber-500/10 rounded-full text-xs font-bold text-amber-500 uppercase tracking-widest border border-amber-500/20">Play Now</div>
       </a>
 
       <!-- Baby Puzzles -->
-      <a href="{{ url_for('games.baby_puzzles') }}" class="card p-12 text-center group hover:-translate-y-4 transition-all duration-700 bg-bg-secondary/40 border-white/5 shadow-3xl flex flex-col items-center">
-         <div class="w-24 h-24 rounded-3xl bg-gold/10 text-gold flex items-center justify-center text-5xl mb-8 border border-gold/20 group-hover:animate-bounce transition-all duration-500">🎈</div>
-         <h2 class="text-3xl font-black mb-4 text-white uppercase tracking-widest" style="font-family:'Space Grotesk', sans-serif;">Baby Puzzles</h2>
-         <p class="text-text-secondary text-sm font-light leading-relaxed mb-10 italic">"Foundational geometry and prismatic colors for the academy's future scholars."</p>
-         <div class="mt-auto px-10 py-3 glass border-gold/20 rounded-2xl text-[9px] font-black text-gold uppercase tracking-[0.3em] group-hover:bg-gold group-hover:text-bg-primary transition-all duration-500 shadow-xl">Genesis Puzzles</div>
+      <a href="{{ url_for('games.baby_puzzles') }}" class="game-card rounded-3xl p-8 text-center group">
+         <div class="game-icon group-hover:bounce transition">🎈</div>
+         <h2 class="text-2xl font-bold mb-3 text-pink-400">Baby Puzzles</h2>
+         <p class="text-gray-400 text-sm">Funny shapes and colors for our youngest learners! 2-5 year olds.</p>
+         <div class="mt-6 px-4 py-2 bg-pink-400/10 rounded-full text-xs font-bold text-pink-400 uppercase tracking-widest border border-pink-400/20">For Little Ones</div>
       </a>
-
-      <!-- Sudoku -->
-      <a href="{{ url_for('games.sudoku') }}" class="card p-12 text-center group hover:-translate-y-4 transition-all duration-700 bg-bg-secondary/40 border-white/5 shadow-3xl flex flex-col items-center">
-        <div class="w-24 h-24 rounded-3xl bg-white/5 text-white flex items-center justify-center text-5xl mb-8 border border-white/10 group-hover:rotate-180 transition-all duration-1000">🧩</div>
-        <h2 class="text-3xl font-black mb-4 text-white uppercase tracking-widest" style="font-family:'Space Grotesk', sans-serif;">Sudoku Vault</h2>
-        <p class="text-text-secondary text-sm font-light leading-relaxed mb-10 italic">"The definitive numerical challenge. Organize the chaos into pure mathematical order."</p>
-        <div class="mt-auto px-10 py-3 glass border-white/10 rounded-2xl text-[9px] font-black text-text-muted uppercase tracking-[0.3em] group-hover:bg-white group-hover:text-bg-primary transition-all duration-500 shadow-xl">Solve Chaos</div>
-     </a>
 
     </div>
   </div>

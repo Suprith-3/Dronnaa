@@ -1,72 +1,44 @@
 {% extends 'base.html' %}
-{% block title %}{{ video.title }} - Master Module{% endblock %}
+{% block title %}{{ video.title }} - Lesson{% endblock %}
 {% block content %}
-<div class="max-w-6xl mx-auto px-6 py-20 relative z-10">
-  
-  <div class="mb-12 fade-in">
-    <a href="{{ url_for('tutor.course_detail', id=video.course_id) }}" class="inline-flex items-center gap-2 text-[10px] font-black text-text-muted hover:text-gold uppercase tracking-[0.3em] mb-8 transition-all">
-      <span class="text-lg">←</span> Course Archives
-    </a>
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-            <h1 class="text-4xl lg:text-5xl font-black text-white mb-3" style="font-family:'Cinzel', serif;">{{ video.title }}</h1>
-            <div class="flex items-center gap-3">
-                <span class="w-2 h-2 rounded-full bg-gold shadow-[0_0_8px_var(--gold)]"></span>
-                <p class="text-[10px] text-text-muted font-black uppercase tracking-[0.2em]">Module of: <span class="text-white">{{ video.course.title }}</span></p>
-            </div>
-        </div>
-        <div class="flex items-center gap-4 text-xs font-bold text-text-muted bg-white/5 px-6 py-3 rounded-2xl border border-white/10 backdrop-blur-3xl">
-            <span class="text-gold">★</span> Mastery Required
-        </div>
-    </div>
+<div class="max-w-5xl mx-auto px-4 py-12">
+  <div class="mb-8">
+      <a href="{{ url_for('tutor.course_detail', id=video.course_id) }}" class="text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 mb-4">← Back to Course</a>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ video.title }}</h1>
+      <p class="text-gray-500">Course: {{ video.course.title }}</p>
   </div>
 
-  <div class="card overflow-hidden bg-black border-white/5 shadow-[0_40px_100px_rgba(0,0,0,0.8)] mb-12 fade-in-1 group">
+  <div class="card overflow-hidden bg-black border-none shadow-2xl mb-10">
     {% set video_id = video.video_url.split('v=')[-1].split('&')[0] %}
-    <div class="relative aspect-video">
-        <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
-        <div class="absolute inset-0 pointer-events-none border-[12px] border-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-    </div>
+    <iframe class="w-full aspect-video" src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
   </div>
 
-  <div class="flex flex-col md:flex-row items-center justify-between p-10 card bg-bg-secondary/40 border-white/10 shadow-3xl fade-in-2 relative overflow-hidden group">
-    <div class="absolute -left-20 -bottom-20 w-40 h-40 bg-gold/5 rounded-full blur-[80px] group-hover:bg-gold/10 transition-all duration-1000"></div>
-    <div class="relative z-10 mb-8 md:mb-0 text-center md:text-left">
-        <h3 class="text-2xl font-black text-white mb-2 leading-tight">Module Concluded?</h3>
-        <p class="text-text-secondary text-base font-light italic">"Acknowledge your progress to solidify the wisdom."</p>
+  <div class="flex items-center justify-between p-6 card bg-blue-50 border-blue-100">
+    <div>
+        <h3 class="font-bold text-blue-900 mb-1">Lesson Complete?</h3>
+        <p class="text-sm text-blue-700">Mark this video as done to track your progress.</p>
     </div>
-    
     <button id="complete-btn" onclick="markComplete('{{ video.id }}')" 
-            style="min-width: 220px;"
-            class="relative z-10 px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all duration-300 active:scale-95
-            {% if video in current_user.completed_videos %}bg-green/10 text-green border-2 border-green/30 cursor-default shadow-green/10{% else %}btn-gold shadow-gold/20{% endif %}">
-      {% if video in current_user.completed_videos %}
-        <span class="flex items-center justify-center gap-3">✓ Mastered</span>
-      {% else %}
-        Mark as Mastered
-      {% endif %}
+            class="px-8 py-3 rounded-full font-bold shadow-lg transition-all 
+            {% if video in current_user.completed_videos %}bg-green-600 text-white cursor-default{% else %}bg-blue-600 text-white hover:bg-blue-700{% endif %}">
+      {% if video in current_user.completed_videos %}✓ Completed{% else %}Mark Complete{% endif %}
     </button>
   </div>
 </div>
-
-<style>
-  #complete-btn.btn-gold:hover { transform: translateY(-3px) scale(1.02); }
-</style>
 {% endblock %}
 
 {% block scripts %}
 <script>
 function markComplete(videoId) {
   const btn = document.getElementById('complete-btn');
-  if(btn.textContent.includes('Mastered')) return;
+  if(btn.textContent.includes('Completed')) return;
   btn.disabled = true;
-  btn.innerHTML = '<span class="animate-pulse">Synthesizing...</span>';
-  
+  btn.textContent = 'Processing...';
   fetch(`/tutor/video/${videoId}/complete`, {method:'POST'})
     .then(r => r.json()).then(d => {
       if(d.success) {
-        btn.innerHTML = '<span class="flex items-center justify-center gap-3">✓ Mastered</span>';
-        btn.className = "relative z-10 px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] bg-green/10 text-green border-2 border-green/30 cursor-default shadow-2xl shadow-green/10 transition-all duration-500";
+        btn.textContent = '✓ Completed';
+        btn.classList.replace('bg-blue-600','bg-green-600');
         btn.disabled = false;
       }
     });

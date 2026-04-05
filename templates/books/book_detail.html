@@ -1,140 +1,97 @@
 {% extends 'base.html' %}
-{% block title %}{{ book.title }} - Manuscript Dossier{% endblock %}
+{% block title %}{{ book.title }} - Dronacharya Hub{% endblock %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-6 py-24 relative z-10">
-  
-  <div class="grid lg:grid-cols-5 gap-16">
-    
-    <!-- Left: Visual Aspect (2 cols) -->
-    <div class="lg:col-span-2 space-y-10 fade-in">
-      <div class="card overflow-hidden bg-bg-secondary border-white/5 shadow-3xl aspect-[3/4] relative group">
-          <div class="absolute inset-0 bg-gradient-to-t from-bg-primary via-transparent to-transparent opacity-60 z-10"></div>
+<div class="max-w-7xl mx-auto px-4 py-12">
+  <div class="grid lg:grid-cols-5 gap-12">
+    <!-- Left: Image (2 cols) -->
+    <div class="lg:col-span-2 space-y-6">
+      <div class="card overflow-hidden bg-white shadow-2xl border-none aspect-[3/4] relative">
           <img src="{{ url_for('static', filename='uploads/' + (book.cover_image or 'default_book.png')) }}" 
-               class="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-110 transition-all duration-700">
-          
+               class="w-full h-full object-cover">
           {% if not book.is_available %}
-            <div class="absolute inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-30">
-                <div class="px-10 py-5 border-4 border-gold text-gold text-4xl font-black uppercase tracking-[0.4em] -rotate-12 transform scale-125 shadow-2xl">ACQUIRED</div>
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-20">
+                <span class="text-white text-3xl font-black uppercase tracking-[0.3em] border-4 border-white px-8 py-4 -rotate-12">SOLD OUT</span>
             </div>
           {% endif %}
-          
-          <div class="absolute bottom-10 left-10 z-20">
-            <div class="badge badge-gold !px-6 !py-2 !text-xs !font-black !uppercase !tracking-widest !shadow-2xl">Original Manuscript</div>
-          </div>
       </div>
       
-      <div class="card p-10 bg-bg-secondary/40 border-white/5 shadow-2xl space-y-10">
-        <div>
-            <h3 class="text-xs font-black text-text-muted uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
-                <span class="text-gold">👤</span> Artifact Guardian
-            </h3>
-            <div class="flex items-center gap-6">
-                <div class="w-16 h-16 rounded-2xl bg-gold/10 text-gold flex items-center justify-center font-black text-2xl border border-gold/20 glow-pulse shadow-xl">{{ book.seller_name[0]|upper }}</div>
+      <div class="card p-8 bg-white shadow-xl divide-y divide-gray-100">
+        <div class="pb-6">
+            <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><span>👤</span> Listing Expert</h3>
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-black text-xl">{{ book.seller_name[0]|upper }}</div>
                 <div>
-                    <h4 class="text-xl font-bold text-white leading-tight mb-1">{{ book.seller_name }}</h4>
-                    <p class="text-[10px] text-text-muted font-black uppercase tracking-widest">Verified Scholar Seller</p>
+                    <h4 class="font-bold text-gray-900 leading-none mb-1">{{ book.seller_name }}</h4>
+                    <p class="text-xs text-gray-400">Trusted Dronacharya Seller</p>
                 </div>
             </div>
         </div>
-        
-        <div class="pt-10 border-t border-white/5">
-            <h3 class="text-xs font-black text-text-muted uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
-                <span class="text-cyan">🏷️</span> Specifications
-            </h3>
-            <div class="grid grid-cols-2 gap-6">
-                <div class="p-5 glass rounded-2xl border-white/5">
-                    <div class="text-[8px] text-text-muted font-black uppercase tracking-widest mb-2">Subject</div>
-                    <div class="text-xs font-black text-gold uppercase tracking-widest">{{ book.genre }}</div>
+        <div class="pt-6">
+            <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><span>🏷️</span> Details</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-3 bg-gray-50 rounded-xl">
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Genre</div>
+                    <div class="text-sm font-black">{{ book.genre }}</div>
                 </div>
-                <div class="p-5 glass rounded-2xl border-white/5">
-                    <div class="text-[8px] text-text-muted font-black uppercase tracking-widest mb-2">Integrity</div>
-                    <div class="text-xs font-black text-cyan uppercase tracking-widest">{{ book.condition }}</div>
+                <div class="p-3 bg-gray-50 rounded-xl">
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Condition</div>
+                    <div class="text-sm font-black">{{ book.condition }}</div>
                 </div>
             </div>
         </div>
       </div>
     </div>
 
-    <!-- Right: The Narrative (3 cols) -->
-    <div class="lg:col-span-3 space-y-12 fade-in-1">
+    <!-- Right: Content (3 cols) -->
+    <div class="lg:col-span-3 space-y-8">
       <div>
-        <div class="flex items-center gap-6 mb-8 text-xs font-black uppercase tracking-widest">
+        <div class="flex items-center gap-4 mb-4">
             {% if book.listing_type == 'sell' %}
-                <span class="text-white bg-green/20 px-5 py-2 rounded-full border border-green/30">Exchange: Currency</span>
+                <span class="bg-green-600 text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow-lg">For Sale</span>
             {% elif book.listing_type == 'swap' %}
-                <span class="text-white bg-cyan/20 px-5 py-2 rounded-full border border-cyan/30">Exchange: Reciprocity</span>
+                <span class="bg-blue-600 text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow-lg">Swap Mode</span>
             {% else %}
-                <span class="text-white bg-violet/20 px-5 py-2 rounded-full border border-violet/30">Exchange: Legacy</span>
+                <span class="bg-violet-600 text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow-lg">Free Donate</span>
             {% endif %}
-            <span class="text-text-muted opacity-50">Catalogued: {{ book.date_listed.strftime('%d %B %Y') }}</span>
+            <span class="text-xs font-bold text-gray-400">Listed {{ book.date_listed.strftime('%d %b %Y') }}</span>
         </div>
-        
-        <h1 class="text-5xl lg:text-7xl font-black text-white leading-tight mb-10" style="font-family:'Cinzel', serif;">{{ book.title }}</h1>
-        
-        <div class="flex items-baseline gap-4 mb-16 pb-12 border-b border-white/5">
-            <span class="text-xl font-bold text-text-muted uppercase tracking-widest">Valuation</span>
-            <div class="text-6xl font-black gold-text drop-shadow-[0_0_40px_rgba(244,162,97,0.3)]">
-                {% if book.listing_type == 'sell' %}<span class="text-2xl mr-2">₹</span>{{ book.price|int }}{% else %}{{ book.listing_type|capitalize }}{% endif %}
-            </div>
+        <h1 style="font-family:'Cinzel',serif;" class="text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-4 uppercase">{{ book.title }}</h1>
+        <div class="text-4xl font-black text-green-700 mb-8 border-b border-gray-100 pb-8">
+            {% if book.listing_type == 'sell' %}₹{{ book.price|int }}{% else %}{{ book.listing_type|capitalize }}{% endif %}
         </div>
-
-        <div class="space-y-6 mb-16">
-            <h3 class="text-xs font-black text-text-muted uppercase tracking-[0.4em] mb-4">Chronicle & Description</h3>
-            <p class="text-text-secondary text-xl font-light leading-relaxed italic max-w-2xl">
-                "{{ book.description or 'The depths of this volume are left for the reader to discover.' }}"
-            </p>
+        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-10">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Description</h3>
+            <p>{{ book.description or 'No description provided for this treasure.' }}</p>
         </div>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-8 mb-16">
-          <a href="{{ wa_url }}" target="_blank" class="w-full btn-whatsapp !py-6 !rounded-[32px] !text-base !font-black !uppercase !tracking-widest flex items-center justify-center gap-4 shadow-3xl shadow-green/20 hover:scale-105 active:scale-95 transition-all">
-              <span class="text-3xl">💬</span> Secure via Cryptic Link
+      <div class="grid md:grid-cols-2 gap-6 mb-10">
+          <a href="{{ wa_url }}" target="_blank" class="w-full btn-whatsapp px-8 py-5 rounded-3xl font-black text-xl flex items-center justify-center gap-3 shadow-2xl hover:scale-[1.02] transition shadow-green-500/30">
+              💬 <span class="uppercase tracking-widest">WhatsApp Chat</span>
           </a>
-          <a href="tel:+91{{ book.seller_phone.replace(' ','').replace('-','') }}" class="w-full btn-primary btn-research !py-6 !rounded-[32px] !text-base !font-black !uppercase !tracking-widest flex items-center justify-center gap-4 shadow-3xl shadow-violet/20 hover:scale-105 active:scale-95 transition-all">
-              <span class="text-3xl">📞</span> Vocal Verification
+          <a href="tel:+91{{ book.seller_phone.replace(' ','').replace('-','') }}" class="w-full bg-black text-white px-8 py-5 rounded-3xl font-black text-xl flex items-center justify-center gap-3 shadow-2xl hover:scale-[1.02] transition shadow-gray-900/30">
+              📞 <span class="uppercase tracking-widest">Call Seller</span>
           </a>
       </div>
 
-      <div class="space-y-6">
-          <div class="flex items-center gap-4 mb-4">
-              <h3 class="text-xl font-black text-white uppercase tracking-widest" style="font-family:'Space Grotesk', sans-serif;">Geospatial Perimeter</h3>
-              <div class="h-px flex-grow bg-white/5"></div>
-          </div>
-          <p class="text-[10px] text-text-muted font-black uppercase tracking-[0.3em] pl-1 mb-8">{{ book.address }}</p>
-          <div id="book-map" class="h-[450px] rounded-[48px] shadow-4xl border-8 border-bg-secondary relative z-10 overflow-hidden outline outline-1 outline-white/5"></div>
+      <div class="space-y-4">
+          <h3 class="text-xl font-bold flex items-center gap-2"><span>📍</span> Collector's Location</h3>
+          <p class="text-sm text-gray-500 leading-relaxed font-bold uppercase tracking-tighter">{{ book.address }}</p>
+          <div id="book-map" style="height:400px;" class="rounded-3xl shadow-2xl border-4 border-white mb-8 overflow-hidden"></div>
       </div>
     </div>
   </div>
 </div>
-
-<style>
-    /* WhatsApp Color Override */
-    .btn-whatsapp { background: #25D366; color: #075E54; border: none; }
-    .btn-whatsapp:hover { background: #20BA5A; }
-    
-    /* Map Color Fix */
-    .leaflet-container { background: #060B18 !important; }
-    .leaflet-tile { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
-    .leaflet-popup-content-wrapper { background: #0A0F1E !important; color: white !important; border: 1px solid #F4A261 !important; border-radius: 12px; }
-    .leaflet-popup-tip { background: #F4A261 !important; }
-</style>
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const map = L.map('book-map', { zoomControl: false }).setView([{{ book.latitude }}, {{ book.longitude }}], 14);
+    const map = L.map('book-map').setView([{{ book.latitude }}, {{ book.longitude }}], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    
-    const bookIcon = L.divIcon({
-        html: '<div class="w-12 h-12 bg-gold/20 border-2 border-gold rounded-2xl flex items-center justify-center text-2xl shadow-[0_0_20px_rgba(244,162,97,0.5)] glow-pulse">🏺</div>',
-        className: '', iconSize: [48, 48], iconAnchor: [24, 24]
-    });
-    
+    const bookIcon=L.divIcon({html:'<div style="background:#1B4332;color:white;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)">📚</div>',className:'',iconSize:[36,36],iconAnchor:[18,18]});
     L.marker([{{ book.latitude }}, {{ book.longitude }}], {icon: bookIcon}).addTo(map)
-        .bindPopup("<div class='font-black uppercase text-[10px] mb-1'>Secured Archive</div><b class='text-lg'>{{ book.title }}</b>").openPopup();
-
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
+        .bindPopup("<b>{{ book.title }}</b><br>Available here!").openPopup();
 });
 </script>
 {% endblock %}
