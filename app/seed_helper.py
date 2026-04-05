@@ -46,6 +46,6 @@ def auto_seed_courses(db):
 
         v = Video(course_id=c.id, title=v_title, video_url=v_url)
         db.session.add(v)
+        db.session.commit()
     
-    db.session.commit()
-    print("Database seeded successfully.")
+    print("Database seeded independently.")
