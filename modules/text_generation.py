@@ -397,3 +397,41 @@ def generate_gemini_vision(image_path, prompt="Solve this educational problem or
                 except:
                     continue
         return f"AI Vision Error: {err_msg}"
+def generate_gemini_scholarships():
+    system_instruction = (
+        "You are an educational consultant. Generate exactly 8 real or highly realistic scholarship listings for Indian and international students. "
+        "Each scholarship must include: title, agency (providing organization), category (Government, Private, or Non-Government), "
+        "eligibility criteria, a brief descriptions, a link (real or official-looking), and the scholarship amount. "
+        "The output MUST be a JSON list of objects: "
+        '[{"title":"...","agency":"...","category":"...","eligibility":"...","description":"...","link":"...","amount":"...","status":"Open"}]'
+        "Return ONLY the valid JSON array."
+    )
+    try:
+        response = client.models.generate_content(model=model_id, contents=system_instruction)
+        text = response.text.strip()
+        if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
+        return json.loads(text)
+    except Exception as e:
+        print(f"Gemini Scholarship Error: {e}")
+        # Try fallbacks
+        for fb_model in fallback_models:
+            try:
+                fb_response = client.models.generate_content(model=fb_model, contents=system_instruction)
+                text = fb_response.text.strip()
+                if '```json' in text: text = text.split('```json')[1].split('```')[0].strip()
+                return json.loads(text)
+            except:
+                continue
+        # Hardcoded fallback if API fails
+        return [
+            {
+                "title": "Post-Matric Scholarship for OBC Students",
+                "agency": "State Government",
+                "category": "Government",
+                "eligibility": "OBC students with family income < 2.5 Lakh.",
+                "description": "Financial assistance for OBC students pursuing post-matriculation courses.",
+                "link": "https://scholarships.gov.in/",
+                "amount": "Varies by state",
+                "status": "Open"
+            }
+        ]

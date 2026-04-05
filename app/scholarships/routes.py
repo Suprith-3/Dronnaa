@@ -1,5 +1,6 @@
-from flask import render_template
+from flask import render_template, jsonify
 from . import scholarship_bp
+from modules.text_generation import generate_gemini_scholarships
 
 SCHOLARSHIPS = [
     {
@@ -227,3 +228,11 @@ SCHOLARSHIPS = [
 @scholarship_bp.route('/')
 def index():
     return render_template('scholarships/index.html', scholarships=SCHOLARSHIPS)
+
+@scholarship_bp.route('/api/generate', methods=['POST'])
+def api_generate():
+    try:
+        new_scholarships = generate_gemini_scholarships()
+        return jsonify({'success': True, 'scholarships': new_scholarships})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400

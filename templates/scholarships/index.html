@@ -88,6 +88,16 @@
       {% endfor %}
     </div>
 
+    <!-- Search More Button -->
+    <div class="flex justify-center mt-16 mb-24">
+        <button id="search-more-btn" onclick="fetchMoreScholarships()" class="group relative px-10 py-4 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl font-black text-lg text-[#070D26] hover:scale-105 active:scale-95 transition-all shadow-[0_10px_30px_rgba(244,162,97,0.3)] hover:shadow-amber-500/50">
+            <span class="relative z-10 flex items-center gap-3">
+                <span>🔍</span> Search For Other
+            </span>
+            <div class="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </button>
+    </div>
+
     <!-- Info Section -->
     <div class="hidden md:block mt-24 p-8 rounded-3xl bg-gradient-to-br from-[#0B1437] to-[#121B41] border border-white/10 shadow-2xl">
       <div class="grid md:grid-cols-2 gap-12 items-center">
@@ -131,8 +141,12 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    initFilters();
+});
+
+function initFilters() {
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const cards = document.querySelectorAll('.scholarship-card');
+    const grid = document.getElementById('scholarship-grid');
 
     filterButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -147,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.classList.remove('bg-white/10', 'border-white/10');
 
             // Filtering
+            const cards = grid.querySelectorAll('.scholarship-card');
             cards.forEach(card => {
                 if (filter === 'all' || card.getAttribute('data-category') === filter) {
                     card.style.display = 'flex';
@@ -156,6 +171,98 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-});
+}
+
+async function fetchMoreScholarships() {
+    const btn = document.getElementById('search-more-btn');
+    const grid = document.getElementById('scholarship-grid');
+    
+    btn.disabled = true;
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = `<span>⌛</span> Searching...`;
+    
+    try {
+        const response = await fetch('/scholarships/api/generate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            data.scholarships.forEach(sch => {
+                const card = createScholarshipCard(sch);
+                grid.appendChild(card);
+            });
+            // Re-apply current filter if any
+            const activeFilterBtn = document.querySelector('.filter-btn.bg-amber-500');
+            if (activeFilterBtn) activeFilterBtn.click();
+            
+            showToast(`Found 8 more opportunities!`, 'success');
+        } else {
+            showToast('Failed to fetch more scholarships.', 'error');
+        }
+    } catch (e) {
+        showToast('Error connecting to AI service.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
+        // Scroll to the new items smoothly
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+function createScholarshipCard(sch) {
+    const div = document.createElement('div');
+    div.className = 'scholarship-card rounded-2xl p-3 md:p-6 flex flex-col h-full relative overflow-hidden group page-fade-in';
+    div.setAttribute('data-category', sch.category);
+    
+    div.innerHTML = `
+        <span class="absolute top-2 right-2 md:top-4 md:right-4 text-[8px] md:text-[10px] font-bold uppercase tracking-widest px-2 md:px-3 py-0.5 md:py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-full">
+          ${sch.category}
+        </span>
+
+        <div class="mb-2 md:mb-4">
+          <div class="text-amber-500 text-[9px] md:text-sm font-medium mb-0.5 md:mb-1 opacity-80 truncate">${sch.agency}</div>
+          <h3 class="text-xs md:text-xl font-bold text-white group-hover:text-amber-400 transition line-clamp-2 h-8 md:h-14">${sch.title}</h3>
+        </div>
+
+        <div class="flex-grow">
+          <div class="flex items-center gap-1.5 mb-2 md:mb-4 text-[9px] md:text-sm text-gray-400">
+            <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500"></span>
+            <span class="truncate">Status: ${sch.status || 'Open'}</span>
+          </div>
+          
+          <div class="space-y-2 md:space-y-4">
+            <div>
+              <p class="text-[8px] md:text-xs font-bold text-gray-500 uppercase tracking-tighter mb-0.5 md:mb-1">Eligibility</p>
+              <p class="text-[10px] md:text-sm text-gray-300 line-clamp-2">${sch.eligibility}</p>
+            </div>
+            <div class="hidden md:block">
+              <p class="text-xs font-bold text-gray-500 uppercase tracking-tighter mb-1">Description</p>
+              <p class="text-sm text-gray-400 leading-relaxed line-clamp-3">${sch.description}</p>
+            </div>
+            <div class="flex justify-between items-center pt-2 md:pt-4 border-t border-white/5 mt-auto">
+              <span class="text-amber-500 font-bold text-sm md:text-lg">${sch.amount}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 md:mt-6">
+          <a href="${sch.link}" target="_blank" 
+             class="block w-full text-center py-2 md:py-3 rounded-lg md:rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-[10px] md:text-base font-bold hover:from-blue-500 hover:to-indigo-600 transition shadow-lg shadow-blue-900/20">
+            Apply Now
+          </a>
+        </div>
+    `;
+    return div;
+}
+
+function showToast(msg, type='success'){
+  const t=document.createElement('div');
+  t.className=`fixed top-4 right-4 z-[9999] px-5 py-3 rounded-xl shadow-xl text-white text-sm font-medium transition-all ${type==='success'?'bg-green-600':'bg-red-600'}`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
 </script>
 {% endblock %}
