@@ -464,7 +464,18 @@ def live_chat():
             "My AI senses are tingling, but I missed that last part. Say it again? ✨",
             "Just resetting my circuits! What was that, friend? 🤖"
         ]
-        return jsonify({'response': random.choice(safe_responses)})
+        response_text = random.choice(safe_responses)
+        
+        # Ensure we still have a TTS file for the fallback response
+        try:
+            import uuid
+            filename = f"robite_fb_{uuid.uuid4().hex[:6]}.mp3"
+            filepath = os.path.join(current_app.config['AUDIO_FOLDER'], filename)
+            generate_tts(response_text, filepath)
+            audio_url = url_for('static', filename='audio/' + filename)
+            return jsonify({'response': response_text, 'audio_url': audio_url})
+        except:
+            return jsonify({'response': response_text})
 
 @tutor_bp.route('/api/live-translate', methods=['POST'])
 @login_required
