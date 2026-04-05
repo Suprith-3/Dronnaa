@@ -93,8 +93,24 @@ def generate_gemini_chat(message, history):
         return "I am currently unable to answer that. Please try again later.", history
 
 def generate_tumtum_chat(message, history):
+    system_instruction = (
+        "You are TumTum, the Research Assistant for Dronacharya Hub. "
+        "Your goal is to help students with academic research, brainstorming, and writing. "
+        "You must advocate for and explain these 10 Research Quality Rules:\n"
+        "1. Always Cite Sources (Quotes, paraphrases, data).\n"
+        "2. Minimal Quotes (<10% of paper, max 2 sentences).\n"
+        "3. Authentic Paraphrasing (Complete rewording, not synonym swapping).\n"
+        "4. Original Voice (85-90% original analysis).\n"
+        "5. Citation Breadth (Cite unique ideas, not common knowledge).\n"
+        "6. Consistent Style (APA/MLA/etc).\n"
+        "7. Full Bibliography (Alphabetized, matching in-text).\n"
+        "8. No Replication (Unique synthesis per request).\n"
+        "9. Low Plagiarism (<10% similarity goal).\n"
+        "10. Source Documentation (Keep track of Author, Title, Date, URL).\n\n"
+        "Be helpful, academic, yet encouraging. Keep responses concise unless asked for detail."
+    )
     try:
-        chat = client.chats.create(model=model_id, history=history)
+        chat = client.chats.create(model=model_id, config={'system_instruction': system_instruction}, history=history)
         response = chat.send_message(message)
         try:
             return response.text, serialize_history(chat.history)
@@ -108,7 +124,7 @@ def generate_tumtum_chat(message, history):
             for fb_model in fallback_models:
                 try:
                     time.sleep(1)
-                    chat = client.chats.create(model=fb_model, history=history)
+                    chat = client.chats.create(model=fb_model, config={'system_instruction': system_instruction}, history=history)
                     response = chat.send_message(message)
                     return response.text, serialize_history(chat.history)
                 except:
@@ -121,8 +137,19 @@ def generate_gemini_paper(topic, language):
         f"You are a PhD-level academic writer. Generate a comprehensive and extensive research paper about '{topic}' "
         f"written entirely in {language}. The paper MUST be between 2000 and 2500 words in length. "
         f"Each section should be highly detailed with in-depth academic analysis. "
-        f"Include these exact markdown sections: "
-        f"\n## Research Topic\n## Abstract\n## Introduction\n## Literature Review\n"
+        f"You MUST strictly adhere to these 10 Academic Quality Rules:\n"
+        f"1. CITE ALL SOURCES: Every direct quote, paraphrased idea, and data point/finding must have an in-text citation.\n"
+        f"2. MINIMAL QUOTES: Direct quotes must be <10% of the paper. Each quote max 2 sentences. Include page numbers if applicable.\n"
+        f"3. AUTHENTIC PARAPHRASING: Reword source material completely with new structure. Do not just swap synonyms. Citations still required.\n"
+        f"4. ORIGINAL VOICE: 85-90% of the paper must be your original analysis, interpretation, and synthesis of ideas. Lead with your own perspective.\n"
+        f"5. CITATION BREADTH: Cite unique theories, data, and findings. Common knowledge (e.g., 'The sun rises in the east') does not need citation.\n"
+        f"6. STYLE CONSISTENCY: Use APA style (unless the topic/language dictates otherwise) consistently for all citations.\n"
+        f"7. COMPLETE BIBLIOGRAPHY: Every source cited in-text must appear in an alphabetized References section at the end with proper hanging indents.\n"
+        f"8. NO REPLICATION: Content must be unique and specifically tailored to this prompt. No bulk reuse of generic material.\n"
+        f"9. LOW PLAGIARISM: Ensure the content would pass a Turnitin check with <10% similarity score by being highly original in synthesis.\n"
+        f"10. DOCUMENTATION: Ensure citations include real-world metadata (Author, Date, Title, Source) where possible to facilitate verification.\n\n"
+        f"Include these exact markdown sections:\n"
+        f"## Research Topic\n## Abstract\n## Introduction\n## Literature Review\n"
         f"## Theoretical Framework\n## Methodology\n## Main Findings / Discussion\n"
         f"## Conclusion\n## References\n"
         f"Under References, list exactly 12 realistic academic references. "

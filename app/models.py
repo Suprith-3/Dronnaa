@@ -23,6 +23,7 @@ class User(UserMixin, db.Model):
     email        = db.Column(db.String(120), unique=True, nullable=False)
     profile_pic  = db.Column(db.String(120), default='default.png')
     password_hash= db.Column(db.String(200), nullable=False)
+    has_research_access = db.Column(db.Boolean, default=False)
     completed_videos = db.relationship('Video', secondary=user_video_completion,
                                        lazy='dynamic', backref=db.backref('completed_by_users', lazy=True))
     quiz_history = db.relationship('QuizHistory', backref='user', lazy=True, foreign_keys='QuizHistory.user_id')

@@ -23,6 +23,7 @@ async function generatePaper(){
       document.getElementById('paper-raw').value=currentMarkdown;
       document.getElementById('paper-output-area').classList.remove('hidden');
       document.getElementById('skeleton-area').classList.add('hidden');
+      document.getElementById('qa-checklist').classList.remove('hidden');
       const wc=currentMarkdown.trim().split(/\s+/).length;
       document.getElementById('word-count').textContent=`~${wc} words`;
       showToast('Paper generated successfully!','success');

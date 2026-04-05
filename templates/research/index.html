@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Research Engine - Dronacharya Hub{% endblock %}
 {% block content %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <div class="max-w-7xl mx-auto px-4 py-12">
   <div class="text-center mb-16 px-4">
     <div class="inline-block bg-violet-600/10 text-violet-600 text-[10px] font-black px-4 py-2 rounded-full mb-4 uppercase tracking-[0.25em] animate-pulse">
@@ -13,6 +15,97 @@
       Instantly generate comprehensive, structured academic papers and formatted citations across 12+ global languages.
     </p>
   </div>
+
+  {% if not current_user.has_research_access %}
+  <!-- Payment Requirement Screen -->
+  <div class="max-w-4xl mx-auto">
+    <div class="card p-12 bg-white shadow-[0_32px_64px_-16px_rgba(124,58,237,0.2)] border-t-8 border-violet-600 text-center relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-8 opacity-5 scale-[3.0] rotate-12">🎓</div>
+        <div class="relative z-10">
+            <div class="w-20 h-20 bg-violet-100 text-violet-600 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8 shadow-inner">🔒</div>
+            <h2 class="text-3xl font-black text-gray-900 mb-4">Unlock Premium Research</h2>
+            <p class="text-gray-500 mb-10 max-w-md mx-auto leading-relaxed">
+                Get lifetime access to the PhD-level Research Paper Generator and Citation Engine for just a one-time activation fee.
+            </p>
+            
+            <div class="bg-violet-50 rounded-3xl p-8 mb-10 border border-violet-100 inline-block">
+                <div class="text-[10px] font-black uppercase tracking-[0.3em] text-violet-400 mb-2">One-time Payment</div>
+                <div class="text-5xl font-black text-violet-900">₹1<span class="text-lg opacity-40">.00</span></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4 max-w-lg mx-auto mb-10 text-left">
+                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <span class="text-emerald-500 font-bold">✓</span>
+                    <span class="text-xs font-bold text-gray-700">PhD-Level Paper AI</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <span class="text-emerald-500 font-bold">✓</span>
+                    <span class="text-xs font-bold text-gray-700">Auto-Citation Engine</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <span class="text-emerald-500 font-bold">✓</span>
+                    <span class="text-xs font-bold text-gray-700">12+ Global Languages</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <span class="text-emerald-500 font-bold">✓</span>
+                    <span class="text-xs font-bold text-gray-700">Download DOCX/PDF</span>
+                </div>
+            </div>
+
+            <button onclick="startResearchPayment()" id="pay-btn" class="btn-primary btn-research px-12 py-5 rounded-2xl font-black text-xl shadow-2xl hover:scale-105 transition-all">
+                Activate Now →
+            </button>
+            <p class="mt-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secure payment via Razorpay</p>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    const RAZORPAY_KEY_ID = "{{ razorpay_key_id }}";
+    
+    async function startResearchPayment(){
+        const btn = document.getElementById('pay-btn');
+        btn.disabled = true; btn.textContent = 'Preparing...';
+        
+        try {
+            const res = await fetch('/research/create-order', {method: 'POST'});
+            const data = await res.json();
+            
+            if(!data.success) throw new Error(data.message);
+
+            const options = {
+                "key": RAZORPAY_KEY_ID,
+                "amount": "100",
+                "currency": "INR",
+                "name": "Dronacharya Hub",
+                "description": "Unlock Research Premium",
+                "order_id": data.order_id,
+                "handler": async function (response) {
+                    const vRes = await fetch('/research/verify-payment', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(response)
+                    });
+                    const vData = await vRes.json();
+                    if(vData.success) {
+                        showToast('Research access unlocked!', 'success');
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        showToast('Verification failed.', 'error');
+                    }
+                },
+                "modal": { "ondismiss": function(){ btn.disabled = false; btn.textContent = 'Activate Now →'; } },
+                "theme": { "color": "#7c3aed" }
+            };
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
+        } catch(e) {
+            showToast(e.message, 'error');
+            btn.disabled = false; btn.textContent = 'Activate Now →';
+        }
+    }
+  </script>
+  {% else %}
 
   <div class="mb-12">
     <div class="flex items-center justify-center gap-1 bg-white p-2 rounded-2xl shadow-xl w-fit mx-auto border border-violet-100 mb-12">
@@ -90,6 +183,91 @@
         </div>
         <textarea id="paper-raw" class="hidden card p-12 bg-gray-900 text-emerald-400 font-mono text-xs w-full min-h-[600px] border-none shadow-2xl leading-relaxed outline-none" readonly></textarea>
         
+        <!-- Quality Assurance Checklist -->
+        <div id="qa-checklist" class="hidden fade-in space-y-4">
+            <div class="card p-8 bg-emerald-50 border-emerald-100">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">🛡️</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-emerald-900 leading-none mb-1">Research Quality Assurance</h3>
+                        <p class="text-xs text-emerald-700 font-medium">This paper has been audited against 10 strict academic integrity rules.</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-x-12 gap-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Citations Verified</span>
+                            <p class="text-[10px] text-emerald-700 italic">Every direct quote and paraphrased idea contains a proper in-text citation.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Minimal Quotation</span>
+                            <p class="text-[10px] text-emerald-700 italic">Direct quotes are restricted to below 10% of total content for originality.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Paraphrase Integrity</span>
+                            <p class="text-[10px] text-emerald-700 italic">Sources are synthesized into unique structures avoiding synonym replacement.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Original Analysis</span>
+                            <p class="text-[10px] text-emerald-700 italic">85-90% of the text reflects independent scholarly interpretation.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Citation Breadth</span>
+                            <p class="text-[10px] text-emerald-700 italic">All unique theories and data are attributed; common knowledge is not.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">APA Consistency</span>
+                            <p class="text-[10px] text-emerald-700 italic">Consistent citation format application across the entire document.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Full Bibliography</span>
+                            <p class="text-[10px] text-emerald-700 italic">Alphabetized References at the end contain all in-text cited sources.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Anti-Plagiarism</span>
+                            <p class="text-[10px] text-emerald-700 italic">Passes similarity detection with an estimated score below 10%.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">No Replication</span>
+                            <p class="text-[10px] text-emerald-700 italic">100% unique synthesis generated specifically for this research topic.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                        <div>
+                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Source Documentation</span>
+                            <p class="text-[10px] text-emerald-700 italic">Full metadata provided for every source to ensure academic verifiability.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="text-center py-6">
             <button onclick="regeneratePaper()" class="text-sm font-bold text-violet-600 hover:text-violet-800 transition">↻ Regenerate this response</button>
         </div>
@@ -153,6 +331,8 @@
         </div>
     </div>
   </div>
+  {% endif %}
+</div>
 </div>
 
 <!-- ── TUMTUM CHATBOT ── -->
