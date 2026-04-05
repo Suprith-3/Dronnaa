@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="{% block meta_description %}Dronacharya Hub is an AI-powered educational platform offering personalized tutoring, academic survey tools, a local book marketplace, scholarships, notes sharing, and brain training games all in one place.{% endblock %}">
-  <meta name="keywords" content="{% block meta_keywords %}AI Tutor, Survey Generator, Buy Sell Books Locally, Scholarships, Study Notes, Educational Games, Dronacharya Hub, E-learning{% endblock %}">
+  <meta name="description" content="{% block meta_description %}Dronacharya Hub is an AI-powered educational platform offering personalized tutoring, academic research tools, a local book marketplace, scholarships, notes sharing, and brain training games all in one place.{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}AI Tutor, Research Generator, Buy Sell Books Locally, Scholarships, Study Notes, Educational Games, Dronacharya Hub, E-learning{% endblock %}">
   
   <title>{% block title %}Dronacharya Hub{% endblock %}</title>
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
@@ -18,7 +18,7 @@
     "@type": "WebSite",
     "name": "Dronacharya Hub",
     "url": "https://dronacharyahub.com/",
-    "description": "AI-powered educational platform offering personalized tutoring, academic survey tools, a local book marketplace, scholarships, notes sharing, and brain training games.",
+    "description": "AI-powered educational platform offering personalized tutoring, academic research tools, a local book marketplace, scholarships, notes sharing, and brain training games.",
     "publisher": {
       "@type": "Organization",
       "name": "Dronacharya Hub",
@@ -102,7 +102,7 @@
         </a>
         <a href="{{ url_for('research.index') }}"
           class="px-4 py-2 rounded-lg hover:bg-violet-600/30 transition text-sm font-medium flex items-center gap-2">
-          📄 <span>Survey</span>
+          📄 <span>Research</span>
         </a>
         <a href="{{ url_for('books.index') }}"
           class="px-4 py-2 rounded-lg hover:bg-green-600/30 transition text-sm font-medium flex items-center gap-2 whitespace-nowrap">
@@ -174,7 +174,7 @@
           <span class="text-xl group-hover:scale-110 transition-transform">🎓</span> <span class="font-semibold text-blue-300">Tutor</span>
         </a>
         <a href="{{ url_for('research.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-violet-500/10 transition group text-sm border border-transparent hover:border-violet-500/30">
-          <span class="text-xl group-hover:scale-110 transition-transform">📄</span> <span class="font-semibold text-violet-300">Survey</span>
+          <span class="text-xl group-hover:scale-110 transition-transform">📄</span> <span class="font-semibold text-violet-300">Research</span>
         </a>
         <a href="{{ url_for('tutor.camera_page') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-amber-500/10 transition group text-sm border border-transparent hover:border-amber-500/30">
           <span class="text-xl group-hover:scale-110 transition-transform">📸</span> <span class="font-semibold text-amber-300">AI Camera</span>
@@ -283,7 +283,7 @@
     </a>
     <a href="{{ url_for('research.index') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.blueprint == 'research' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
       <span class="text-xl">📄</span>
-      <span class="text-[9px] font-bold uppercase tracking-tighter">Survey</span>
+      <span class="text-[9px] font-bold uppercase tracking-tighter">Research</span>
       {% if request.blueprint == 'research' %}<div class="absolute -bottom-1 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>{% endif %}
     </a>
     <a href="{{ url_for('scholarships.index') }}" class="relative flex flex-col items-center gap-1 min-w-[50px] transition-all duration-300 {% if request.blueprint == 'scholarships' %}text-blue-600 scale-110{% else %}text-gray-400 hover:text-blue-600{% endif %}">
@@ -332,7 +332,7 @@
         </div>
       </div>
       <div class="hidden lg:block">
-        <h4 class="font-semibold text-violet-400 mb-3 text-sm tracking-widest uppercase">Survey</h4>
+        <h4 class="font-semibold text-violet-400 mb-3 text-sm tracking-widest uppercase">Research</h4>
         <div class="flex flex-col gap-1 text-gray-400 text-xs">
           <a href="{{ url_for('research.index') }}" class="hover:text-white">Generator</a>
           <a href="{{ url_for('research.index') }}#cite" class="hover:text-white">Citations</a>
