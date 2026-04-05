@@ -507,4 +507,35 @@ def generate_specific_course(topic):
                 return json.loads(text)
             except:
                 continue
-        return {"title": topic.capitalize(), "description": f"A comprehensive course about {topic}.", "level": "Beginner"}
+
+def classify_document_type(file_path):
+    """
+    Classifies a file (image or PDF) as 'Handwritten' or 'Printed/Typed' using Gemini.
+    Returns True if handwritten, False otherwise.
+    """
+    mime_type = 'application/pdf' if file_path.lower().endswith('.pdf') else 'image/jpeg'
+    prompt = "Analyze this document. Is it handwritten or printed/typed text? Reply with ONLY one word: 'Handwritten' or 'Printed'."
+    
+    try:
+        with open(file_path, 'rb') as f:
+            file_data = f.read()
+            
+        response = client.models.generate_content(
+            model=model_id,
+            contents=[
+                types.Content(
+                    role='user',
+                    parts=[
+                        types.Part.from_text(text=prompt),
+                        types.Part.from_bytes(data=file_data, mime_type=mime_type)
+                    ]
+                )
+            ]
+        )
+        result = response.text.strip().lower()
+        print(f"Classification result: {result}")
+        return 'handwritten' in result
+    except Exception as e:
+        print(f"Classification Error: {e}")
+        # Default fallback mechanism (e.g., check file size or just return False)
+        return False

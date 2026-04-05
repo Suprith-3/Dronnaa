@@ -4,6 +4,7 @@ from flask import render_template, request, redirect, url_for, flash, current_ap
 from flask_login import current_user, login_required
 from . import notes_bp
 from ..models import Note, UserCoupon, db
+from modules.text_generation import classify_document_type
 from werkzeug.utils import secure_filename
 from modules.supabase_helper import upload_file_to_supabase
 import random
@@ -28,10 +29,13 @@ def allowed_file(filename):
 @notes_bp.route('/')
 def index():
     notes = Note.query.order_by(Note.date_uploaded.desc()).all()
+    handwritten_notes = [n for n in notes if n.is_handwritten]
+    printed_notes = [n for n in notes if not n.is_handwritten]
+    
     # Unique subjects for filtering
     subjects = db.session.query(Note.subject).distinct().all()
     subjects = [s[0] for s in subjects]
-    return render_template('notes/index.html', notes=notes, subjects=subjects)
+    return render_template('notes/index.html', notes=notes, handwritten_notes=handwritten_notes, printed_notes=printed_notes, subjects=subjects)
 
 @notes_bp.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -66,14 +70,34 @@ def upload():
 
 
             
+            # Perform classification
+            temp_path = os.path.join(current_app.config['NOTES_FOLDER'], f"temp_{unique_filename}")
+            file.seek(0)
+            file.save(temp_path)
+            
+            # User proposed type
+            user_proposed_type = request.form.get('note_type', 'handwritten')
+            
+            # AI Check
+            try:
+                is_detected_handwritten = classify_document_type(temp_path)
+            except:
+                is_detected_handwritten = (user_proposed_type == 'handwritten')
+            
+            # Finalize note model
             new_note = Note(
                 title=request.form.get('title'),
                 subject=request.form.get('subject'),
                 description=request.form.get('description'),
                 file_path=final_path,
                 uploader_name=current_user.first_name if current_user.is_authenticated else request.form.get('uploader_name', 'Anonymous'),
-                user_id=current_user.id if current_user.is_authenticated else None
+                user_id=current_user.id if current_user.is_authenticated else None,
+                is_handwritten=is_detected_handwritten
             )
+            
+            # Clean up temp file
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
             
             db.session.add(new_note)
             

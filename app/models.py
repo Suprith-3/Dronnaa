@@ -116,6 +116,7 @@ class Note(db.Model):
     uploader_name = db.Column(db.String(100), nullable=False)
     date_uploaded = db.Column(db.DateTime, default=datetime.utcnow)
     user_id       = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # owner
+    is_handwritten = db.Column(db.Boolean, default=False)
     user          = db.relationship('User', backref=db.backref('notes', lazy=True))
 
 
