@@ -4,365 +4,443 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <div class="max-w-7xl mx-auto px-4 py-12">
-  <div class="text-center mb-16 px-4">
-    <div class="inline-block bg-violet-600/10 text-violet-600 text-[10px] font-black px-4 py-2 rounded-full mb-4 uppercase tracking-[0.25em] animate-pulse">
-        Academic Excellence Powered by AI
+    <div class="text-center mb-16 px-4">
+        <div
+            class="inline-block bg-violet-600/10 text-violet-600 text-[10px] font-black px-4 py-2 rounded-full mb-4 uppercase tracking-[0.25em] animate-pulse">
+            Academic Excellence Powered by AI
+        </div>
+        <h1 style="font-family:'Cinzel',serif; font-size:clamp(36px,6vw,64px);"
+            class="font-bold text-gray-900 leading-none mb-6">
+            Future of <span class="text-violet-600 italic">Research</span>
+        </h1>
+        <p class="hidden md:block text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">
+            Instantly generate comprehensive, structured academic papers and formatted citations across 12+ global
+            languages.
+        </p>
     </div>
-    <h1 style="font-family:'Cinzel',serif; font-size:clamp(36px,6vw,64px);" class="font-bold text-gray-900 leading-none mb-6">
-      Future of <span class="text-violet-600 italic">Research</span>
-    </h1>
-    <p class="hidden md:block text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">
-      Instantly generate comprehensive, structured academic papers and formatted citations across 12+ global languages.
-    </p>
-  </div>
 
-  {% if not current_user.has_research_access %}
-  <!-- Payment Requirement Screen -->
-  <div class="max-w-4xl mx-auto">
-    <div class="card p-12 bg-white shadow-[0_32px_64px_-16px_rgba(124,58,237,0.2)] border-t-8 border-violet-600 text-center relative overflow-hidden">
-        <div class="absolute top-0 right-0 p-8 opacity-5 scale-[3.0] rotate-12">🎓</div>
-        <div class="relative z-10">
-            <div class="w-20 h-20 bg-violet-100 text-violet-600 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8 shadow-inner">🔒</div>
-            <h2 class="text-3xl font-black text-gray-900 mb-4">Unlock Premium Research</h2>
-            <p class="text-gray-500 mb-10 max-w-md mx-auto leading-relaxed">
-                Get lifetime access to the PhD-level Research Paper Generator and Citation Engine for just a one-time activation fee.
-            </p>
-            
-            <div class="bg-violet-50 rounded-3xl p-8 mb-10 border border-violet-100 inline-block">
-                <div class="text-[10px] font-black uppercase tracking-[0.3em] text-violet-400 mb-2">One-time Payment</div>
-                <div class="text-5xl font-black text-violet-900">₹1<span class="text-lg opacity-40">.00</span></div>
+    {% if not current_user.has_research_access %}
+    <!-- Payment Requirement Screen -->
+    <div class="max-w-4xl mx-auto">
+        <div
+            class="card p-12 bg-white shadow-[0_32px_64px_-16px_rgba(124,58,237,0.2)] border-t-8 border-violet-600 text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-8 opacity-5 scale-[3.0] rotate-12">🎓</div>
+            <div class="relative z-10">
+                <div
+                    class="w-20 h-20 bg-violet-100 text-violet-600 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8 shadow-inner">
+                    🔒</div>
+                <h2 class="text-3xl font-black text-gray-900 mb-4">Unlock Premium Research</h2>
+                <p class="text-gray-500 mb-10 max-w-md mx-auto leading-relaxed">
+                    Get lifetime access to the PhD-level Research Paper Generator and Citation Engine for just a
+                    one-time activation fee.
+                </p>
+
+                <div class="bg-violet-50 rounded-3xl p-8 mb-10 border border-violet-100 inline-block">
+                    <div class="text-[10px] font-black uppercase tracking-[0.3em] text-violet-400 mb-2">One-time Payment
+                    </div>
+                    <div class="text-5xl font-black text-violet-900">₹1<span class="text-lg opacity-40">.00</span></div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4 max-w-lg mx-auto mb-10 text-left">
+                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <span class="text-emerald-500 font-bold">✓</span>
+                        <span class="text-xs font-bold text-gray-700">PhD-Level Paper AI</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <span class="text-emerald-500 font-bold">✓</span>
+                        <span class="text-xs font-bold text-gray-700">Auto-Citation Engine</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <span class="text-emerald-500 font-bold">✓</span>
+                        <span class="text-xs font-bold text-gray-700">12+ Global Languages</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <span class="text-emerald-500 font-bold">✓</span>
+                        <span class="text-xs font-bold text-gray-700">Download DOCX/PDF</span>
+                    </div>
+                </div>
+
+                <button onclick="startResearchPayment()" id="pay-btn"
+                    class="btn-primary btn-research px-12 py-5 rounded-2xl font-black text-xl shadow-2xl hover:scale-105 transition-all">
+                    Activate Now →
+                </button>
+                <p class="mt-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secure payment via
+                    Razorpay</p>
             </div>
-
-            <div class="grid md:grid-cols-2 gap-4 max-w-lg mx-auto mb-10 text-left">
-                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <span class="text-emerald-500 font-bold">✓</span>
-                    <span class="text-xs font-bold text-gray-700">PhD-Level Paper AI</span>
-                </div>
-                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <span class="text-emerald-500 font-bold">✓</span>
-                    <span class="text-xs font-bold text-gray-700">Auto-Citation Engine</span>
-                </div>
-                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <span class="text-emerald-500 font-bold">✓</span>
-                    <span class="text-xs font-bold text-gray-700">12+ Global Languages</span>
-                </div>
-                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <span class="text-emerald-500 font-bold">✓</span>
-                    <span class="text-xs font-bold text-gray-700">Download DOCX/PDF</span>
-                </div>
-            </div>
-
-            <button onclick="startResearchPayment()" id="pay-btn" class="btn-primary btn-research px-12 py-5 rounded-2xl font-black text-xl shadow-2xl hover:scale-105 transition-all">
-                Activate Now →
-            </button>
-            <p class="mt-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secure payment via Razorpay</p>
         </div>
     </div>
-  </div>
 
-  <script>
-    const RAZORPAY_KEY_ID = "{{ razorpay_key_id }}";
-    
-    async function startResearchPayment(){
-        const btn = document.getElementById('pay-btn');
-        btn.disabled = true; 
-        btn.textContent = 'Waking up server...';
-        
-        try {
-            // Step 1: Wake server (optional but good for Render free tier)
-            await fetch("/"); 
-            
-            // Step 2: wait a bit for server to fully breathe
-            await new Promise(r => setTimeout(r, 4000));
-            
-            btn.textContent = 'Preparing...';
-            
-            const res = await fetch('/research/create-order', {method: 'POST'});
-            const data = await res.json();
-            
-            if(!data.success) throw new Error(data.message);
+    <script>
+        const RAZORPAY_KEY_ID = "{{ razorpay_key_id }}";
 
-            const options = {
-                "key": RAZORPAY_KEY_ID,
-                "amount": "100",
-                "currency": "INR",
-                "name": "Dronacharya Hub",
-                "description": "Unlock Research Premium",
-                "order_id": data.order_id,
-                "handler": async function (response) {
-                    const vRes = await fetch('/research/verify-payment', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(response)
-                    });
-                    const vData = await vRes.json();
-                    if(vData.success) {
-                        showToast('Research access unlocked!', 'success');
-                        setTimeout(() => window.location.reload(), 1500);
-                    } else {
-                        showToast('Verification failed.', 'error');
-                    }
-                },
-                "modal": { "ondismiss": function(){ btn.disabled = false; btn.textContent = 'Activate Now →'; } },
-                "theme": { "color": "#7c3aed" }
-            };
-            const rzp1 = new Razorpay(options);
-            rzp1.open();
-        } catch(e) {
-            showToast(e.message, 'error');
-            btn.disabled = false; btn.textContent = 'Activate Now →';
+        async function startResearchPayment() {
+            const btn = document.getElementById('pay-btn');
+            btn.disabled = true; btn.textContent = 'Preparing...';
+
+            try {
+                const res = await fetch('/research/create-order', { method: 'POST' });
+                const data = await res.json();
+
+                if (!data.success) throw new Error(data.message);
+
+                const options = {
+                    "key": RAZORPAY_KEY_ID,
+                    "amount": "100",
+                    "currency": "INR",
+                    "name": "Dronacharya Hub",
+                    "description": "Unlock Research Premium",
+                    "order_id": data.order_id,
+                    "handler": async function (response) {
+                        const vRes = await fetch('/research/verify-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(response)
+                        });
+                        const vData = await vRes.json();
+                        if (vData.success) {
+                            showToast('Research access unlocked!', 'success');
+                            setTimeout(() => window.location.reload(), 1500);
+                        } else {
+                            showToast('Verification failed.', 'error');
+                        }
+                    },
+                    "modal": { "ondismiss": function () { btn.disabled = false; btn.textContent = 'Activate Now →'; } },
+                    "theme": { "color": "#7c3aed" }
+                };
+                const rzp1 = new Razorpay(options);
+                rzp1.open();
+            } catch (e) {
+                showToast(e.message, 'error');
+                btn.disabled = false; btn.textContent = 'Activate Now →';
+            }
         }
-    }
-  </script>
-  {% else %}
+    </script>
+    {% else %}
 
-  <div class="mb-12">
-    <div class="flex items-center justify-center gap-1 bg-white p-2 rounded-2xl shadow-xl w-fit mx-auto border border-violet-100 mb-12">
-      <button onclick="switchMainTab('paper')" data-tab="paper-tab" class="px-8 py-3 rounded-xl transition text-sm font-bold border-b-2 border-violet-600">
-        📄 Research Paper
-      </button>
-      <button onclick="switchMainTab('citation')" data-tab="citation-tab" class="px-8 py-3 rounded-xl transition text-sm font-medium hover:bg-violet-50">
-        📌 Citation Engine
-      </button>
-    </div>
-
-    <!-- Paper Tab -->
-    <div id="paper-tab" class="space-y-8 fade-in">
-      <div class="card p-10 bg-white/80 backdrop-blur-3xl shadow-2xl border-t-8 border-violet-600">
-        <div class="grid md:grid-cols-4 gap-6 items-end">
-            <div class="md:col-span-2">
-                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Research Topic</label>
-                <input type="text" id="topic-input" class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-lg font-bold" placeholder="e.g., Quantum Computing in the 21st Century">
-            </div>
-            <div>
-                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Language</label>
-                <select id="language-select" class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-lg font-bold bg-white cursor-pointer">
-                    <option value="English">🇬🇧 English</option>
-                    <option value="Hindi">🇮🇳 Hindi</option>
-                    <option value="Kannada">🇮🇳 Kannada</option>
-                    <option value="Spanish">🇪🇸 Spanish</option>
-                    <option value="French">🇫🇷 French</option>
-                    <option value="German">🇩🇪 German</option>
-                    <option value="Chinese">🇨🇳 Chinese</option>
-                    <option value="Japanese">🇯🇵 Japanese</option>
-                    <option value="Russian">🇷🇺 Russian</option>
-                    <option value="Portuguese">🇵🇹 Portuguese</option>
-                    <option value="Arabic">🇸🇦 Arabic</option>
-                    <option value="Italian">🇮🇹 Italian</option>
-                    <option value="Korean">🇰🇷 Korean</option>
-                    <option value="Turkish">🇹🇷 Turkish</option>
-                </select>
-            </div>
-            <button onclick="generatePaper()" id="generate-paper-btn" class="btn-primary btn-research py-[18px] rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl transition-all">Generate Paper</button>
-        </div>
-      </div>
-
-      <!-- Loading State (Shared Skeleton) -->
-      <div id="skeleton-area" class="hidden space-y-8 animate-pulse">
-          <div class="flex items-center justify-center py-20 bg-violet-50/50 rounded-3xl border-2 border-dashed border-violet-200">
-              <div class="text-center">
-                  <div class="text-4xl mb-4">⌛</div>
-                  <h3 id="loading-msg" class="text-xl font-bold text-violet-900 mb-2">Analyzing sources...</h3>
-                  <p class="text-violet-700 text-xs">Wait while Dronacharya AI structures your knowledge.</p>
-              </div>
-          </div>
-      </div>
-
-      <!-- Paper Output -->
-      <div id="paper-output-area" class="hidden space-y-6">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6 card p-6 border-violet-100 bg-violet-50/50">
-          <div class="flex items-center gap-10">
-              <div class="text-center border-r border-violet-200 pr-10">
-                  <div id="word-count" class="text-2xl font-black text-violet-900">~800 words</div>
-                  <div class="text-[10px] font-bold text-violet-400 uppercase tracking-widest">Document length</div>
-              </div>
-              <div class="hidden md:block">
-                  <div class="flex gap-1">
-                      <button onclick="switchOutputTab('preview')" class="output-tab px-6 py-2 rounded-full text-xs font-black bg-violet-100 text-violet-700 transition">🎨 Preview</button>
-                      <button onclick="switchOutputTab('raw')" class="output-tab px-6 py-2 rounded-full text-xs font-bold text-gray-500 hover:bg-violet-200 transition">🛠 Raw MD</button>
-                  </div>
-              </div>
-          </div>
-          <div class="flex items-center gap-3 w-full md:w-auto">
-              <select id="download-format" class="px-5 py-3 rounded-xl border-2 border-violet-200 text-sm font-black text-violet-900 outline-none">
-                  <option value="docx">📄 DOCX</option>
-                  <option value="pdf">📕 PDF</option>
-                  <option value="txt">📝 TXT</option>
-              </select>
-              <button onclick="downloadPaper()" id="download-btn" class="btn-primary btn-research px-10 py-3 rounded-xl font-black text-sm shadow-xl flex-grow md:flex-none">⬇ Download Paper</button>
-              <button onclick="copyPaper()" class="p-3 bg-white border-2 border-violet-100 text-violet-600 rounded-xl hover:bg-violet-600 hover:text-white transition shadow-lg">📋</button>
-          </div>
+    <div class="mb-12">
+        <div
+            class="flex items-center justify-center gap-1 bg-white p-2 rounded-2xl shadow-xl w-fit mx-auto border border-violet-100 mb-12">
+            <button onclick="switchMainTab('paper')" data-tab="paper-tab"
+                class="px-8 py-3 rounded-xl transition text-sm font-bold border-b-2 border-violet-600">
+                📄 Research Paper
+            </button>
+            <button onclick="switchMainTab('citation')" data-tab="citation-tab"
+                class="px-8 py-3 rounded-xl transition text-sm font-medium hover:bg-violet-50">
+                📌 Citation Engine
+            </button>
         </div>
 
-        <div id="paper-preview" class="card p-12 bg-white shadow-2xl prose prose-violet max-w-none prose-sm leading-relaxed text-gray-700 prose-headings:font-cinzel prose-headings:text-gray-900">
-            <!-- Rendered Markdown -->
-        </div>
-        <textarea id="paper-raw" class="hidden card p-12 bg-gray-900 text-emerald-400 font-mono text-xs w-full min-h-[600px] border-none shadow-2xl leading-relaxed outline-none" readonly></textarea>
-        
-        <!-- Quality Assurance Checklist -->
-        <div id="qa-checklist" class="hidden fade-in space-y-4">
-            <div class="card p-8 bg-emerald-50 border-emerald-100">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">🛡️</div>
+        <!-- Paper Tab -->
+        <div id="paper-tab" class="space-y-8 fade-in">
+            <div class="card p-10 bg-white/80 backdrop-blur-3xl shadow-2xl border-t-8 border-violet-600">
+                <div class="grid md:grid-cols-4 gap-6 items-end">
+                    <div class="md:col-span-2">
+                        <label
+                            class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Research
+                            Topic</label>
+                        <input type="text" id="topic-input"
+                            class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-lg font-bold"
+                            placeholder="e.g., Quantum Computing in the 21st Century">
+                    </div>
                     <div>
-                        <h3 class="text-xl font-bold text-emerald-900 leading-none mb-1">Research Quality Assurance</h3>
-                        <p class="text-xs text-emerald-700 font-medium">This paper has been audited against 10 strict academic integrity rules.</p>
+                        <label
+                            class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Language</label>
+                        <select id="language-select"
+                            class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-lg font-bold bg-white cursor-pointer">
+                            <option value="English">🇬🇧 English</option>
+                            <option value="Hindi">🇮🇳 Hindi</option>
+                            <option value="Kannada">🇮🇳 Kannada</option>
+                            <option value="Spanish">🇪🇸 Spanish</option>
+                            <option value="French">🇫🇷 French</option>
+                            <option value="German">🇩🇪 German</option>
+                            <option value="Chinese">🇨🇳 Chinese</option>
+                            <option value="Japanese">🇯🇵 Japanese</option>
+                            <option value="Russian">🇷🇺 Russian</option>
+                            <option value="Portuguese">🇵🇹 Portuguese</option>
+                            <option value="Arabic">🇸🇦 Arabic</option>
+                            <option value="Italian">🇮🇹 Italian</option>
+                            <option value="Korean">🇰🇷 Korean</option>
+                            <option value="Turkish">🇹🇷 Turkish</option>
+                        </select>
                     </div>
+                    <button onclick="generatePaper()" id="generate-paper-btn"
+                        class="btn-primary btn-research py-[18px] rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl transition-all">Generate
+                        Paper</button>
                 </div>
-                <div class="grid md:grid-cols-2 gap-x-12 gap-y-4">
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Citations Verified</span>
-                            <p class="text-[10px] text-emerald-700 italic">Every direct quote and paraphrased idea contains a proper in-text citation.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Minimal Quotation</span>
-                            <p class="text-[10px] text-emerald-700 italic">Direct quotes are restricted to below 10% of total content for originality.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Paraphrase Integrity</span>
-                            <p class="text-[10px] text-emerald-700 italic">Sources are synthesized into unique structures avoiding synonym replacement.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Original Analysis</span>
-                            <p class="text-[10px] text-emerald-700 italic">85-90% of the text reflects independent scholarly interpretation.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Citation Breadth</span>
-                            <p class="text-[10px] text-emerald-700 italic">All unique theories and data are attributed; common knowledge is not.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">APA Consistency</span>
-                            <p class="text-[10px] text-emerald-700 italic">Consistent citation format application across the entire document.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Full Bibliography</span>
-                            <p class="text-[10px] text-emerald-700 italic">Alphabetized References at the end contain all in-text cited sources.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Anti-Plagiarism</span>
-                            <p class="text-[10px] text-emerald-700 italic">Passes similarity detection with an estimated score below 10%.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">No Replication</span>
-                            <p class="text-[10px] text-emerald-700 italic">100% unique synthesis generated specifically for this research topic.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="text-emerald-500 font-bold mt-0.5">✓</div>
-                        <div>
-                            <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Source Documentation</span>
-                            <p class="text-[10px] text-emerald-700 italic">Full metadata provided for every source to ensure academic verifiability.</p>
-                        </div>
+            </div>
+
+            <!-- Loading State (Shared Skeleton) -->
+            <div id="skeleton-area" class="hidden space-y-8 animate-pulse">
+                <div
+                    class="flex items-center justify-center py-20 bg-violet-50/50 rounded-3xl border-2 border-dashed border-violet-200">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">⌛</div>
+                        <h3 id="loading-msg" class="text-xl font-bold text-violet-900 mb-2">Analyzing sources...</h3>
+                        <p class="text-violet-700 text-xs">Wait while Dronacharya AI structures your knowledge.</p>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="text-center py-6">
-            <button onclick="regeneratePaper()" class="text-sm font-bold text-violet-600 hover:text-violet-800 transition">↻ Regenerate this response</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Citation Tab -->
-    <div id="citation-tab" class="hidden fade-in space-y-8">
-        <div class="grid md:grid-cols-3 gap-10">
-            <div class="md:col-span-2 space-y-6">
-                <div class="card p-10 bg-white shadow-2xl border-t-8 border-violet-600">
-                    <h3 class="text-xl font-bold mb-6">Citation Generator</h3>
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Paste Reference Source</label>
-                            <textarea id="citation-input" rows="4" class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-sm font-medium leading-relaxed" placeholder="Author, Year, Title, Journal/URL, etc."></textarea>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Style Preference</label>
-                                <select id="citation-style" class="w-full px-6 py-3 rounded-2xl border-2 border-gray-100 focus:border-violet-400 transition outline-none text-sm font-bold bg-white">
-                                    <option value="APA">APA Style</option>
-                                    <option value="MLA">MLA Style</option>
-                                    <option value="Chicago">Chicago Manual</option>
-                                    <option value="IEEE">IEEE Reference</option>
-                                    <option value="Vancouver">Vancouver</option>
-                                </select>
+            <!-- Paper Output -->
+            <div id="paper-output-area" class="hidden space-y-6">
+                <div
+                    class="flex flex-col md:flex-row items-center justify-between gap-6 card p-6 border-violet-100 bg-violet-50/50">
+                    <div class="flex items-center gap-10">
+                        <div class="text-center border-r border-violet-200 pr-10">
+                            <div id="word-count" class="text-2xl font-black text-violet-900">~800 words</div>
+                            <div class="text-[10px] font-bold text-violet-400 uppercase tracking-widest">Document length
                             </div>
-                            <button onclick="generateCitation()" id="citation-btn" class="w-full btn-primary btn-research py-3 rounded-2xl font-black text-sm shadow-xl">Format Citation →</button>
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="flex gap-1">
+                                <button onclick="switchOutputTab('preview')"
+                                    class="output-tab px-6 py-2 rounded-full text-xs font-black bg-violet-100 text-violet-700 transition">🎨
+                                    Preview</button>
+                                <button onclick="switchOutputTab('raw')"
+                                    class="output-tab px-6 py-2 rounded-full text-xs font-bold text-gray-500 hover:bg-violet-200 transition">🛠
+                                    Raw MD</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <select id="download-format"
+                            class="px-5 py-3 rounded-xl border-2 border-violet-200 text-sm font-black text-violet-900 outline-none">
+                            <option value="docx">📄 DOCX</option>
+                            <option value="pdf">📕 PDF</option>
+                            <option value="txt">📝 TXT</option>
+                        </select>
+                        <button onclick="downloadPaper()" id="download-btn"
+                            class="btn-primary btn-research px-10 py-3 rounded-xl font-black text-sm shadow-xl flex-grow md:flex-none">⬇
+                            Download Paper</button>
+                        <button onclick="copyPaper()"
+                            class="p-3 bg-white border-2 border-violet-100 text-violet-600 rounded-xl hover:bg-violet-600 hover:text-white transition shadow-lg">📋</button>
+                    </div>
+                </div>
+
+                <div id="paper-preview"
+                    class="card p-12 bg-white shadow-2xl prose prose-violet max-w-none prose-sm leading-relaxed text-gray-700 prose-headings:font-cinzel prose-headings:text-gray-900">
+                    <!-- Rendered Markdown -->
+                </div>
+                <textarea id="paper-raw"
+                    class="hidden card p-12 bg-gray-900 text-emerald-400 font-mono text-xs w-full min-h-[600px] border-none shadow-2xl leading-relaxed outline-none"
+                    readonly></textarea>
+
+                <!-- Quality Assurance Checklist -->
+                <div id="qa-checklist" class="hidden fade-in space-y-4">
+                    <div class="card p-8 bg-emerald-50 border-emerald-100">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                                🛡️</div>
+                            <div>
+                                <h3 class="text-xl font-bold text-emerald-900 leading-none mb-1">Research Quality
+                                    Assurance</h3>
+                                <p class="text-xs text-emerald-700 font-medium">This paper has been audited against 10
+                                    strict academic integrity rules.</p>
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-x-12 gap-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span
+                                        class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Citations
+                                        Verified</span>
+                                    <p class="text-[10px] text-emerald-700 italic">Every direct quote and paraphrased
+                                        idea contains a proper in-text citation.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span
+                                        class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Minimal
+                                        Quotation</span>
+                                    <p class="text-[10px] text-emerald-700 italic">Direct quotes are restricted to below
+                                        10% of total content for originality.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span
+                                        class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Paraphrase
+                                        Integrity</span>
+                                    <p class="text-[10px] text-emerald-700 italic">Sources are synthesized into unique
+                                        structures avoiding synonym replacement.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span
+                                        class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Original
+                                        Analysis</span>
+                                    <p class="text-[10px] text-emerald-700 italic">85-90% of the text reflects
+                                        independent scholarly interpretation.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span
+                                        class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Citation
+                                        Breadth</span>
+                                    <p class="text-[10px] text-emerald-700 italic">All unique theories and data are
+                                        attributed; common knowledge is not.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">APA
+                                        Consistency</span>
+                                    <p class="text-[10px] text-emerald-700 italic">Consistent citation format
+                                        application across the entire document.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span
+                                        class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Full
+                                        Bibliography</span>
+                                    <p class="text-[10px] text-emerald-700 italic">Alphabetized References at the end
+                                        contain all in-text cited sources.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span
+                                        class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Anti-Plagiarism</span>
+                                    <p class="text-[10px] text-emerald-700 italic">Passes similarity detection with an
+                                        estimated score below 10%.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span class="text-xs font-black text-emerald-900 block uppercase tracking-wider">No
+                                        Replication</span>
+                                    <p class="text-[10px] text-emerald-700 italic">100% unique synthesis generated
+                                        specifically for this research topic.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="text-emerald-500 font-bold mt-0.5">✓</div>
+                                <div>
+                                    <span
+                                        class="text-xs font-black text-emerald-900 block uppercase tracking-wider">Source
+                                        Documentation</span>
+                                    <p class="text-[10px] text-emerald-700 italic">Full metadata provided for every
+                                        source to ensure academic verifiability.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card p-8 bg-violet-50/50 border-violet-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <label class="block text-violet-900 text-xs font-black uppercase tracking-widest">Formatted Response</label>
-                        <button onclick="copyCitation()" class="text-xs font-bold text-violet-600 hover:text-violet-800">Copy Result</button>
-                    </div>
-                    <textarea id="citation-output" rows="2" class="w-full bg-transparent border-none outline-none font-bold text-gray-900 resize-none text-lg italic leading-snug" placeholder="Your citation will appear here..." readonly></textarea>
+                <div class="text-center py-6">
+                    <button onclick="regeneratePaper()"
+                        class="text-sm font-bold text-violet-600 hover:text-violet-800 transition">↻ Regenerate this
+                        response</button>
                 </div>
             </div>
+        </div>
 
-            <div class="hidden md:block space-y-6">
-                <div class="card p-8 bg-black text-white border-none shadow-2xl relative overflow-hidden">
-                    <div class="absolute -right-6 -bottom-6 text-white/10 scale-[3.0] rotate-12 rotate-y-180">📄</div>
-                    <h3 class="font-bold text-lg mb-4 opacity-100 relative z-10">Citation Standards</h3>
-                    <p class="text-xs opacity-60 leading-relaxed mb-8 relative z-10">We support the latest standards including APA 7th ed, MLA 9th Ed, and IEEE for technical papers.</p>
-                    <ul class="text-[11px] font-bold space-y-3 relative z-10">
-                        <li class="flex items-center gap-2">✅ Journal Articles</li>
-                        <li class="flex items-center gap-2">✅ Web Resources</li>
-                        <li class="flex items-center gap-2">✅ Books & Media</li>
-                        <li class="flex items-center gap-2">✅ Conference Papers</li>
-                    </ul>
+        <!-- Citation Tab -->
+        <div id="citation-tab" class="hidden fade-in space-y-8">
+            <div class="grid md:grid-cols-3 gap-10">
+                <div class="md:col-span-2 space-y-6">
+                    <div class="card p-10 bg-white shadow-2xl border-t-8 border-violet-600">
+                        <h3 class="text-xl font-bold mb-6">Citation Generator</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label
+                                    class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Paste
+                                    Reference Source</label>
+                                <textarea id="citation-input" rows="4"
+                                    class="w-full px-6 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition outline-none text-sm font-medium leading-relaxed"
+                                    placeholder="Author, Year, Title, Journal/URL, etc."></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label
+                                        class="block text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Style
+                                        Preference</label>
+                                    <select id="citation-style"
+                                        class="w-full px-6 py-3 rounded-2xl border-2 border-gray-100 focus:border-violet-400 transition outline-none text-sm font-bold bg-white">
+                                        <option value="APA">APA Style</option>
+                                        <option value="MLA">MLA Style</option>
+                                        <option value="Chicago">Chicago Manual</option>
+                                        <option value="IEEE">IEEE Reference</option>
+                                        <option value="Vancouver">Vancouver</option>
+                                    </select>
+                                </div>
+                                <button onclick="generateCitation()" id="citation-btn"
+                                    class="w-full btn-primary btn-research py-3 rounded-2xl font-black text-sm shadow-xl">Format
+                                    Citation →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card p-8 bg-violet-50/50 border-violet-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <label class="block text-violet-900 text-xs font-black uppercase tracking-widest">Formatted
+                                Response</label>
+                            <button onclick="copyCitation()"
+                                class="text-xs font-bold text-violet-600 hover:text-violet-800">Copy Result</button>
+                        </div>
+                        <textarea id="citation-output" rows="2"
+                            class="w-full bg-transparent border-none outline-none font-bold text-gray-900 resize-none text-lg italic leading-snug"
+                            placeholder="Your citation will appear here..." readonly></textarea>
+                    </div>
                 </div>
 
-                <div class="card p-8 bg-violet-600 text-white border-none shadow-2xl">
-                    <h3 class="font-bold mb-4">Pro Tip</h3>
-                    <p class="text-xs opacity-80 leading-relaxed">Generated citations are AI-verified against style guides. Always double-check volume and page numbers before publishing.</p>
+                <div class="hidden md:block space-y-6">
+                    <div class="card p-8 bg-black text-white border-none shadow-2xl relative overflow-hidden">
+                        <div class="absolute -right-6 -bottom-6 text-white/10 scale-[3.0] rotate-12 rotate-y-180">📄
+                        </div>
+                        <h3 class="font-bold text-lg mb-4 opacity-100 relative z-10">Citation Standards</h3>
+                        <p class="text-xs opacity-60 leading-relaxed mb-8 relative z-10">We support the latest standards
+                            including APA 7th ed, MLA 9th Ed, and IEEE for technical papers.</p>
+                        <ul class="text-[11px] font-bold space-y-3 relative z-10">
+                            <li class="flex items-center gap-2">✅ Journal Articles</li>
+                            <li class="flex items-center gap-2">✅ Web Resources</li>
+                            <li class="flex items-center gap-2">✅ Books & Media</li>
+                            <li class="flex items-center gap-2">✅ Conference Papers</li>
+                        </ul>
+                    </div>
+
+                    <div class="card p-8 bg-violet-600 text-white border-none shadow-2xl">
+                        <h3 class="font-bold mb-4">Pro Tip</h3>
+                        <p class="text-xs opacity-80 leading-relaxed">Generated citations are AI-verified against style
+                            guides. Always double-check volume and page numbers before publishing.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-  </div>
-  {% endif %}
+    {% endif %}
 </div>
 </div>
 
 <!-- ── TUMTUM CHATBOT ── -->
 <div class="fixed bottom-6 right-6 z-[60]">
     <!-- Floating Toggle -->
-    <button onclick="toggleTumTum()" id="tumtum-trigger" class="w-16 h-16 bg-violet-600 rounded-full shadow-2xl flex items-center justify-center text-3xl hover:scale-110 active:scale-95 transition-all group relative">
+    <button onclick="toggleTumTum()" id="tumtum-trigger"
+        class="w-16 h-16 bg-violet-600 rounded-full shadow-2xl flex items-center justify-center text-3xl hover:scale-110 active:scale-95 transition-all group relative">
         🤖
-        <span class="absolute -top-12 right-0 bg-white text-violet-900 text-xs font-black px-4 py-2 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-opacity border border-violet-100 whitespace-nowrap">
+        <span
+            class="absolute -top-12 right-0 bg-white text-violet-900 text-xs font-black px-4 py-2 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-opacity border border-violet-100 whitespace-nowrap">
             Hi, I'm TumTum! 👋
         </span>
     </button>
 
     <!-- Chat Window -->
-    <div id="tumtum-window" class="hidden absolute bottom-20 right-0 w-80 md:w-96 bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(124,58,237,0.3)] border border-violet-100 flex flex-col overflow-hidden max-h-[500px] animate-slide-up">
+    <div id="tumtum-window"
+        class="hidden absolute bottom-20 right-0 w-80 md:w-96 bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(124,58,237,0.3)] border border-violet-100 flex flex-col overflow-hidden max-h-[500px] animate-slide-up">
         <div class="bg-violet-600 p-6 text-white flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl">🤖</div>
@@ -373,11 +451,13 @@
             </div>
             <button onclick="toggleTumTum()" class="p-2 hover:bg-white/10 rounded-lg transition">✕</button>
         </div>
-        
-        <div id="tumtum-messages" class="flex-grow p-6 space-y-4 overflow-y-auto bg-gray-50/50 min-h-[300px] max-h-[350px]">
+
+        <div id="tumtum-messages"
+            class="flex-grow p-6 space-y-4 overflow-y-auto bg-gray-50/50 min-h-[300px] max-h-[350px]">
             <div class="flex items-start gap-3">
                 <div class="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-sm">🤖</div>
-                <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm text-xs text-gray-700 leading-relaxed border border-violet-50">
+                <div
+                    class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm text-xs text-gray-700 leading-relaxed border border-violet-50">
                     Hello! I'm <b>TumTum</b>, your Research Assistant. 🎓<br><br>
                     Need help brainstorming a topic or choosing a citation style? Ask me anything!
                 </div>
@@ -385,55 +465,58 @@
         </div>
 
         <div class="p-4 bg-white border-t border-gray-100 flex gap-2">
-            <input type="text" id="tumtum-input" onkeypress="if(event.key==='Enter') sendTumTumTip()" class="flex-grow px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 text-xs outline-none focus:border-violet-400 transition" placeholder="Ask TumTum for a tip...">
-            <button onclick="sendTumTumTip()" class="p-3 bg-violet-600 text-white rounded-xl hover:bg-violet-700 active:scale-90 transition shadow-lg">➤</button>
+            <input type="text" id="tumtum-input" onkeypress="if(event.key==='Enter') sendTumTumTip()"
+                class="flex-grow px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 text-xs outline-none focus:border-violet-400 transition"
+                placeholder="Ask TumTum for a tip...">
+            <button onclick="sendTumTumTip()"
+                class="p-3 bg-violet-600 text-white rounded-xl hover:bg-violet-700 active:scale-90 transition shadow-lg">➤</button>
         </div>
     </div>
 </div>
 
 <script>
-function toggleTumTum(){
-    const win = document.getElementById('tumtum-window');
-    win.classList.toggle('hidden');
-    if(!win.classList.contains('hidden')) document.getElementById('tumtum-input').focus();
-}
-
-async function sendTumTumTip(){
-    const input = document.getElementById('tumtum-input');
-    const msg = input.value.trim();
-    if(!msg) return;
-    
-    appendMessage('user', msg);
-    input.value = '';
-
-    try {
-        const res = await fetch('/research/chat', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({message: msg})
-        });
-        const data = await res.json();
-        if(data.success) {
-            appendMessage('bot', data.response);
-        }
-    } catch(e) {
-        appendMessage('bot', "Sorry, I'm a bit tied up right now!");
+    function toggleTumTum() {
+        const win = document.getElementById('tumtum-window');
+        win.classList.toggle('hidden');
+        if (!win.classList.contains('hidden')) document.getElementById('tumtum-input').focus();
     }
-}
 
-function appendMessage(role, text){
-    const container = document.getElementById('tumtum-messages');
-    const div = document.createElement('div');
-    div.className = `flex items-start gap-3 ${role === 'user' ? 'flex-row-reverse' : ''}`;
-    
-    div.innerHTML = `
-        <div class="w-8 h-8 ${role==='bot'?'bg-violet-100':'bg-violet-500 text-white'} rounded-full flex items-center justify-center text-sm">${role==='bot'?'🤖':'👤'}</div>
-        <div class="${role==='bot'?'bg-violet-50 border border-violet-100 rounded-tl-none':'bg-violet-500 text-white rounded-tr-none'} p-4 rounded-2xl shadow-sm text-xs leading-relaxed max-w-[80%] markdown-content">
+    async function sendTumTumTip() {
+        const input = document.getElementById('tumtum-input');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        appendMessage('user', msg);
+        input.value = '';
+
+        try {
+            const res = await fetch('/research/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+            const data = await res.json();
+            if (data.success) {
+                appendMessage('bot', data.response);
+            }
+        } catch (e) {
+            appendMessage('bot', "Sorry, I'm a bit tied up right now!");
+        }
+    }
+
+    function appendMessage(role, text) {
+        const container = document.getElementById('tumtum-messages');
+        const div = document.createElement('div');
+        div.className = `flex items-start gap-3 ${role === 'user' ? 'flex-row-reverse' : ''}`;
+
+        div.innerHTML = `
+        <div class="w-8 h-8 ${role === 'bot' ? 'bg-violet-100' : 'bg-violet-500 text-white'} rounded-full flex items-center justify-center text-sm">${role === 'bot' ? '🤖' : '👤'}</div>
+        <div class="${role === 'bot' ? 'bg-violet-50 border border-violet-100 rounded-tl-none' : 'bg-violet-500 text-white rounded-tr-none'} p-4 rounded-2xl shadow-sm text-xs leading-relaxed max-w-[80%] markdown-content">
             ${marked.parse(text)}
         </div>
     `;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-}
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
 </script>
 {% endblock %}
